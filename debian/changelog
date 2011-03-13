@@ -1,0 +1,5 @@
+ossec-hids (2.5.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>  Sun, 13 Mar 2011 03:24:51 +0100
