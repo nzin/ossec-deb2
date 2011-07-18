@@ -1,5 +1,5 @@
 Source: ossec-hids
-Section: unknown
+Section: utils
 Priority: extra
 Maintainer: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
 Build-Depends: debhelper (>= 7.0.50~)
@@ -11,10 +11,33 @@ Homepage: http://www.ossec.net/
 Package: ossec-hids
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion detection), log monitoring and SIM/SIEM together.
- <insert long description, indented with spaces>
+Description: (short description here) 
+ OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+
 
 Package: ossec-hids-doc
 Architecture: all
 Description: documentation for ossec-hids
  <insert long description, indented with spaces>
+
+Package: ossec-hids-local
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: (short description here) 
+ OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+ <insert long description, indented with spaces>
+
+Package: ossec-hids-server
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: (short description here)
+ OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+ <insert long description, indented with spaces>
+
+Package: ossec-hids-client
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: (short description here)
+ OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+ <insert long description, indented with spaces>
+

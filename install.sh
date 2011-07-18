@@ -53,8 +53,6 @@ for i in $*; do
         exit 1;
     fi        
 done
-        
-
 
 ##########
 # install()
@@ -83,18 +81,7 @@ Install()
 
     # Binary install will use the previous generated code.
     if [ "X${USER_BINARYINSTALL}" = "X" ]; then
-        make all
-        if [ $? != 0 ]; then
-            cd ../
-            catError "0x5-build"
-        fi
-        
-        # Building everything    
-        make build
-        if [ $? != 0 ]; then
-            cd ../
-            catError "0x5-build"
-        fi    
+	build
     fi
     
     # If update, stop ossec
@@ -149,9 +136,6 @@ Install()
     fi       
     	
 }
-
-
-
 
 ##########
 # UseSyscheck()
@@ -233,9 +217,6 @@ UseRootcheck()
       echo "  </rootcheck>" >> $NEWCONFIG
     fi            
 }
-
-
-
 
 ##########
 # SetupLogs()
@@ -323,9 +304,6 @@ SetupLogs()
     fi
 }
 
-
-
-
 ##########
 # ConfigureClient()
 ##########
@@ -394,9 +372,6 @@ ConfigureClient()
 
     echo "</ossec_config>" >> $NEWCONFIG
 }
-
-
-
 
 ##########
 # ConfigureServer()
@@ -680,9 +655,6 @@ ConfigureServer()
     SetupLogs "3.6"
     echo "</ossec_config>" >> $NEWCONFIG 
 }
-
-
-
 
 ##########
 # setEnv()
@@ -1171,11 +1143,40 @@ main()
     fi
 }
 
+# Inicio del parche
+##########
+# build()
+##########
+build()
+{
 
+  cd `dirname $0`
+  cd ./src/
 
+  make all
+  if [ $? != 0 ]; then
+    cd ../
+    catError "0x5-build"
+  fi
+        
+  # Building everything    
+  make build
+  if [ $? != 0 ]; then
+    cd ../
+    catError "0x5-build"
+  fi    
+
+}
+
+USER_LANGUAGE="en"
+USER_INSTALL_TYPE="server"
+
+if [$1="build"]; then build
+elif [$1=install] install
+fi
 
 ### Calling main function where everything happens
-main
+#main
 
 
 exit 0
