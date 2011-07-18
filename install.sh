@@ -1,4 +1,4 @@
-#!/bin/sh
+ou#!/bin/sh
 # Installation script for the OSSEC
 # Author: Daniel B. Cid <daniel.cid@gmail.com>
 # Last modification: Mar 02, 2006
@@ -53,6 +53,8 @@ for i in $*; do
         exit 1;
     fi        
 done
+        
+
 
 ##########
 # install()
@@ -137,6 +139,9 @@ Install()
     	
 }
 
+
+
+
 ##########
 # UseSyscheck()
 ##########
@@ -217,6 +222,9 @@ UseRootcheck()
       echo "  </rootcheck>" >> $NEWCONFIG
     fi            
 }
+
+
+
 
 ##########
 # SetupLogs()
@@ -304,6 +312,9 @@ SetupLogs()
     fi
 }
 
+
+
+
 ##########
 # ConfigureClient()
 ##########
@@ -372,6 +383,9 @@ ConfigureClient()
 
     echo "</ossec_config>" >> $NEWCONFIG
 }
+
+
+
 
 ##########
 # ConfigureServer()
@@ -655,6 +669,9 @@ ConfigureServer()
     SetupLogs "3.6"
     echo "</ossec_config>" >> $NEWCONFIG 
 }
+
+
+
 
 ##########
 # setEnv()
