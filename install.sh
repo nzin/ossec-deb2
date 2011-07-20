@@ -16,7 +16,6 @@
 ### Looking up for the execution directory
 cd `dirname $0`
 
-
 ### Looking for echo -n
 ECHO="echo -n"
 hs=`echo -n "a"`
@@ -54,7 +53,7 @@ for i in $*; do
     fi        
 done
         
-	echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
+    echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
     echo "CC=${CC}" >> ${LOCATION}
     echo "GCC=${CC}" >> ${LOCATION}
     echo "CLANG=clang" >> ${LOCATION}
@@ -68,13 +67,13 @@ done
     echo "CEXTRA=${CEXTRA}" >> ./src/Config.OS
     
     # Makefile
-	echo " - ${runningmake}"
-    cd ./src
+    echo " - ${runningmake}"
+#    cd ./src
 
     # Binary install will use the previous generated code.
-    if [ "X${USER_BINARYINSTALL}" = "X" ]; then
-	build
-    fi
+#    if [ "X${USER_BINARYINSTALL}" = "X" ]; then
+#	build
+#    fi
     
 
 ##########
@@ -91,7 +90,7 @@ Install()
     fi    
 
     # Making the right installation type
-	if [ "X$INSTYPE" = "Xserver" ]; then
+    if [ "X$INSTYPE" = "Xserver" ]; then
         ./InstallServer.sh
 	
     elif [ "X$INSTYPE" = "Xagent" ]; then 
@@ -1189,7 +1188,7 @@ USER_INSTALL_TYPE="server"
 
 if [$1="build"]; then build
 elif [$1=install]
-  ### Calling main function where everything happens
+  ### Calling main function where installation happens
   main
 fi
 
