@@ -1,4 +1,4 @@
-ou#!/bin/sh
+#!/bin/sh
 # Installation script for the OSSEC
 # Author: Daniel B. Cid <daniel.cid@gmail.com>
 # Last modification: Mar 02, 2006
@@ -54,16 +54,6 @@ for i in $*; do
     fi        
 done
         
-
-
-##########
-# install()
-##########
-Install()
-{
-	echo ""
-	echo "5- ${installing}"
-    
 	echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
     echo "CC=${CC}" >> ${LOCATION}
     echo "GCC=${CC}" >> ${LOCATION}
@@ -85,6 +75,15 @@ Install()
     if [ "X${USER_BINARYINSTALL}" = "X" ]; then
 	build
     fi
+    
+
+##########
+# install()
+##########
+Install()
+{
+	echo ""
+	echo "5- ${installing}"
     
     # If update, stop ossec
     if [ "X${update_only}" = "Xyes" ]; then
@@ -1189,15 +1188,12 @@ USER_LANGUAGE="en"
 USER_INSTALL_TYPE="server"
 
 if [$1="build"]; then build
-elif [$1=install] install
+elif [$1=install]
+  ### Calling main function where everything happens
+  main
 fi
 
-### Calling main function where everything happens
-#main
-
-
 exit 0
-
 
 
 ## EOF ##
