@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 # Installation script for the OSSEC
 # Author: Daniel B. Cid <daniel.cid@gmail.com>
 # Last modification: Mar 02, 2006
@@ -844,10 +844,11 @@ AddPFTable()
 }
 
 ##########
-# main()
+# pre()
 ##########
-main()
+pre()
 {
+ 
     LG="en"
     LANGUAGE="en"
     . ./src/init/shared.sh
@@ -1085,6 +1086,14 @@ main()
         fi
     fi    
 
+}
+
+##########
+# main()
+##########
+main()
+{
+
     # Installing (calls the respective script 
     # -- InstallAgent.sh or InstallServer.sh
     Install
@@ -1186,6 +1195,8 @@ build()
 
 USER_LANGUAGE="en"
 USER_INSTALL_TYPE="server"
+
+pre
 
 if [$1="build"]; then build
 elif [$1=install]
