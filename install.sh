@@ -1198,11 +1198,19 @@ USER_INSTALL_TYPE="server"
 
 pre
 
-if [$1="build"]; then build
-elif [$1=install]
-  ### Calling main function where installation happens
-  main
-fi
+case $1 in
+        "build")
+            build
+            ;;
+        "install")
+# Call main function where installation happens
+           main 
+            ;;
+        *)
+            echo " Unknown argument $1" >&2
+            exit 1
+            ;;
+    esac 
 
 exit 0
 
