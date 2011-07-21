@@ -30,16 +30,29 @@ build:
 
 	./install
 
-install:
+install: install-doc install-server install-client install-local
+
+
+	./install
+
+install-%:
 
 	USER_LANGUAGE = en
 	USER_NO_STOP = no
 #	USER_UPDATE = 
-	USER_INSTALL_TYPE = server # ( agent || local || server )
+	BUILD = no
 
-	BUILD =		# variable leaved blank to continue installing the binaries
 
-	./install
+install-doc:
+
+install-server:
+	USER_INSTALL_TYPE = server
+
+install-client:
+	USER_INSTALL_TYPE = agent
+
+install-local:
+	USER_INSTALL_TYPE = local
 
 binary:
 
