@@ -77,6 +77,9 @@ Install()
 
     echo "CEXTRA=${CEXTRA}" >> ./src/Config.OS
 
+  # If only-building
+  if [ "X${BUILD}" = "Xyes" ]; then
+
     # Makefile
 	echo " - ${runningmake}"
     cd ./src
@@ -96,6 +99,11 @@ Install()
             catError "0x5-build"
         fi
     fi
+
+    exit 0
+
+  else # End of building
+
 
     # If update, stop ossec
     if [ "X${update_only}" = "Xyes" ]; then
@@ -147,7 +155,7 @@ Install()
             notmodified="yes"
         fi
     fi
-
+  fi
 }
 
 
