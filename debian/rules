@@ -20,8 +20,10 @@ export DH_OPTIONS
 clean:
 
 build:
+	./install build
 
 install:
+	./install install
 
 binary:
 
