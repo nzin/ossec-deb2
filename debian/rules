@@ -20,10 +20,26 @@ export DH_OPTIONS
 clean:
 
 build:
-	./install build
+
+	USER_LANGUAGE = en
+	USER_NO_STOP = no
+#	USER_UPDATE = 
+	USER_INSTALL_TYPE = server #( agent || local || server )
+
+	BUILD = yes	# variable used to stop the installation script
+
+	./install
 
 install:
-	./install install
+
+	USER_LANGUAGE = en
+	USER_NO_STOP = no
+#	USER_UPDATE = 
+	USER_INSTALL_TYPE = server # ( agent || local || server )
+
+	BUILD =		# variable leaved blank to continue installing the binaries
+
+	./install
 
 binary:
 
