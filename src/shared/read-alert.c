@@ -27,6 +27,12 @@
 #define RULE_BEGIN_SZ   6
 #define SRCIP_BEGIN     "Src IP: "
 #define SRCIP_BEGIN_SZ  8
+#define SRCPORT_BEGIN     "Src Port: "
+#define SRCPORT_BEGIN_SZ  10
+#define DSTIP_BEGIN     "Dst IP: "
+#define DSTIP_BEGIN_SZ  8
+#define DSTPORT_BEGIN     "Dst Port: "
+#define DSTPORT_BEGIN_SZ  10
 #define USER_BEGIN      "User: "
 #define USER_BEGIN_SZ   6
 #define ALERT_MAIL      "mail"
@@ -63,6 +69,10 @@ void FreeAlertData(alert_data *al_data)
     {
         free(al_data->user);
     }
+    if(al_data->filename)
+    {
+        free(al_data->filename);
+    }
     if(al_data->log)
     {
         while(*(al_data->log))
@@ -81,17 +91,21 @@ void FreeAlertData(alert_data *al_data)
  */
 alert_data *GetAlertData(int flag, FILE *fp)
 {
-    int _r = 0, log_size;
+    int _r = 0, log_size, issyscheck = 0;
     char *p;
 
+    char *alertid = NULL;
     char *date = NULL;
     char *comment = NULL;
     char *location = NULL;
     char *srcip = NULL;
+    char *dstip = NULL;
     char *user = NULL;
     char *group = NULL;
+    char *filename = NULL;
     char **log = NULL;
-    int level, rule;
+    int level, rule, srcport, dstport;
+  
     
     char str[OS_BUFFER_SIZE+1];
     str[OS_BUFFER_SIZE]='\0';
@@ -101,13 +115,14 @@ alert_data *GetAlertData(int flag, FILE *fp)
     {
         
         /* Enf of alert */
-        if(strcmp(str, "\n") == 0)
+        if(strcmp(str, "\n") == 0 && log_size > 0)
         {
             /* Found in here */
             if(_r == 2)
             {
                 alert_data *al_data;
                 os_calloc(1, sizeof(alert_data), al_data);
+                al_data->alertid = alertid;
                 al_data->level = level;
                 al_data->rule = rule;
                 al_data->location = location;
@@ -115,8 +130,13 @@ alert_data *GetAlertData(int flag, FILE *fp)
                 al_data->group = group;
                 al_data->log = log;
                 al_data->srcip = srcip;
+                al_data->srcport = srcport;
+                al_data->dstip = dstip;
+                al_data->dstport = dstport;
                 al_data->user = user;
                 al_data->date = date;
+                al_data->filename = filename;
+
                
                 return(al_data);
             }
@@ -127,7 +147,20 @@ alert_data *GetAlertData(int flag, FILE *fp)
         /* Checking for the header */
         if(strncmp(ALERT_BEGIN, str, ALERT_BEGIN_SZ) == 0)
         {
+            char *m;
+            int z = 0;
             p = str + ALERT_BEGIN_SZ + 1;
+
+            m = strstr(p, ":");
+            if (!m)
+            {
+                continue;
+            }
+
+            z = strlen(p) - strlen(m);
+            os_realloc(alertid, (z + 1)*sizeof(char *), alertid);
+            strncpy(alertid, p, z);
+            alertid[z] = '\0';
             
             /* Searching for email flag */
             p = strchr(p, ' ');
@@ -154,6 +187,10 @@ alert_data *GetAlertData(int flag, FILE *fp)
 
                 /* Cleaning new line from group */
                 os_clearnl(group, p);
+                if(group != NULL && strstr(group, "syscheck") != NULL)
+                {
+                    issyscheck = 1;
+                }
             }
 
 
@@ -257,6 +294,30 @@ alert_data *GetAlertData(int flag, FILE *fp)
                 p = str + SRCIP_BEGIN_SZ;
                 os_strdup(p, srcip);
             }
+            /* srcport */
+            else if(strncmp(SRCPORT_BEGIN, str, SRCPORT_BEGIN_SZ) == 0)
+            {
+                os_clearnl(str,p);
+                
+                p = str + SRCPORT_BEGIN_SZ;
+                srcport = atoi(p);
+            }
+            /* dstip */
+            else if(strncmp(DSTIP_BEGIN, str, DSTIP_BEGIN_SZ) == 0)
+            {
+                os_clearnl(str,p);
+                
+                p = str + DSTIP_BEGIN_SZ;
+                os_strdup(p, dstip);
+            }
+            /* dstport */
+            else if(strncmp(DSTPORT_BEGIN, str, DSTPORT_BEGIN_SZ) == 0)
+            {
+                os_clearnl(str,p);
+                
+                p = str + DSTPORT_BEGIN_SZ;
+                dstport = atoi(p);
+            }
             /* username */
             else if(strncmp(USER_BEGIN, str, USER_BEGIN_SZ) == 0)
             {
@@ -269,6 +330,19 @@ alert_data *GetAlertData(int flag, FILE *fp)
             else if(log_size < 20)
             {
                 os_clearnl(str,p);
+
+                if(str != NULL && issyscheck == 1)
+                {
+                    if(strncmp(str, "Integrity checksum changed for: '",33) == 0)
+                    {
+                        filename = strdup(str+33);
+                        if(filename)
+                        {
+                            filename[strlen(filename) -1] = '\0';
+                        }
+                    } 
+                    issyscheck = 0;
+                }
                 
                 os_realloc(log, (log_size +2)*sizeof(char *), log);
                 os_strdup(str, log[log_size]); 
@@ -306,6 +380,11 @@ alert_data *GetAlertData(int flag, FILE *fp)
         {
             free(user);
             user = NULL;
+        }
+        if(filename)
+        {
+            free(filename);
+            filename = NULL;
         }
         if(group)
         {
