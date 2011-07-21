@@ -12,7 +12,7 @@
 # New function AddTable to add support for OpenBSD pf rules in firewall-drop active response
 
 # Uncomment for verbose mode
-set -x
+#set -x
 
 ### Looking up for the execution directory
 cd `dirname $0`
