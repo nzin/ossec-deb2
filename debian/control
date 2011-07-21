@@ -11,33 +11,30 @@ Homepage: http://www.ossec.net/
 Package: ossec-hids
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: (short description here) 
+Description: Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
 
 
 Package: ossec-hids-doc
 Architecture: all
 Description: documentation for ossec-hids
- <insert long description, indented with spaces>
+ OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
 
 Package: ossec-hids-local
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: (short description here) 
+Description: Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
- <insert long description, indented with spaces>
 
 Package: ossec-hids-server
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: (short description here)
+Description: Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
- <insert long description, indented with spaces>
 
 Package: ossec-hids-client
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: (short description here)
+Description: Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
- <insert long description, indented with spaces>
 
