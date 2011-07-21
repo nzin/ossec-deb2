@@ -11,11 +11,11 @@
 # Changelog 15/07/2006 - Rafael M. Capovilla <under@underlinux.com.br>
 # New function AddTable to add support for OpenBSD pf rules in firewall-drop active response
 
-# Uncomment for verbose mode
-#set -x
+
 
 ### Looking up for the execution directory
 cd `dirname $0`
+
 
 ### Looking for echo -n
 ECHO="echo -n"
@@ -54,7 +54,17 @@ for i in $*; do
     fi        
 done
         
-    echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
+
+
+##########
+# install()
+##########
+Install()
+{
+	echo ""
+	echo "5- ${installing}"
+    
+	echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
     echo "CC=${CC}" >> ${LOCATION}
     echo "GCC=${CC}" >> ${LOCATION}
     echo "CLANG=clang" >> ${LOCATION}
@@ -68,22 +78,24 @@ done
     echo "CEXTRA=${CEXTRA}" >> ./src/Config.OS
     
     # Makefile
-    echo " - ${runningmake}"
-#    cd ./src
+	echo " - ${runningmake}"
+    cd ./src
 
     # Binary install will use the previous generated code.
-#    if [ "X${USER_BINARYINSTALL}" = "X" ]; then
-#	build
-#    fi
-    
-
-##########
-# install()
-##########
-Install()
-{
-	echo ""
-	echo "5- ${installing}"
+    if [ "X${USER_BINARYINSTALL}" = "X" ]; then
+        make all
+        if [ $? != 0 ]; then
+            cd ../
+            catError "0x5-build"
+        fi
+        
+        # Building everything    
+        make build
+        if [ $? != 0 ]; then
+            cd ../
+            catError "0x5-build"
+        fi    
+    fi
     
     # If update, stop ossec
     if [ "X${update_only}" = "Xyes" ]; then
@@ -91,7 +103,7 @@ Install()
     fi    
 
     # Making the right installation type
-    if [ "X$INSTYPE" = "Xserver" ]; then
+	if [ "X$INSTYPE" = "Xserver" ]; then
         ./InstallServer.sh
 	
     elif [ "X$INSTYPE" = "Xagent" ]; then 
@@ -844,11 +856,10 @@ AddPFTable()
 }
 
 ##########
-# pre()
+# main()
 ##########
-pre()
+main()
 {
- 
     LG="en"
     LANGUAGE="en"
     . ./src/init/shared.sh
@@ -1086,14 +1097,6 @@ pre()
         fi
     fi    
 
-}
-
-##########
-# main()
-##########
-main()
-{
-
     # Installing (calls the respective script 
     # -- InstallAgent.sh or InstallServer.sh
     Install
@@ -1168,51 +1171,15 @@ main()
     fi
 }
 
-# Inicio del parche
-##########
-# build()
-##########
-build()
-{
 
-  cd `dirname $0`
-  cd ./src/
 
-  make all
-  if [ $? != 0 ]; then
-    cd ../
-    catError "0x5-build"
-  fi
-        
-  # Building everything    
-  make build
-  if [ $? != 0 ]; then
-    cd ../
-    catError "0x5-build"
-  fi    
 
-}
+### Calling main function where everything happens
+main
 
-USER_LANGUAGE="en"
-USER_INSTALL_TYPE="server"
-
-pre
-
-case $1 in
-        "build")
-            build
-            ;;
-        "install")
-# Call main function where installation happens
-           main 
-            ;;
-        *)
-            echo " Unknown argument $1" >&2
-            exit 1
-            ;;
-    esac 
 
 exit 0
+
 
 
 ## EOF ##
