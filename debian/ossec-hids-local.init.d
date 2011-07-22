@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          ossec-hids
+# Provides:          ossec-hids-local
 # Required-Start:    $network $local_fs
 # Required-Stop:
 # Default-Start:     2 3 4 5
@@ -15,8 +15,8 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=ossec-hids             # Introduce a short description here
-NAME=ossec-hids             # Introduce the short server's name here
+DESC=ossec-hids-local             # Introduce a short description here
+NAME=ossec-hids-local             # Introduce the short server's name here
 DAEMON=/usr/sbin/ossec-hids # Introduce the server's location here
 DAEMON_ARGS=""             # Arguments to run the daemon with
 PIDFILE=/var/run/$NAME.pid
