@@ -59,7 +59,7 @@ build: build-stamp build-local build-server build-agent
 
 build-local: configure-local
 
-	USER_INSTALL_TYPE="${USER_INSTALL_TYPE}" BUILD="${BUILD}" USER_LANGUAGE="en" USER_NO_STOP="no" ./install.sh
+	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ./install.sh
 
 build-server: configure-server
 
