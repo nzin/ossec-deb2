@@ -38,15 +38,15 @@ configure-%: configure-stamp
 
 configure-local:
 
-	USER_INSTALL_TYPE = local
+	USER_INSTALL_TYPE="local"
 
 configure-server:
 
-	USER_INSTALL_TYPE = server
+	USER_INSTALL_TYPE="server"
 
 configure-agent:
 
-	USER_INSTALL_TYPE = agent
+	USER_INSTALL_TYPE="agent"
 
 
 build-stamp:
@@ -79,19 +79,19 @@ install-%:
 	dh_prep
 	dh_installdirs
 
-	USER_LANGUAGE = en
-	USER_NO_STOP = no
+	USER_LANGUAGE="en"
+	USER_NO_STOP="no"
 #	USER_UPDATE = 
-	BUILD = no
+	BUILD="no"
 
-	DESTDIR = $CURDIR/debian
+	DESTDIR="$CURDIR/debian"
 
 
 
 install-doc:
 
-	PKG=$PKG_BASENAME-doc
-	DESTDIR = $DESTDIR/$PKG
+	PKG="$PKG_BASENAME-doc"
+	DESTDIR = "$DESTDIR/$PKG"
 
 	# This target needs to be done
 
