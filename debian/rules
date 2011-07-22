@@ -59,15 +59,15 @@ build: build-stamp build-local build-server build-agent
 
 build-local: configure-local
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	$(shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh)
 
 build-server: configure-server
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	$(shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh)
 
 build-agent: configure-agent
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	$(shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh)
 
 install: build install-doc install-server install-agent install-local
 
@@ -100,7 +100,7 @@ install-local:
 	PKG=$PKG_BASENAME-local
 	INSTALLDIR = $DESTDIR/$PKG
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	$(shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh)
 
 
 install-server:
@@ -108,14 +108,14 @@ install-server:
 	PKG=$PKG_BASENAME-server
 	INSTALLDIR = $DESTDIR/$PKG
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	$(shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh)
 
 install-client:
 
 	PKG=$PKG_BASENAME-client
 	INSTALLDIR = $DESTDIR/$PKG
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	$(shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh)
 
 binary:
 
