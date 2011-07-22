@@ -8,33 +8,26 @@ Homepage: http://www.ossec.net/
 #Vcs-Git: git://git.debian.org/collab-maint/ossec-hids.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/ossec-hids.git;a=summary
 
-Package: ossec-hids
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Host-based Intrusion Detection System.
- OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
-
-
 Package: ossec-hids-doc
 Architecture: all
-Description: documentation for ossec-hids
+Description: documentation for ossec-hids.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
 
 Package: ossec-hids-local
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Host-based Intrusion Detection System.
+Description: Ossec's local installation binaries. Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
 
 Package: ossec-hids-server
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Host-based Intrusion Detection System.
+Description: Ossec's server installation binaries. Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
 
 Package: ossec-hids-client
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Host-based Intrusion Detection System.
+Description: Ossec's client installation binaries. Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
 
