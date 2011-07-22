@@ -11,7 +11,8 @@
 # Changelog 15/07/2006 - Rafael M. Capovilla <under@underlinux.com.br>
 # New function AddTable to add support for OpenBSD pf rules in firewall-drop active response
 
-
+# Uncomment the next line for debug mode.
+set -x
 
 ### Looking up for the execution directory
 cd `dirname $0`
