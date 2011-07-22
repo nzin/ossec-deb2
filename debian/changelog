@@ -1,4 +1,4 @@
-ossec-hids (2.5.1-1) unstable; urgency=low
+ossec-hids (2.6-1) unstable; urgency=low
 
   * Initial release (Closes: #361954)
 
