@@ -128,19 +128,19 @@ get-orig-source:
 
 clean-doc:		## are we really needing clean-* targets? ---> we already have dh_clean at clean target
 
-	$(MAKE) clean-doc
+#	$(MAKE) clean-doc
 
 clean-local:
 
-	$(MAKE) clean-local
+#	$(MAKE) clean-local
 
 clean-server:
 
-	$(MAKE) clean-server
+#	$(MAKE) clean-server
 
 clean-client:
 
-	$(MAKE) clean-client
+#	$(MAKE) clean-client
 
 clean: #clean-local clean-server clean-client clean-doc
 
