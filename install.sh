@@ -935,10 +935,12 @@ main()
         catError "0x1-location";
     fi
 
-    # Must be root
+    # Must be root only in the case of not only-building.
+  if [ ! "X$BUILD" = "Xyes" ]; then
     if [ ! "X$ME" = "Xroot" ]; then
         catError "0x2-beroot";
     fi
+  fi
 
     # Checking dependencies
     checkDependencies
