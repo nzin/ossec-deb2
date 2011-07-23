@@ -25,12 +25,17 @@ typedef struct _alert_data
 {
     int rule;
     int level;
+    char *alertid;
     char *date;
     char *location;
     char *comment;
     char *group;
     char *srcip;
+    int srcport;
+    char *dstip;
+    int dstport;
     char *user;
+    char *filename;
     char **log;
 }alert_data;
 

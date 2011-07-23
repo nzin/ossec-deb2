@@ -11,8 +11,8 @@
 # Changelog 15/07/2006 - Rafael M. Capovilla <under@underlinux.com.br>
 # New function AddTable to add support for OpenBSD pf rules in firewall-drop active response
 
-# Uncomment for verbose mode
-#set -x
+# Uncomment the next line for debug mode.
+set -x
 
 ### Looking up for the execution directory
 cd `dirname $0`
@@ -51,31 +51,10 @@ for i in $*; do
         echo "$0 debug"
         echo "$0 binary-install"
         exit 1;
-    fi        
-done
-        
-    echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
-    echo "CC=${CC}" >> ${LOCATION}
-    echo "GCC=${CC}" >> ${LOCATION}
-    echo "CLANG=clang" >> ${LOCATION}
-    
-    # Changing Config.OS with the new C flags
-    # Checking if debug is enabled
-    if [ "X${SET_DEBUG}" = "Xdebug" ]; then
-        CEXTRA="${CEXTRA} -DDEBUGAD"
     fi
-        
-    echo "CEXTRA=${CEXTRA}" >> ./src/Config.OS
-    
-    # Makefile
-    echo " - ${runningmake}"
-#    cd ./src
+done
 
-    # Binary install will use the previous generated code.
-#    if [ "X${USER_BINARYINSTALL}" = "X" ]; then
-#	build
-#    fi
-    
+
 
 ##########
 # install()
@@ -84,17 +63,58 @@ Install()
 {
 	echo ""
 	echo "5- ${installing}"
-    
+
+	echo "DIR=\"${INSTALLDIR}\"" > ${LOCATION}
+    echo "CC=${CC}" >> ${LOCATION}
+    echo "GCC=${CC}" >> ${LOCATION}
+    echo "CLANG=clang" >> ${LOCATION}
+
+    # Changing Config.OS with the new C flags
+    # Checking if debug is enabled
+    if [ "X${SET_DEBUG}" = "Xdebug" ]; then
+        CEXTRA="${CEXTRA} -DDEBUGAD"
+    fi
+
+    echo "CEXTRA=${CEXTRA}" >> ./src/Config.OS
+
+  # If only-building
+  if [ "X${BUILD}" = "Xyes" ]; then
+
+    # Makefile
+    echo " - ${runningmake}"
+#    cd ./src
+
+    # Binary install will use the previous generated code.
+    if [ "X${USER_BINARYINSTALL}" = "X" ]; then
+        make all
+        if [ $? != 0 ]; then
+            cd ../
+            catError "0x5-build"
+        fi
+
+        # Building everything
+        make build
+        if [ $? != 0 ]; then
+            cd ../
+            catError "0x5-build"
+        fi
+    fi
+
+    exit 0
+
+  else # End of building
+
+
     # If update, stop ossec
     if [ "X${update_only}" = "Xyes" ]; then
         UpdateStopOSSEC
-    fi    
+    fi
 
     # Making the right installation type
     if [ "X$INSTYPE" = "Xserver" ]; then
         ./InstallServer.sh
-	
-    elif [ "X$INSTYPE" = "Xagent" ]; then 
+
+    elif [ "X$INSTYPE" = "Xagent" ]; then
         ./InstallAgent.sh
 
     elif [ "X$INSTYPE" = "Xlocal" ]; then
@@ -102,8 +122,8 @@ Install()
 	fi
 
     cd ../
-   
-   
+
+
     # Generate the /etc/ossec-init.conf
     VERSION_FILE="./src/VERSION"
     VERSION=`cat ${VERSION_FILE}`
@@ -115,27 +135,27 @@ Install()
     chmod 600 ${OSSEC_INIT}
     cp -pr ${OSSEC_INIT} ${INSTALLDIR}${OSSEC_INIT}
     chmod 644 ${INSTALLDIR}${OSSEC_INIT}
-    
 
-    # If update_rules is set, we need to tweak 
+
+    # If update_rules is set, we need to tweak
     # ossec.conf to read the new signatures.
     if [ "X${update_rules}" = "Xyes" ]; then
         UpdateOSSECRules
-    fi    
+    fi
 
     # If update, start OSSEC
     if [ "X${update_only}" = "Xyes" ]; then
-        UpdateStartOSSEC    
-    fi    
-     
+        UpdateStartOSSEC
+    fi
+
     # Calling the init script  to start ossec hids during boot
     if [ "X${update_only}" = "X" ]; then
         runInit
         if [ $? = 1 ]; then
             notmodified="yes"
-        fi 
-    fi       
-    	
+        fi
+    fi
+  fi
 }
 
 
@@ -154,7 +174,7 @@ UseSyscheck()
         read AS
     else
         AS=${USER_ENABLE_SYSCHECK}
-    fi        
+    fi
     echo ""
     case $AS in
         $nomatch)
@@ -164,7 +184,7 @@ UseSyscheck()
             SYSCHECK="yes"
             echo "   - ${yessyscheck}."
             ;;
-    esac 
+    esac
 
     # Adding to the config file
     if [ "X$SYSCHECK" = "Xyes" ]; then
@@ -181,16 +201,16 @@ UseSyscheck()
 UseRootcheck()
 {
 
-    # Rootkit detection configuration 
+    # Rootkit detection configuration
     echo ""
     $ECHO "  3.3- ${runrootcheck} ($yes/$no) [$yes]: "
-    
+
     if [ "X${USER_ENABLE_ROOTCHECK}" = "X" ]; then
         read ES
     else
         ES=${USER_ENABLE_ROOTCHECK}
-    fi    
-    
+    fi
+
     echo ""
     case $ES in
         $nomatch)
@@ -219,7 +239,7 @@ UseRootcheck()
       echo "  <rootcheck>" >> $NEWCONFIG
         echo "    <disabled>yes</disabled>" >> $NEWCONFIG
       echo "  </rootcheck>" >> $NEWCONFIG
-    fi            
+    fi
 }
 
 
@@ -238,7 +258,7 @@ SetupLogs()
     echo "  <!-- Files to monitor (localfiles) -->" >> $NEWCONFIG
     LOG_FILES=`cat ${SYSLOG_TEMPLATE}`
     for i in ${LOG_FILES}; do
-        # If log file present, add it    
+        # If log file present, add it
         ls $i > /dev/null 2>&1
         if [ $? = 0 ]; then
             echo "    -- $i"
@@ -248,7 +268,8 @@ SetupLogs()
 	        echo "    <location>$i</location>" >>$NEWCONFIG
 	        echo "  </localfile>" >> $NEWCONFIG
         fi
-    done    
+    done
+
 
     # Getting snort files
     SNORT_FILES=`cat ${SNORT_TEMPLATE}`
@@ -257,7 +278,7 @@ SetupLogs()
         if [ $? = 0 ]; then
             echo "" >> $NEWCONFIG
             echo "  <localfile>" >> $NEWCONFIG
-            
+
             head -n 1 $i|grep "\[**\] "|grep -v "Classification:" > /dev/null
             if [ $? = 0 ]; then
                 echo "    <log_format>snort-full</log_format>" >> $NEWCONFIG
@@ -267,10 +288,10 @@ SetupLogs()
                 echo "    -- $i (snort-fast file)"
             fi
             echo "    <location>$i</location>" >>$NEWCONFIG
-            echo "  </localfile>" >> $NEWCONFIG    
+            echo "  </localfile>" >> $NEWCONFIG
         fi
-    done    
-    
+    done
+
     # Getting apache logs
     APACHE_FILES=`cat ${APACHE_TEMPLATE}`
     for i in ${APACHE_FILES}; do
@@ -281,7 +302,7 @@ SetupLogs()
           echo "    <log_format>apache</log_format>" >> $NEWCONFIG
           echo "    <location>$i</location>" >>$NEWCONFIG
           echo "  </localfile>" >> $NEWCONFIG
-          
+
           echo "    -- $i (apache log)"
         fi
     done
@@ -296,13 +317,13 @@ SetupLogs()
           echo "    <log_format>postgresql_log</log_format>" >> $NEWCONFIG
           echo "    <location>$i</location>" >>$NEWCONFIG
           echo "  </localfile>" >> $NEWCONFIG
-          
+
           echo "    -- $i (postgresql log)"
         fi
     done
-   
-   
-    echo "" 
+
+
+    echo ""
     catMsg "0x106-logs"
 
 
@@ -322,9 +343,9 @@ ConfigureClient()
 	echo ""
 	echo "3- ${configuring} $NAME."
 	echo ""
-  
+
     if [ "X${USER_AGENT_SERVER_IP}" = "X" ]; then
-        # Looping and asking for server ip  
+        # Looping and asking for server ip
         while [ 1 ]; do
 	    $ECHO "  3.1- ${serverip}: "
 	        read IPANSWER
@@ -338,9 +359,9 @@ ConfigureClient()
         done
     else
         IP=${USER_AGENT_SERVER_IP}
-    fi    
+    fi
 
-    echo "<ossec_config>" > $NEWCONFIG	
+    echo "<ossec_config>" > $NEWCONFIG
     echo "  <client>" >> $NEWCONFIG
 	echo "    <server-ip>$IP</server-ip>" >> $NEWCONFIG
 	echo "  </client>" >> $NEWCONFIG
@@ -359,8 +380,8 @@ ConfigureClient()
         read ANY
     else
         ANY=${USER_ENABLE_ACTIVE_RESPONSE}
-    fi    
-    
+    fi
+
     case $ANY in
         $nomatch)
             echo ""
@@ -393,18 +414,18 @@ ConfigureServer()
 {
 	echo ""
 	echo "3- ${configuring} $NAME."
-	
-    
+
+
     # Configuring e-mail notification
 	echo ""
 	$ECHO "  3.1- ${mailnotify} ($yes/$no) [$yes]: "
-    
+
     if [ "X${USER_ENABLE_EMAIL}" = "X" ]; then
 	read ANSWER
     else
         ANSWER=${USER_ENABLE_EMAIL}
     fi
-        
+
 	case $ANSWER in
 		$nomatch)
             echo ""
@@ -415,7 +436,7 @@ ConfigureServer()
 			EMAILNOTIFY="yes"
 			$ECHO "   - ${whatsemail} "
             if [ "X${USER_EMAIL_ADDRESS}" = "X" ]; then
-			
+
                 read EMAIL
                 echo "${EMAIL}" | grep -E "^[a-zA-Z0-9_.-]{1,36}@[a-zA-Z0-9_.-]{1,54}$" > /dev/null 2>&1 ;RVAL=$?;
                 # Ugly e-mail validation
@@ -427,24 +448,24 @@ ConfigureServer()
             else
                 EMAIL=${USER_EMAIL_ADDRESS}
             fi
-                    
+
             ls ${HOST_CMD} > /dev/null 2>&1
             if [ $? = 0 ]; then
               HOSTTMP=`${HOST_CMD} -W 5 -t mx devmail.ossec.net 2>/dev/null`
               if [ $? = 1 ]; then
-                 # Trying without the -W 
+                 # Trying without the -W
                  HOSTTMP=`${HOST_CMD} -t mx devmail.ossec.net 2>/dev/null`
-              fi       
+              fi
               if [ "X$HOSTTMP" = "X${OSSECMX}" -o "X$HOSTTMP" = "X${OSSECMX2}" -o "X$HOSTTMP" = "X${OSSECMX3}" ];then
                  # Breaking down the user e-mail
                  EMAILHOST=`echo ${EMAIL} | cut -d "@" -f 2`
                  if [ "X${EMAILHOST}" = "Xlocalhost" ]; then
                     SMTPHOST="127.0.0.1"
-                 else       
+                 else
                     HOSTTMP=`${HOST_CMD} -W 5 -t mx ${EMAILHOST}`
                     SMTPHOST=`echo ${HOSTTMP} | cut -d " " -f 7`
-                 fi   
-              fi    
+                 fi
+              fi
             fi
 
             if [ "X${USER_EMAIL_SMTP}" = "X" ]; then
@@ -461,7 +482,7 @@ ConfigureServer()
                     *)
                         SMTP=${SMTPHOST}
                         echo ""
-                        echo "   --- ${usingsmtp} ${SMTP}"   
+                        echo "   --- ${usingsmtp} ${SMTP}"
                         ;;
                     esac
                 fi
@@ -469,16 +490,16 @@ ConfigureServer()
                 if [ "X${SMTP}" = "X" ]; then
 			        $ECHO "   - ${whatsmtp} "
                     read SMTP
-                fi  
+                fi
             else
                 SMTP=${USER_EMAIL_SMTP}
-            fi             
+            fi
         ;;
 	esac
 
 
-	# Writting global parameters 
-    echo "<ossec_config>" > $NEWCONFIG 
+	# Writting global parameters
+    echo "<ossec_config>" > $NEWCONFIG
 	echo "  <global>" >> $NEWCONFIG
 	if [ "$EMAILNOTIFY" = "yes" ]; then
 		echo "    <email_notification>yes</email_notification>" >> $NEWCONFIG
@@ -488,10 +509,10 @@ ConfigureServer()
 	else
 		echo "    <email_notification>no</email_notification>" >> $NEWCONFIG
 	fi
-    
-    echo "  </global>" >> $NEWCONFIG	
+
+    echo "  </global>" >> $NEWCONFIG
 	echo "" >> $NEWCONFIG
-    
+
 	# Writting rules configuration
     cat ${RULES_TEMPLATE} >> $NEWCONFIG
 	echo "" >> $NEWCONFIG
@@ -499,7 +520,7 @@ ConfigureServer()
 
     # Checking if syscheck should run
     UseSyscheck
-  
+
     # Checking if rootcheck should run
     UseRootcheck
 
@@ -507,13 +528,13 @@ ConfigureServer()
     # Active response
     catMsg "0x107-ar"
     $ECHO "   - ${enable_ar} ($yes/$no) [$yes]: "
-    
+
     if [ "X${USER_ENABLE_ACTIVE_RESPONSE}" = "X" ]; then
         read AR
     else
         AR=${USER_ENABLE_ACTIVE_RESPONSE}
     fi
-        
+
     case $AR in
         $nomatch)
             echo ""
@@ -528,16 +549,16 @@ ConfigureServer()
             ACTIVERESPONSE="yes"
             echo ""
             catMsg "0x108-ar-enabled"
-            
+
             echo ""
             $ECHO "   - ${firewallar} ($yes/$no) [$yes]: "
-            
+
             if [ "X${USER_ENABLE_FIREWALL_RESPONSE}" = "X" ]; then
                 read HD2
             else
                 HD2=${USER_ENABLE_FIREWALL_RESPONSE}
             fi
-                    
+
             echo ""
             case $HD2 in
                 $nomatch)
@@ -547,7 +568,7 @@ ConfigureServer()
                     echo "     - ${yesfirewall}"
                     FIREWALLDROP="yes"
                     ;;
-            esac        
+            esac
             echo "" >> $NEWCONFIG
             echo "  <global>" >> $NEWCONFIG
             echo "    <white_list>127.0.0.1</white_list>" >> $NEWCONFIG
@@ -573,9 +594,9 @@ ConfigureServer()
             #    if [ "X${USER_ENABLE_PF}" = "X" ]; then
             #        read PFENABLE
             #    else
-            #        PFENABLE=${USER_ENABLE_PF}    
+            #        PFENABLE=${USER_ENABLE_PF}
             #    fi
-            #        
+            #
             #    echo ""
             #    case $PFENABLE in
             #        $nomatch)
@@ -585,24 +606,24 @@ ConfigureServer()
             #            AddPFTable
             #            ;;
             #    esac
-            #fi                   
+            #fi
 
             echo "  </global>" >> $NEWCONFIG
             ;;
-    esac                
-    
-    
+    esac
+
+
     if [ "X$INSTYPE" = "Xserver" ]; then
-      # Configuring remote syslog  
+      # Configuring remote syslog
 	  echo ""
 	  $ECHO "  3.5- ${syslog} ($yes/$no) [$yes]: "
-      
+
       if [ "X${USER_ENABLE_SYSLOG}" = "X" ]; then
 	    read ANSWER
       else
         ANSWER=${USER_ENABLE_SYSLOG}
       fi
-              
+
       echo ""
       case $ANSWER in
 		$nomatch)
@@ -617,9 +638,9 @@ ConfigureServer()
 	  # Configuring remote connections
       SLOG="yes"
 	fi
-    
-    
-    
+
+
+
 	if [ "X$RLOG" = "Xyes" ]; then
 	echo "" >> $NEWCONFIG
 	echo "  <remote>" >> $NEWCONFIG
@@ -661,12 +682,12 @@ ConfigureServer()
             echo "" >> $NEWCONFIG
             cat ${ACTIVE_RESPONSE_TEMPLATE} >> $NEWCONFIG
             echo "" >> $NEWCONFIG
-        fi        
+        fi
     fi
-     
+
     # Setting up the logs
     SetupLogs "3.6"
-    echo "</ossec_config>" >> $NEWCONFIG 
+    echo "</ossec_config>" >> $NEWCONFIG
 }
 
 
@@ -690,27 +711,27 @@ setEnv()
                 if [ $? = 0 ]; then
                     INSTALLDIR=$ANSWER;
                     break;
-                fi 
+                fi
             else
-                break;           
-            fi  
+                break;
+            fi
         done
     else
         INSTALLDIR=${USER_DIR}
-    fi    
+    fi
 
-    
+
     CEXTRA="$CEXTRA -DDEFAULTDIR=\\\"${INSTALLDIR}\\\""
-    
+
     echo ""
     echo "    - ${installat} ${INSTALLDIR} ."
-    
+
 
     if [ "X$INSTYPE" = "Xagent" ]; then
         CEXTRA="$CEXTRA -DCLIENT"
     elif [ "X$INSTYPE" = "Xlocal" ]; then
-        CEXTRA="$CEXTRA -DLOCAL"    
-    fi   
+        CEXTRA="$CEXTRA -DLOCAL"
+    fi
 
     ls $INSTALLDIR >/dev/null 2>&1
     if [ $? = 0 ]; then
@@ -721,13 +742,13 @@ setEnv()
         else
             ANSWER=${USER_DELETE_DIR}
         fi
-            
+
         case $ANSWER in
             $yesmatch)
                 rm -rf $INSTALLDIR
                 if [ ! $? = 0 ]; then
                     exit 2;
-                fi    
+                fi
                 ;;
         esac
     fi
@@ -785,11 +806,11 @@ AddWhite()
         else
             ANSWER=$yes
         fi
-                
+
 		if [ "X${ANSWER}" = "X" ] ; then
 			ANSWER=$no
 		fi
-			
+
 		case $ANSWER in
 			$no)
 				break;
@@ -801,7 +822,7 @@ AddWhite()
 				else
                     IPS=${USER_WHITE_LIST}
                 fi
-                    
+
 				for ip in ${IPS};
 				do
 					if [ ! "X${ip}" = "X" ]; then
@@ -811,7 +832,7 @@ AddWhite()
                         fi
 					fi
 				done
-				
+
 				break;
 				;;
 		esac
@@ -832,7 +853,7 @@ AddPFTable()
     echo "   - ${pfmessage}:"
     echo "     ${moreinfo}"
     echo "     http://www.ossec.net/en/manual.html#active-response-tools"
-    
+
     echo ""
     echo ""
     echo "      table <${TABLE}> persist #$TABLE "
@@ -858,76 +879,78 @@ pre()
     if [ ! `isFile ${PREDEF_FILE}` = "${FALSE}" ]; then
         . ${PREDEF_FILE}
     fi
-                        
+
     # If user language is not set
-     
+
     if [ "X${USER_LANGUAGE}" = "X" ]; then
-    
+
         # Choosing the language.
         while [ 1 ]; do
         echo ""
-        for i in `ls ${TEMPLATE}`; do 
+        for i in `ls ${TEMPLATE}`; do
             # ignore CVS (should not be there anyways and config)
             if [ "$i" = "CVS" -o "$i" = "config" ]; then continue; fi
             cat "${TEMPLATE}/$i/language.txt"
             if [ ! "$i" = "en" ]; then
                 LG="${LG}/$i"
-            fi    
+            fi
         done
         $ECHO "  (${LG}) [en]: "
         read USER_LG;
 
         if [ "X${USER_LG}" = "X" ]; then
             USER_LG="en"
-        fi    
-    
+        fi
+
         ls "${TEMPLATE}/${USER_LG}" > /dev/null 2>&1
         if [ $? = 0 ]; then
             break;
         fi
-        done;    
+        done;
 
         LANGUAGE=${USER_LG}
-    
+
     else
-        
+
         # If provided language is not valid, default to english
         ls "${TEMPLATE}/${USER_LANGUAGE}" > /dev/null 2>&1
         if [ $? = 0 ]; then
             LANGUAGE=${USER_LANGUAGE}
         else
             LANGUAGE="en"
-        fi    
+        fi
 
     fi # for USER_LANGUAGE
-    
-    
+
+
     . ./src/init/shared.sh
     . ./src/init/language.sh
     . ./src/init/functions.sh
     . ./src/init/init.sh
     . ${TEMPLATE}/${LANGUAGE}/messages.txt
-    
-    
+
+
     # Must be executed as ./install.sh
     if [ `isFile ${VERSION_FILE}` = "${FALSE}" ]; then
         catError "0x1-location";
     fi
 
-    # Must be root
+    # Must be root only in the case of not only-building.
+  if [ ! "X$BUILD" = "Xyes" ]; then
     if [ ! "X$ME" = "Xroot" ]; then
         catError "0x2-beroot";
-    fi    
+    fi
+  fi
 
     # Checking dependencies
     checkDependencies
 
     clear
-    
+
 
     # Initial message
     echo " $NAME $VERSION ${installscript} - http://www.ossec.net"
-    
+
     catMsg "0x101-initial"
 
     echo "  - $system: $UNAME"
@@ -953,7 +976,7 @@ pre()
                 read ANY
             else
                 ANY=$yes
-            fi    
+            fi
 
             case $ANY in
                 $yes)
@@ -965,10 +988,10 @@ pre()
                     ;;
                   *)
                     ct="1"
-                    ;;      
+                    ;;
             esac
         done
-        
+
 
         # Do some of the update steps.
         if [ "X${update_only}" = "Xyes" ]; then
@@ -985,41 +1008,41 @@ pre()
                 USER_INSTALL_TYPE=`getPreinstalled`
                 USER_DIR=`getPreinstalledDir`
                 USER_DELETE_DIR="$nomatch"
-            fi     
+            fi
 
             ct="1"
-            
+
             # We dont need to update the rules on agent installs
             if [ "X${USER_INSTALL_TYPE}" = "Xagent" ]; then
                 ct="0"
             fi
-                
+
             while [ $ct = "1" ]; do
-                ct="0"    
+                ct="0"
                 $ECHO " - ${updaterules} ($yes/$no): "
                 if [ "X${USER_UPDATE_RULES}" = "X" ]; then
                     read ANY
-                else    
+                else
                     ANY=$yes
                 fi
-            
+
                 case $ANY in
                     $yes)
                         update_rules="yes"
                         break;
                         ;;
-                    $no)         
+                    $no)
                         break;
                         ;;
                     *)
                         ct="1"
                         ;;
-                esac 
+                esac
             done
-        fi    
+        fi
         echo ""
-    fi    
-    
+    fi
+
     serverm=`echo ${server} | cut -b 1`
     localm=`echo ${local} | cut -b 1`
     agentm=`echo ${agent} | cut -b 1`
@@ -1036,28 +1059,28 @@ pre()
 
             read ANSWER
             case $ANSWER in
-        
+
                 ${helpm}|${help})
                 catMsg "0x102-installhelp"
 	            ;;
-            
+
                 ${server}|${serverm})
                 echo ""
 	            echo "  - ${serverchose}."
 	            INSTYPE="server"
 	            break;
 	            ;;
-            
+
                 ${agent}|${agentm})
                 echo ""
 	            echo "  - ${clientchose}."
 	            INSTYPE="agent"
 	            break;
 	            ;;
-   
+
                 ${local}|${localm})
                 echo ""
-                echo "  - ${localchose}." 
+                echo "  - ${localchose}."
                 INSTYPE="local"
                 break;
                 ;;
@@ -1072,29 +1095,21 @@ pre()
     # Setting up the environment
     setEnv
 
-    
+
     # Configuring the system (based on the installation type)
-    if [ "X${update_only}" = "X" ]; then    
-        if [ "X$INSTYPE" = "Xserver" ]; then	
+    if [ "X${update_only}" = "X" ]; then
+        if [ "X$INSTYPE" = "Xserver" ]; then
             ConfigureServer
         elif [ "X$INSTYPE" = "Xagent" ]; then
             ConfigureClient
         elif [ "X$INSTYPE" = "Xlocal" ]; then
-            ConfigureServer   
+            ConfigureServer
         else
             catError "0x4-installtype"
         fi
-    fi    
+    fi
 
-}
-
-##########
-# main()
-##########
-main()
-{
-
-    # Installing (calls the respective script 
+    # Installing (calls the respective script
     # -- InstallAgent.sh or InstallServer.sh
     Install
 
@@ -1114,22 +1129,22 @@ main()
 
     catMsg "0x103-thanksforusing"
 
-    
+
     if [ "X${update_only}" = "Xyes" ]; then
         # Message for the update
         if [ "X`sh ./src/init/fw-check.sh`" = "XPF" -a "X${ACTIVERESPONSE}" = "Xyes" ]; then
             if [ "X$USER_NO_STOP" = "X" ]; then
                 read ANY
-            fi    
+            fi
             AddPFTable
-        fi    
+        fi
         echo ""
         echo " - ${updatecompleted}"
         echo ""
         exit 0;
-    fi    
+    fi
 
-    
+
     if [ "X$USER_NO_STOP" = "X" ]; then
         read ANY
     fi
@@ -1138,11 +1153,11 @@ main()
     # PF firewall message
     if [ "X`sh ./src/init/fw-check.sh`" = "XPF" -a "X${ACTIVERESPONSE}" = "Xyes" ]; then
         AddPFTable
-    fi    
+    fi
 
 
     if [ "X$INSTYPE" = "Xserver" ]; then
-        echo ""        	
+        echo ""
         echo " - ${addserveragent}"
         echo "   ${runma}:"
         echo ""
@@ -1151,9 +1166,9 @@ main()
         echo "   ${moreinfo}"
         echo "   http://www.ossec.net/en/manual.html#ma"
         echo ""
-      
+
     elif [ "X$INSTYPE" = "Xagent" ]; then
-        catMsg "0x104-client"	
+        catMsg "0x104-client"
         echo "   $INSTALLDIR/bin/manage_agents"
         echo ""
         echo "   ${moreinfo}"
@@ -1168,49 +1183,15 @@ main()
     fi
 }
 
-# Inicio del parche
-##########
-# build()
-##########
-build()
-{
+_f_cfg="./install.cfg.sh"
 
-  cd `dirname $0`
-  cd ./src/
+if [ -f $_f_cfg ]; then
+  . $_f_cfg
+fi
 
-  make all
-  if [ $? != 0 ]; then
-    cd ../
-    catError "0x5-build"
-  fi
-        
-  # Building everything    
-  make build
-  if [ $? != 0 ]; then
-    cd ../
-    catError "0x5-build"
-  fi    
+### Calling main function where everything happens
+main
 
-}
-
-USER_LANGUAGE="en"
-USER_INSTALL_TYPE="server"
-
-pre
-
-case $1 in
-        "build")
-            build
-            ;;
-        "install")
-# Call main function where installation happens
-           main 
-            ;;
-        *)
-            echo " Unknown argument $1" >&2
-            exit 1
-            ;;
-    esac 
 
 exit 0
 

@@ -40,7 +40,7 @@ LIBS="os_xml os_regex os_net os_crypto"
 # Shares sources
 SOURCES="shared config"
 # Binaries
-BINARIES="os_maild os_dbd os_csyslogd agentlessd os_execd analysisd logcollector remoted client-agent addagent util rootcheck syscheckd monitord"
+BINARIES="os_maild os_dbd os_csyslogd agentlessd os_execd analysisd logcollector remoted client-agent addagent util rootcheck syscheckd monitord os_auth"
 ROOTCHECKBIN="rootcheck"
 DIRECTORIES=""      # Directories to make
 
@@ -63,6 +63,7 @@ if [ "X${ARGV}" = "Xall" -o "X${ARGV}" = "Xrootcheck" -o "X${ARGV}" = "Xlibs" ];
     ls /usr/include/openssl/opensslconf.h > /dev/null 2>&1
     if [ $? = 0 ]; then
         echo "DEXTRA=-DUSE_OPENSSL" >> Config.OS
+        echo "OPENSSLCMD=-lssl -lcrypto" >> Config.OS
     fi    
 
     # Checking for inotify
