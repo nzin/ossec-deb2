@@ -59,15 +59,21 @@ build: build-stamp build-local build-server build-agent
 
 build-local: configure-local
 
-	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec/" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh
+	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec/" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
 
 build-server: configure-server
 
-	USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+# Possible values for:
+# - USER_LANGUAGE: any value in $(ls ./etc/templates/)
+# - USER_DIR == DESTDIR <-- values assigned now have to change in the near future.
+# - USER_DELETE_DIR: set this variable to "y" if you want to delete the $USER_DIR directory without being asked by the system.
+# - 
+
+	USER_INSTALL_TYPE="server" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec/" USER_DELETE_DIR="" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSLOG="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
 
 build-agent: configure-agent
 
-	USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec/" USER_DELETE_DIR="" ./install.sh
 
 install: build install-doc install-server install-agent install-local
 
