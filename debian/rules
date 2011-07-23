@@ -35,7 +35,6 @@ configure-%: configure-stamp
 	BUILD="yes"	# variable used to stop the installation script
 
 
-
 configure-local:
 
 	USER_INSTALL_TYPE="local"
@@ -49,17 +48,13 @@ configure-agent:
 	USER_INSTALL_TYPE="agent"
 
 
-build-stamp:
-
-	dh_testdir
-	touch build-stamp
-
-build: build-stamp build-local build-server build-agent
-
-
 build-local: configure-local
 
+	dh_testdir
+
 	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
+
+	touch build-local-stamp
 
 build-server: configure-server
 
@@ -69,7 +64,11 @@ build-server: configure-server
 # - USER_DELETE_DIR: set this variable to "y" if you want to delete the $USER_DIR directory without being asked by the system.
 # - 
 
+	dh_testdir
+
 	USER_INSTALL_TYPE="server" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSLOG="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
+
+	touch build-server-stamp
 
 build-agent: configure-agent
 
@@ -77,9 +76,20 @@ build-agent: configure-agent
 #			!! IT WAS SET TO "1.1.1.1" for testing purposes.
 # 
 
+	dh_testdir
+
 	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="n" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_AGENT_SERVER_IP="1.1.1.1" USER_ENABLE_ACTIVE_RESPONSE="n" ./install.sh debug
 
-install: build install-doc install-server install-agent install-local
+	touch build-agent-stamp
+
+build-stamp: build-local build-server build-agent
+
+	touch build-stamp
+
+build: build-stamp 
+
+
+install: install-doc install-server install-agent install-local
 
 
 install-%:
@@ -94,36 +104,34 @@ install-%:
 #	USER_UPDATE = 
 	BUILD="no"
 
-	DESTDIR="$(CURDIR)/debian"
-
-
+	BASE_DESTDIR="$(CURDIR)/debian"
 
 install-doc:
 
 	PKG="$(PKG_BASENAME)-doc"
-	DESTDIR = "$(DESTDIR)/$(PKG)"
+	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
-	# This target needs to be done
+# This target needs to be done
 
 install-local:
 
 	PKG="$(PKG_BASENAME)-local"
-	INSTALLDIR = "$(DESTDIR)/$(PKG)"
+	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
-	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
+	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" USER_DIR="$(DESTDIR)" ./install.sh debug
 
 
 install-server:
 
 	PKG="$(PKG_BASENAME)-server"
-	INSTALLDIR = "$(DESTDIR)/$(PKG)"
+	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
 	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 
 install-client:
 
 	PKG="$(PKG_BASENAME)-client"
-	INSTALLDIR = "$(DESTDIR)/$(PKG)"
+	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
 	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 
