@@ -59,7 +59,7 @@ build: build-stamp build-local build-server build-agent
 
 build-local: configure-local
 
-	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec/" USER_ENABLE_EMAIL="NO" ./install.sh
+	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec/" USER_ENABLE_EMAIL="NO" EMAIL_NOTIFY="no" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh
 
 build-server: configure-server
 
