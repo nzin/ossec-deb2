@@ -73,7 +73,11 @@ build-server: configure-server
 
 build-agent: configure-agent
 
-	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" ./install.sh
+# - USER_AGENT_SERVER_IP : needed to configure the client. Couldn't we use a domain name?
+#			!! IT WAS SET TO "1.1.1.1" for testing purposes.
+# 
+
+	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="n" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_AGENT_SERVER_IP="1.1.1.1" USER_ENABLE_ACTIVE_RESPONSE="n" ./install.sh debug
 
 install: build install-doc install-server install-agent install-local
 
