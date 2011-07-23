@@ -16,8 +16,8 @@ export DH_VERBOSE=1
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
-PKG_BASENAME=ossec-hids
-CURDIR=`pwd`
+PKG_BASENAME="ossec-hids"
+CURDIR="`pwd`"
 
 
 configure-stamp:
@@ -90,38 +90,38 @@ install-%:
 #	USER_UPDATE = 
 	BUILD="no"
 
-	DESTDIR="$CURDIR/debian"
+	DESTDIR="$(CURDIR)/debian"
 
 
 
 install-doc:
 
-	PKG="$PKG_BASENAME-doc"
-	DESTDIR = "$DESTDIR/$PKG"
+	PKG="$(PKG_BASENAME)-doc"
+	DESTDIR = "$(DESTDIR)/$(PKG)"
 
 	# This target needs to be done
 
 install-local:
 
-	PKG=$PKG_BASENAME-local
-	INSTALLDIR = $DESTDIR/$PKG
+	PKG="$(PKG_BASENAME)-local"
+	INSTALLDIR = "$(DESTDIR)/$(PKG)"
 
-	USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 
 
 install-server:
 
-	PKG=$PKG_BASENAME-server
-	INSTALLDIR = $DESTDIR/$PKG
+	PKG="$(PKG_BASENAME)-server"
+	INSTALLDIR = "$(DESTDIR)/$(PKG)"
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 
 install-client:
 
-	PKG=$PKG_BASENAME-client
-	INSTALLDIR = $DESTDIR/$PKG
+	PKG="$(PKG_BASENAME)-client"
+	INSTALLDIR = "$(DESTDIR)/$(PKG)"
 
-	shell USER_INSTALL_TYPE="$USER_INSTALL_TYPE" BUILD="$BUILD" USER_LANGUAGE="$USER_LANGUAGE" USER_NO_STOP="no" ./install.sh
+	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 
 binary:
 
