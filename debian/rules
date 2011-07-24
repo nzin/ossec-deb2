@@ -138,31 +138,19 @@ binary-indep:
 get-orig-source:
 
 
-clean-doc:		## are we really needing clean-* targets? ---> we already have dh_clean at clean target
-
-#	$(MAKE) clean-doc
-
-clean-local:
-
-#	$(MAKE) clean-local
-
-clean-server:
-
-#	$(MAKE) clean-server
-
-clean-client:
-
-#	$(MAKE) clean-client
-
-clean: #clean-local clean-server clean-client clean-doc
-
+clean: 
 	dh_testdir
 	dh_testroot
-
-#	rm -f build-stamp configure-stamp	#  <-- already done by dh_clean, so don't needed
-
-
 	dh_clean
+	cd src && make clean
+# Clean up additional auto-generated files
+	for file in etc/ossec.mc src/Config.OS \
+		src/analysisd/compiled_rules/compiled_rules.h \
+		src/analysisd/ossec-logtest src/analysisd/ossec-makelists \
+		src/isbigendian src/isbigendian.c ; do \
+		[ -e $$file ] && rm -f $$file; \
+	done
+
 
 #%:
 #	dh $@ 
