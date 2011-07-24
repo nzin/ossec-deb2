@@ -48,13 +48,13 @@ install-arch: build
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
 		rootcheck_control ; do \
-		install -m 755 bin/$$file debian/ossec-hids-server/usr/share/ossec/ ; \
+		install -m 755 bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
 	done
 # Agent files
 	install -m 755 bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
 		manage_agents ; do \
-		install -m 755 bin/$$file debian/ossec-hids-agent/usr/share/ossec/ ; \
+		install -m 755 bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	done
 	dh_install -a
 
