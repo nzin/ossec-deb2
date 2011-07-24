@@ -86,47 +86,6 @@ install-%:
 	dh_testroot
 	dh_prep
 	dh_installdirs
-
-	USER_LANGUAGE="en"
-	USER_NO_STOP="no"
-#	USER_UPDATE = 
-	BUILD="no"
-
-	BASE_DESTDIR="$(CURDIR)/debian"
-
-install-doc:
-
-	PKG="$(PKG_BASENAME)-doc"
-	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
-
-# This target needs to be done
-	dh_install
-
-install-local:
-
-	PKG="$(PKG_BASENAME)-local"
-	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
-
-	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" USER_DIR="$(DESTDIR)" ./install.sh debug
-
-	dh_install
-
-
-install-server:
-
-	PKG="$(PKG_BASENAME)-server"
-	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
-
-	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
-
-	dh_install
-
-install-client:
-
-	PKG="$(PKG_BASENAME)-client"
-	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
-
-	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 	dh_install
 
 binary:
