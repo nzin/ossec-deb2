@@ -48,52 +48,40 @@ configure-%: configure-stamp
 #	USER_INSTALL_TYPE="agent"
 
 
-build-local: #configure-local
-
+build-local: build-local-stamp #configure-local
+build-local-stamp:
 	dh_testdir
-
 	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
-
 	touch build-local-stamp
 
-build-server: #configure-server
-
+build-server: build-server-stamp #configure-server
+build-server-stamp:
+	dh_testdir
 # Possible values for:
 # - USER_LANGUAGE: any value in $(ls ./etc/templates/)
 # - USER_DIR == DESTDIR <-- values assigned now have to change in the near future.
 # - USER_DELETE_DIR: set this variable to "y" if you want to delete the $USER_DIR directory without being asked by the system.
 # - 
-
-	dh_testdir
-
 	USER_INSTALL_TYPE="server" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSLOG="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
-
 	touch build-server-stamp
 
-build-agent: #configure-agent
-
+build-agent: build-agent-stamp #configure-agent
+build-agent-stamp:
+	dh_testdir
 # - USER_AGENT_SERVER_IP : needed to configure the client. Could we use a domain name?
 #			!! IT WAS SET TO "127.0.0.1" for testing purposes.
 # 
-
-	dh_testdir
-
 	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="n" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_AGENT_SERVER_IP="127.0.0.1" USER_ENABLE_ACTIVE_RESPONSE="n" ./install.sh debug
-
 	touch build-agent-stamp
 
-build-stamp: build-local build-server build-agent
-
-	touch build-stamp
-
 build: build-stamp 
-
+build-stamp: build-local build-server build-agent
+	touch build-stamp
 
 install: install-doc install-server install-agent install-local
 
 
 install-%:
-
 	dh_testdir
 	dh_testroot
 	dh_prep
