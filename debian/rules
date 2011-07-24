@@ -19,88 +19,102 @@ export DH_OPTIONS
 PKG_BASENAME="ossec-hids"
 CURDIR="`pwd`"
 
-
+configure: configure-stamp
 configure-stamp:
 	dh_testdir
+# TBD - Configure CFLAGS in src/Config.OS
+	echo > src/Config.OS
+	touch $@
 
+build: configure build-stamp 
+build-stamp: 
+	cd src && make all
+	cd src && make build
+	touch $@
 
-	touch configure-stamp
+build-indep: build-indep-stamp
+build-indep-stamp:
+# Nothing to do here, yet
+	touch $@
 
-configure-%: configure-stamp
-
-#	USER_LANGUAGE="en"	# Here we have to choose if autodetect or ask to the user. First choice preferred.
-#	USER_NO_STOP="no"
-#	USER_UPDATE="" 
-
-#	BUILD="yes"	# variable used to stop the installation script
-
-
-#configure-local:
-
-#	USER_INSTALL_TYPE="local"
-
-#configure-server:
-
-#	USER_INSTALL_TYPE="server"
-
-#configure-agent:
-
-#	USER_INSTALL_TYPE="agent"
-
-
-build-local: build-local-stamp #configure-local
-build-local-stamp:
-	dh_testdir
-	USER_INSTALL_TYPE="local" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" USER_DIR="/var/ossec" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
-	touch build-local-stamp
-
-build-server: build-server-stamp #configure-server
-build-server-stamp:
-	dh_testdir
-# Possible values for:
-# - USER_LANGUAGE: any value in $(ls ./etc/templates/)
-# - USER_DIR == DESTDIR <-- values assigned now have to change in the near future.
-# - USER_DELETE_DIR: set this variable to "y" if you want to delete the $USER_DIR directory without being asked by the system.
-# - 
-	USER_INSTALL_TYPE="server" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="no" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_ENABLE_EMAIL="n" EMAIL_NOTIFY="n" USER_ENABLE_ACTIVE_RESPONSE="n" USER_ENABLE_SYSLOG="n" USER_ENABLE_SYSCHECK="n" USER_ENABLE_ROOTCHECK="n" ./install.sh debug
-	touch build-server-stamp
-
-build-agent: build-agent-stamp #configure-agent
-build-agent-stamp:
-	dh_testdir
-# - USER_AGENT_SERVER_IP : needed to configure the client. Could we use a domain name?
-#			!! IT WAS SET TO "127.0.0.1" for testing purposes.
-# 
-	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="n" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_AGENT_SERVER_IP="127.0.0.1" USER_ENABLE_ACTIVE_RESPONSE="n" ./install.sh debug
-	touch build-agent-stamp
-
-build: build-stamp 
-build-stamp: build-local build-server build-agent
-	touch build-stamp
-
-install: install-doc install-server install-agent install-local
-
-
-install-%:
+install-arch: build
 	dh_testdir
 	dh_testroot
-	dh_prep
-	dh_installdirs
-	dh_install
+	dh_prep -a
+	dh_installdirs -a
+# Server files
+	install -m 755 bin/ossec* debian/ossec-hids-server/usr/bin/
+	-rm -f debian/ossec-hids-server/usr/bin/ossec-agentd
+	for file in manage_agents syscheck_update verify-agent-conf  \
+		clear_stats list_agents agent_control syscheck_control \
+		rootcheck_control ; do \
+		install -m 755 bin/$$file debian/ossec-hids-server/usr/share/ossec/ ; \
+	done
+# Agent files
+	install -m 755 bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
+	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
+		manage_agents ; do \
+		install -m 755 bin/$$file debian/ossec-hids-agent/usr/share/ossec/ ; \
+	done
+	dh_install -a
 
-binary:
+install-indep: build-indep
+	dh_testdir
+	dh_testroot
+	dh_prep -i
+	dh_installdirs -i
+	dh_install -i
 
-binary-arch:
+install: install-arch install-indep
 
-binary-indep:
+binary: binary-arch binary-indep
+
+binary-arch: build install-arch
+	dh_testdir -a
+	dh_testroot -a
+	dh_installdocs -a 
+	dh_installexamples -a
+	dh_installdebconf -a
+	dh_installman -a 
+	dh_installchangelogs -a 
+	dh_link -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -a
+	dh_installdeb -a
+	dh_perl -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary-indep: build-indep install-indep
+	dh_testdir -i
+	dh_testroot -i
+	dh_installdocs -i
+	dh_installexamples -i
+	dh_installdebconf -i
+	dh_installman -i 
+	dh_installchangelogs -i
+	dh_link -i
+	dh_strip -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_makeshlibs -i
+	dh_installdeb -i
+	dh_perl -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
 
 get-orig-source:
-
 
 clean: 
 	dh_testdir
 	dh_testroot
-	dh_clean
 	cd src && make clean
 # Clean up additional auto-generated files
 	for file in etc/ossec.mc src/Config.OS \
@@ -108,7 +122,9 @@ clean:
 		src/analysisd/ossec-logtest src/analysisd/ossec-makelists \
 		src/isbigendian src/isbigendian.c ; do \
 		[ -e $$file ] && rm -f $$file; \
-	done
+		done
+	-rm -rf bin/
+	dh_clean
 
 
 #%:
