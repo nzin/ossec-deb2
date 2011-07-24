@@ -28,27 +28,27 @@ configure-stamp:
 
 configure-%: configure-stamp
 
-	USER_LANGUAGE="en"	# Here we have to choose if autodetect or ask to the user. First choice preferred.
-	USER_NO_STOP="no"
+#	USER_LANGUAGE="en"	# Here we have to choose if autodetect or ask to the user. First choice preferred.
+#	USER_NO_STOP="no"
 #	USER_UPDATE="" 
 
-	BUILD="yes"	# variable used to stop the installation script
+#	BUILD="yes"	# variable used to stop the installation script
 
 
-configure-local:
+#configure-local:
 
-	USER_INSTALL_TYPE="local"
+#	USER_INSTALL_TYPE="local"
 
-configure-server:
+#configure-server:
 
-	USER_INSTALL_TYPE="server"
+#	USER_INSTALL_TYPE="server"
 
-configure-agent:
+#configure-agent:
 
-	USER_INSTALL_TYPE="agent"
+#	USER_INSTALL_TYPE="agent"
 
 
-build-local: configure-local
+build-local: #configure-local
 
 	dh_testdir
 
@@ -56,7 +56,7 @@ build-local: configure-local
 
 	touch build-local-stamp
 
-build-server: configure-server
+build-server: #configure-server
 
 # Possible values for:
 # - USER_LANGUAGE: any value in $(ls ./etc/templates/)
@@ -70,15 +70,15 @@ build-server: configure-server
 
 	touch build-server-stamp
 
-build-agent: configure-agent
+build-agent: #configure-agent
 
-# - USER_AGENT_SERVER_IP : needed to configure the client. Couldn't we use a domain name?
-#			!! IT WAS SET TO "1.1.1.1" for testing purposes.
+# - USER_AGENT_SERVER_IP : needed to configure the client. Could we use a domain name?
+#			!! IT WAS SET TO "127.0.0.1" for testing purposes.
 # 
 
 	dh_testdir
 
-	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="n" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_AGENT_SERVER_IP="1.1.1.1" USER_ENABLE_ACTIVE_RESPONSE="n" ./install.sh debug
+	USER_INSTALL_TYPE="agent" BUILD="yes" USER_LANGUAGE="en" USER_NO_STOP="n" ACTIVE_RESPONSE="n" USER_DIR="/var/ossec" USER_DELETE_DIR="" USER_AGENT_SERVER_IP="127.0.0.1" USER_ENABLE_ACTIVE_RESPONSE="n" ./install.sh debug
 
 	touch build-agent-stamp
 
@@ -112,6 +112,7 @@ install-doc:
 	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
 # This target needs to be done
+	dh_install
 
 install-local:
 
@@ -119,6 +120,8 @@ install-local:
 	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
 	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" USER_DIR="$(DESTDIR)" ./install.sh debug
+
+	dh_install
 
 
 install-server:
@@ -128,12 +131,15 @@ install-server:
 
 	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
 
+	dh_install
+
 install-client:
 
 	PKG="$(PKG_BASENAME)-client"
 	DESTDIR = "$(BASE_DESTDIR)/$(PKG)"
 
 	USER_INSTALL_TYPE="$(USER_INSTALL_TYPE)" BUILD="$(BUILD)" USER_LANGUAGE="$(USER_LANGUAGE)" USER_NO_STOP="n" ./install.sh
+	dh_install
 
 binary:
 
