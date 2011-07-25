@@ -1,5 +1,6 @@
 usr/bin/
 usr/lib/ossec/
+var/logs/ossec
 var/ossec/.ssh
 var/ossec/active-response/bin
 var/ossec/agentless
