@@ -1,0 +1,8 @@
+usr/bin/
+usr/lib/ossec/
+var/ossec/.ssh
+var/ossec/active-response/bin
+var/ossec/agentless
+var/ossec/queue
+var/ossec/rules
+var/ossec/stats
