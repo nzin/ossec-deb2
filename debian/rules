@@ -42,7 +42,7 @@ install-arch: build
 	dh_testroot
 	dh_prep -a
 	dh_installdirs -a
-# Server files
+# Server files and directories
 	install -m 755 bin/ossec debian/ossec-hids-server/usr/bin/
 	install -m 755 bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	-rm -f debian/ossec-hids-server/usr/bin/ossec
@@ -52,14 +52,18 @@ install-arch: build
 		rootcheck_control ; do \
 		install -m 755 bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
 	done
+	cd debian/ossec-hids-server/var/ossec && ln -s bin ../../usr/lib/ossec/
+	cd debian/ossec-hids-server/var/ossec && ln -s etc ../../etc/ossec/
 	cd debian/ossec-hids-server/var/ossec && ln -s logs ../logs/ossec/
-# Agent files
+# Agent files and directories
 	install -m 755 bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
 		manage_agents ; do \
 		install -m 755 bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	done
 	dh_install -a
+	cd debian/ossec-hids-agent/var/ossec && ln -s bin ../../usr/lib/ossec/
+	cd debian/ossec-hids-agent/var/ossec && ln -s etc ../../etc/ossec/
 	cd debian/ossec-hids-agent/var/ossec && ln -s logs ../logs/ossec/
 
 install-indep: build-indep
