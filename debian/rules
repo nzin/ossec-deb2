@@ -42,21 +42,44 @@ install-arch: build
 	dh_testroot
 	dh_prep -a
 	dh_installdirs -a
-# Server files
-	install -m 755 bin/ossec* debian/ossec-hids-server/usr/bin/
+# Server files and directories
+	install -m 755 bin/ossec debian/ossec-hids-server/usr/bin/
+	install -m 755 bin/ossec* debian/ossec-hids-server/usr/lib/ossec
+	-rm -f debian/ossec-hids-server/usr/bin/ossec
 	-rm -f debian/ossec-hids-server/usr/bin/ossec-agentd
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
 		rootcheck_control ; do \
-		install -m 755 bin/$$file debian/ossec-hids-server/usr/share/ossec/ ; \
+		install -m 755 bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
 	done
-# Agent files
+	cd debian/ossec-hids-server/var/ossec && ln -s bin ../../usr/lib/ossec/
+	cd debian/ossec-hids-server/var/ossec && ln -s etc ../../etc/ossec/
+	cd debian/ossec-hids-server/var/ossec && ln -s logs ../logs/ossec/
+	cd debian/ossec-hids-server/var/ossec && ln -s rules ../../etc/rules/
+	chmod -R 550 debian/ossec-hids-server/var/ossec
+	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
+	chmod 770 debian/ossec-hids-server/var/ossec/queue/ossec
+	chmod 750 debian/ossec-hids-server/var/ossec/queue/fts
+	chmod 750 debian/ossec-hids-server/var/ossec/queue/syscheck
+	chmod 750 debian/ossec-hids-server/var/ossec/queue/rootcheck
+	chmod 750 debian/ossec-hids-server/var/ossec/queue/diff
+	chmod 755 debian/ossec-hids-server/var/ossec/queue/agent-info
+	chmod 755 debian/ossec-hids-server/var/ossec/queue/rids
+	chmod 755 debian/ossec-hids-server/var/ossec/queue/agentless
+	chmod 750 debian/ossec-hids-server/var/ossec/stats
+	chmod 750 debian/ossec-hids-server/var/logs/ossec
+	chmod -R 550 debian/ossec-hids-server/etc/
+# Agent files and directories
 	install -m 755 bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
 		manage_agents ; do \
-		install -m 755 bin/$$file debian/ossec-hids-agent/usr/share/ossec/ ; \
+		install -m 755 bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	done
 	dh_install -a
+	cd debian/ossec-hids-agent/var/ossec && ln -s bin ../../usr/lib/ossec/
+	cd debian/ossec-hids-agent/var/ossec && ln -s etc ../../etc/ossec/
+	cd debian/ossec-hids-agent/var/ossec && ln -s logs ../logs/ossec/
+	chmod 750 debian/ossec-hids-agent/var/logs/ossec
 
 install-indep: build-indep
 	dh_testdir
