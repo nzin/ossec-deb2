@@ -74,10 +74,10 @@ stats            ossec:ossec 750
 logs             ossec:ossec 750
 EOF  
         } | while read dir owner mode; do
-	        if ! dpkg-statoverride --list ${HOMEDIR}$dir >/dev/null
+	        if ! dpkg-statoverride --list ${HOMEDIR}/$dir >/dev/null
                 then
-		    chown $owner ${HOMEDIR}$dir
-        	    chmod $mode ${HOMEDIR}$dir
+		    chown $owner ${HOMEDIR}/$dir
+        	    chmod $mode ${HOMEDIR}/$dir
                 fi
         done
         
