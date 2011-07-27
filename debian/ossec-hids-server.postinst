@@ -40,14 +40,13 @@ case "$1" in
 	[ -z "$EMAIL_SERVER" ] && EMAIL_SERVER="127.0.0.1"
 	[ -z "$SYSLOG" ] && SYSLOG="no"
 
-        # TODO - configure the configuration file
+    # TODO - configure the configuration file
 
-        CONF_FILE=/etc/ossec/ossec-init.conf
-        if ! dpkg-statoverride --list ${CONF_FILE} >/dev/null && [ -e ${CONF_FILE} ] 
-        then
-            chown ossec:ossec ${CONF_FILE}
-            chmod 640 ${CONF_FILE}
-            fi
+    CONF_FILE=/etc/ossec/ossec-init.conf
+    if ! dpkg-statoverride --list ${CONF_FILE} >/dev/null && [ -e ${CONF_FILE} ] 
+    then
+        chown ossec:ossec ${CONF_FILE}
+        chmod 640 ${CONF_FILE}
 	fi
 
 	db_stop
