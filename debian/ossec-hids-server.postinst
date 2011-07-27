@@ -47,7 +47,6 @@ case "$1" in
         then
             chown ossec:ossec ${CONF_FILE}
             chmod 640 ${CONF_FILE}
-            fi
 	fi
 
 	db_stop
