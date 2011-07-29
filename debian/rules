@@ -96,7 +96,7 @@ install-arch: build
 	done
 	cd debian/ossec-hids-server/var/ossec && ln -s bin ../../usr/lib/ossec/
 	cd debian/ossec-hids-server/var/ossec && ln -s etc ../../etc/ossec/
-	cd debian/ossec-hids-server/var/ossec && ln -s logs ../logs/ossec/
+	cd debian/ossec-hids-server/var/ossec && ln -s logs ../../logs/ossec/
 	cd debian/ossec-hids-server/var/ossec && ln -s rules ../../etc/ossec/rules/
 	chmod -R 550 debian/ossec-hids-server/var/ossec
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
