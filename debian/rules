@@ -34,7 +34,7 @@ configure-server-stamp:
 configure-agent: configure-agent-stamp
 configure-agent-stamp:
 	dh_testdir
-	echo "CEXTRA=-DDEFAULTDIR=\\\"/var/ossec\\\"" -DCLIENT" > src/Config.OS
+	echo "CEXTRA=-DDEFAULTDIR=\\\"/var/ossec\\\" -DCLIENT" > src/Config.OS
 	touch $@
 
 # Configure for the local build
