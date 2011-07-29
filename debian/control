@@ -2,7 +2,8 @@ Source: ossec-hids
 Section: utils
 Priority: extra
 Maintainer: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~)
+Uploaders: Javier Fernandez-Sanguino <jfs@debian.org>
+Build-Depends: debhelper (>= 7.0.50~), zlib1g-dev
 Standards-Version: 3.8.4
 Homepage: http://www.ossec.net/
 #Vcs-Git: git://git.debian.org/collab-maint/ossec-hids.git
