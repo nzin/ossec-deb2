@@ -19,17 +19,46 @@ export DH_OPTIONS
 PKG_BASENAME="ossec-hids"
 CURDIR="`pwd`"
 
-configure: configure-stamp
-configure-stamp:
+# If we do not say anything we assume a server build
+configure: configure-server
+
+# Configure for the server build
+configure-server: configure-server-stamp
+configure-server-stamp:
 	dh_testdir
-# TBD - Configure CFLAGS in src/Config.OS
+# TBD - Configure CFLAGS in src/Config.OS?
 	echo > src/Config.OS
 	touch $@
 
-build: configure build-stamp 
-build-stamp: 
+# Configure for the agent build
+configure-agent: configure-agent-stamp
+configure-agent-stamp:
+	dh_testdir
+	echo > src/Config.OS
+	cd src && make setagent
+	touch $@
+
+# Builds all binaries
+build: build-server build-agent
+
+# Build the server
+build-server: configure-server build-server-stamp 
+build-server-stamp: 
+# For Prelude support:
+#	cd src && make setprelude
 	cd src && make all
 	cd src && make build
+	mv bin server-bin
+	touch $@
+
+# Build the agent
+# Note: we need to clean the build first
+build-agent: clean-sources configure-agent build-agent-stamp 
+build-agent-stamp: 
+# We have to clean and rebuild againt to set -DCLIENT
+	cd src && make all
+	cd src && make build
+	mv bin agent-bin
 	touch $@
 
 build-indep: build-indep-stamp
@@ -43,14 +72,14 @@ install-arch: build
 	dh_prep -a
 	dh_installdirs -a
 # Server files and directories
-	install -m 755 bin/ossec debian/ossec-hids-server/usr/bin/
-	install -m 755 bin/ossec* debian/ossec-hids-server/usr/lib/ossec
+	install -m 755 server-bin/ossec debian/ossec-hids-server/usr/bin/
+	install -m 755 sever-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	-rm -f debian/ossec-hids-server/usr/bin/ossec
 	-rm -f debian/ossec-hids-server/usr/bin/ossec-agentd
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
 		rootcheck_control ; do \
-		install -m 755 bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
+		install -m 755 server-bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
 	done
 	cd debian/ossec-hids-server/var/ossec && ln -s bin ../../usr/lib/ossec/
 	cd debian/ossec-hids-server/var/ossec && ln -s etc ../../etc/ossec/
@@ -70,10 +99,10 @@ install-arch: build
 	chmod 750 debian/ossec-hids-server/var/logs/ossec
 	chmod -R 550 debian/ossec-hids-server/etc/
 # Agent files and directories
-	install -m 755 bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
+	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
 		manage_agents ; do \
-		install -m 755 bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
+		install -m 755 agent-bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	done
 	dh_install -a
 	cd debian/ossec-hids-agent/var/ossec && ln -s bin ../../usr/lib/ossec/
@@ -135,7 +164,7 @@ binary-indep: build-indep install-indep
 
 get-orig-source:
 
-clean: 
+clean-sources:
 	dh_testdir
 	dh_testroot
 	cd src && make clean
@@ -146,7 +175,11 @@ clean:
 		src/isbigendian src/isbigendian.c ; do \
 		[ -e $$file ] && rm -f $$file; \
 		done
-	-rm -rf bin/
+
+clean: clean-sources
+	dh_testdir
+	dh_testroot
+	-rm -rf bin/ server-bin/ agent-bin/
 	dh_clean
 
 
