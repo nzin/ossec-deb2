@@ -190,7 +190,7 @@ clean-sources:
 		src/analysisd/compiled_rules/compiled_rules.h \
 		src/analysisd/ossec-logtest src/analysisd/ossec-makelists \
 		src/isbigendian src/isbigendian.c ; do \
-		[ -e $$file ] && rm -f $$file; \
+		[ -e $$file ] && rm -f $$file || true; \
 		done
 
 clean: clean-sources
