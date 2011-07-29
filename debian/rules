@@ -121,6 +121,7 @@ install-arch: build
 	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
 	cp -pr etc/rules/* debian/ossec-hids-server/etc/ossec/rules/
 	chmod o-rwx debian/ossec-hids-server/etc/ossec/rules/
+	chmod -R ug-x debian/ossec-hids-server/etc/ossec/rules/
 # These are only for local configuration, not provided upstream
 #	install -m 640 etc/local_decoder.xml debian/ossec-hids-server/etc/ossec/
 #	install -m 640 etc/local_internal_options.conf debian/ossec-hids-server/etc/ossec/
