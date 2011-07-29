@@ -88,7 +88,7 @@ install-arch: build
 	dh_prep -a
 	dh_installdirs -a
 # Server files and directories
-	install -m 755 sever-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
+	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
 		rootcheck_control ; do \
