@@ -12,6 +12,7 @@
 # New function AddTable to add support for OpenBSD pf rules in firewall-drop active response
 
 
+
 ### Looking up for the execution directory
 cd `dirname $0`
 
