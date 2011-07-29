@@ -37,6 +37,13 @@ configure-agent-stamp:
 	echo "CEXTRA=-DDEFAULTDIR=\"/var/ossec\" -DCLIENT" > src/Config.OS
 	touch $@
 
+# Configure for the local build
+configure-local: configure-local-stamp
+configure-local-stamp:
+	dh_testdir
+	echo "CEXTRA=-DDEFAULTDIR=\"/var/ossec\" -DLOCAL" > src/Config.OS
+	touch $@
+
 # Builds all binaries
 build: build-server build-agent
 
@@ -58,6 +65,16 @@ build-agent-stamp:
 	cd src && make all
 	cd src && make build
 	mv bin agent-bin
+	touch $@
+
+# Build the stand-alone version (local)
+# Note: we need to clean the build first
+build-local: clean-sources configure-local build-local-stamp 
+build-local-stamp: 
+# We have to clean and rebuild againt to set -DCLIENT
+	cd src && make all
+	cd src && make build
+	mv bin local-bin
 	touch $@
 
 build-indep: build-indep-stamp
@@ -178,7 +195,7 @@ clean-sources:
 clean: clean-sources
 	dh_testdir
 	dh_testroot
-	-rm -rf bin/ server-bin/ agent-bin/
+	-rm -rf bin/ server-bin/ agent-bin/ local-bin/
 	dh_clean
 
 
