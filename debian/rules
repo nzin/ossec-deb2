@@ -111,6 +111,18 @@ install-arch: build
 	chmod 750 debian/ossec-hids-server/var/ossec/stats
 	chmod 750 debian/ossec-hids-server/var/logs/ossec
 	chmod -R 550 debian/ossec-hids-server/etc/
+	install -m 755 src/init/ossec-server.sh debian/ossec-hids-server/var/ossec/bin/ossec-control
+	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-server/var/ossec/agentless/
+	# configuration files:
+	install -m 640 etc/decoder.xml debian/ossec-hids-server/etc/ossec/
+	install -m 640 etc/local_decoder.xml debian/ossec-hids-server/etc/ossec/
+	install -m 640 etc/local_internal_options.conf debian/ossec-hids-server/etc/ossec/
+	install -m 640 etc/internal_options.conf debian/ossec-hids-server/etc/ossec/
+	install -m 640 rootcheck/db/*.txt debian/ossec-hids-server/etc/ossec/shared/
+	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
+	# other scripts
+	install -m 750 active-response/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
+	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
 # Agent files and directories
 	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
@@ -122,6 +134,7 @@ install-arch: build
 	cd debian/ossec-hids-agent/var/ossec && ln -s etc ../../etc/ossec/
 	cd debian/ossec-hids-agent/var/ossec && ln -s logs ../logs/ossec/
 	chmod 750 debian/ossec-hids-agent/var/logs/ossec
+	# TODO: Missing configuration files, extract from src/InstallAgent.sh
 
 install-indep: build-indep
 	dh_testdir
