@@ -11,8 +11,6 @@
 # Changelog 15/07/2006 - Rafael M. Capovilla <under@underlinux.com.br>
 # New function AddTable to add support for OpenBSD pf rules in firewall-drop active response
 
-# Uncomment the next line for debug mode.
-set -x
 
 ### Looking up for the execution directory
 cd `dirname $0`
@@ -78,9 +76,6 @@ Install()
 
     echo "CEXTRA=${CEXTRA}" >> ./src/Config.OS
 
-  # If only-building
-  if [ "X${BUILD}" = "Xyes" ]; then
-
     # Makefile
 	echo " - ${runningmake}"
     cd ./src
@@ -100,11 +95,6 @@ Install()
             catError "0x5-build"
         fi
     fi
-
-    exit 0
-
-  else # End of building
-
 
     # If update, stop ossec
     if [ "X${update_only}" = "Xyes" ]; then
@@ -156,7 +146,7 @@ Install()
             notmodified="yes"
         fi
     fi
-  fi
+
 }
 
 
@@ -935,13 +925,10 @@ main()
         catError "0x1-location";
     fi
 
-
-  if [ ! "X$BUILD" = "Xyes" ]; then
     # Must be root
     if [ ! "X$ME" = "Xroot" ]; then
         catError "0x2-beroot";
     fi
-  fi
 
     # Checking dependencies
     checkDependencies
