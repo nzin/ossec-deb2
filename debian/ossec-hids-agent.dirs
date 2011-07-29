@@ -2,7 +2,7 @@ usr/bin/
 usr/lib/ossec/
 etc/ossec/rules
 etc/ossec/shared
-var/logs/ossec
+var/log/ossec
 var/ossec/bin
 var/ossec/active-response/bin
 var/ossec/agentless
