@@ -4,9 +4,24 @@
 # Modified for slackware by Jack S. Lai
 # Modified for Debian by Javier Fernandez-Sanguino
 #
-#  OSSEC HIDS is a free software; you can redistribute it and/or modify
+# OSSEC HIDS is a free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License (version 2) as
-#  published by the FSF - Free Software Foundation.
+# published by the FSF - Free Software Foundation.
+
+### BEGIN INIT INFO
+# Provides:          ossec-hids
+# Required-Start:    $time $network $local_fs $remote_fs
+# Required-Stop:     $network $remote_fs
+# Should-Start:      $syslog
+# Should-Stop:       
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Intrusion detection system that monitors the local system
+# Description:       Intrusion detection system that will
+#                    perform log analysis, file integrity checking, policy
+#                    monitoring, rootkit detection, real-time alerting and
+#                    active response. 
+### END INIT INFO
 
 
 . /etc/ossec-init.conf
