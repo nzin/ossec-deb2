@@ -1,0 +1,32 @@
+
+Things TODO for the OSSEC package:
+
+Packages:
+---------
+
+- Check if /var/ossec/etc/ossec-init.conf needs to be generated. 
+    Since it is used for upgrades in install.sh it might not be necessary.
+    dpkg should handle upgrades by itself.
+
+- [all] Generate + install the init.d file for the packages
+
+- [all] Setup system checking, rootkit detection and log monitor in the
+  post-install
+
+- [agent] Configure with server IP addresss in post-install
+
+- [server] Configure email'notifications and remote syslog in post-install
+
+
+Other:
+------
+
+- License review and update debian/copyright accordingly
+
+- Debconf messages + po-debconf infrastructure
+   Note: Debconf messages (+translations) can be based on the template
+   questions in src/etc/templates/
+
+
+- Move changes to debian/patches (if any).
+    Setup dpatch infrastructure.
