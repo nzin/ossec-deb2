@@ -97,7 +97,7 @@ install-arch: build
 	cd debian/ossec-hids-server/var/ossec && ln -s bin ../../usr/lib/ossec/
 	cd debian/ossec-hids-server/var/ossec && ln -s etc ../../etc/ossec/
 	cd debian/ossec-hids-server/var/ossec && ln -s logs ../logs/ossec/
-	cd debian/ossec-hids-server/var/ossec && ln -s rules ../../etc/rules/
+	cd debian/ossec-hids-server/var/ossec && ln -s rules ../../etc/ossec/rules/
 	chmod -R 550 debian/ossec-hids-server/var/ossec
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/ossec
@@ -120,6 +120,8 @@ install-arch: build
 	install -m 640 etc/internal_options.conf debian/ossec-hids-server/etc/ossec/
 	install -m 640 rootcheck/db/*.txt debian/ossec-hids-server/etc/ossec/shared/
 	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
+	cp -pr etc/rules/* debian/ossec-hids-server/etc/ossec/rules/
+	chmod o-rwx debian/ossec-hids-server/etc/ossec/rules/
 	# other scripts
 	install -m 750 active-response/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
