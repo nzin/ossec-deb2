@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
-. /usr/share/debconf/confmodule
 test $DEBIAN_SCRIPT_DEBUG && set -v -x
+. /usr/share/debconf/confmodule
 
 # Initialise variables
 OSSECUSER="ossec"
