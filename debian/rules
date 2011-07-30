@@ -88,6 +88,7 @@ install-arch: build
 	dh_testroot
 	dh_prep -a
 	dh_installdirs -a
+	dh_installinit -a --name=ossec-hids
 # Server files and directories
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
@@ -164,7 +165,6 @@ binary-arch: build install-arch
 	dh_link -a
 	dh_strip -a
 	dh_compress -a
-	dh_installinit -a --name=ossec-hids
 	dh_fixperms -a
 	dh_makeshlibs -a
 	dh_installdeb -a
