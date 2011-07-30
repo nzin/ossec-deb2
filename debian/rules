@@ -213,6 +213,7 @@ clean: clean-sources
 	dh_testdir
 	dh_testroot
 	-rm -rf bin/ server-bin/ agent-bin/ local-bin/
+	-rm -f install
 	dh_clean
 
 
