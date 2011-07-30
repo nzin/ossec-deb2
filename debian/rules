@@ -136,9 +136,9 @@ install-arch: build
 	# 	install -m 755 agent-bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	# done
 	# dh_install -a
-	# cd debian/ossec-hids-agent/var/ossec && ln -s bin ../../usr/lib/ossec/
-	# cd debian/ossec-hids-agent/var/ossec && ln -s etc ../../etc/ossec/
-	# cd debian/ossec-hids-agent/var/ossec && ln -s logs ../log/ossec/
+	# cd debian/ossec-hids-agent/var/ossec && ln -s ../../usr/lib/ossec/ bin
+	# cd debian/ossec-hids-agent/var/ossec && ln -s ../../etc/ossec/ etc
+	# cd debian/ossec-hids-agent/var/ossec && ln -s ../../var/log/ossec/ logs
 	# chmod 750 debian/ossec-hids-agent/var/log/ossec
 	# TODO: Missing configuration files, extract from src/InstallAgent.sh
 
