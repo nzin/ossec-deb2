@@ -72,9 +72,14 @@ queue/agent-info ossec:ossec 755
 queue/rids       ossec:ossec 755
 queue/agentless  ossec:ossec 755
 stats            ossec:ossec 750
-logs             ossec:ossec 750
+/var/log/ossec   ossec:ossec 750
 EOF
         } | while read dir owner mode; do
+                if ! echo "$dir" | grep -q "^/" ; then
+                    location=${HOMEDIR}$dir
+                else
+                    location=$dir
+                fi
 	        if ! dpkg-statoverride --list ${HOMEDIR}$dir >/dev/null
                 then
 		    chown $owner ${HOMEDIR}$dir
