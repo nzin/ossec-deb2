@@ -95,10 +95,10 @@ install-arch: build
 		rootcheck_control ; do \
 		install -m 755 server-bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
 	done
-	cd debian/ossec-hids-server/var/ossec && ln -s bin ../../usr/lib/ossec/
-	cd debian/ossec-hids-server/var/ossec && ln -s etc ../../etc/ossec/
-	cd debian/ossec-hids-server/var/ossec && ln -s logs ../../var/log/ossec/
-	cd debian/ossec-hids-server/var/ossec && ln -s rules ../../etc/ossec/rules/
+	cd debian/ossec-hids-server/var/ossec && ln -s ../../usr/lib/ossec/ bin
+	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/ etc
+	cd debian/ossec-hids-server/var/ossec && ln -s ../../var/log/ossec/ logs
+	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/rules/ rules
 	chmod -R 550 debian/ossec-hids-server/var/ossec
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/ossec
@@ -116,12 +116,12 @@ install-arch: build
 	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-server/var/ossec/agentless/
 	# configuration files:
 	install -m 640 etc/decoder.xml debian/ossec-hids-server/etc/ossec/
-
 	install -m 640 etc/internal_options.conf debian/ossec-hids-server/etc/ossec/
 	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-server/etc/ossec/shared/
 	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
 	cp -pr etc/rules/* debian/ossec-hids-server/etc/ossec/rules/
-	chmod 750 debian/ossec-hids-server/etc/ossec/rules/
+	find debian/ossec-hids-server/etc/ossec/rules/ -type f -exec chmod a-x {} \;
+	chmod -R ug=rX,o= debian/ossec-hids-server/etc/ossec/rules/
 #	chmod ug-x debian/ossec-hids-server/etc/ossec/rules/*
 # These are only for local configuration, not provided upstream
 #	install -m 640 etc/local_decoder.xml debian/ossec-hids-server/etc/ossec/
