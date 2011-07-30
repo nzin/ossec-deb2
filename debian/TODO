@@ -9,13 +9,14 @@ Packages:
     dpkg should handle upgrades by itself.
 
 - [all] Generate + install the init.d file for the packages
+    DONE - for the server
 
 - [all] Setup system checking, rootkit detection and log monitor in the
   post-install
 
 - [agent] Configure with server IP addresss in post-install
 
-- [server] Configure email'notifications and remote syslog in post-install
+- [server] Configure email notifications and remote syslog in post-install
 
 
 Other:
@@ -27,6 +28,7 @@ Other:
    Note: Debconf messages (+translations) can be based on the template
    questions in src/etc/templates/
 
+- Remove ossec users on purge? (at least userm and userd)
 
 - Move changes to debian/patches (if any).
     Setup dpatch infrastructure.
