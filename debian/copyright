@@ -1,17 +1,12 @@
-This work was packaged for Debian by:
+This work was packaged for Debian by Jose Antonio Quevedo Muñoz
+<joseantonio.quevedo@gmail.com>  and Javier Fernandez-Sanguino <jfs@debian.org>
+on July 2011.
 
-    Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com> on Sun, 13 Mar 2011 03:24:51 +0100
+It was downloaded from: http://www.ossec.net/files/
 
-It was downloaded from:
+Upstream Author: Daniel B. Cid <dcid@ossec.net>
 
-    http://www.ossec.net/files/ossec-hids-2.6.tar.gz
-
-Upstream Author(s):
-
-    Daniel B. Cid <dcid@ossec.net>
-
-Copyright:
-
+Copyright: 
     Copyright (C) 2011 Trend Micro Inc.
 
 License:
@@ -19,14 +14,8 @@ License:
     <Put the license of the package here indented by 4 spaces>
 
 The Debian packaging is:
-
     Copyright (C) 2011 Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
-
-# Please chose a license for your packaging work. If the program you package
-# uses a mainstream license, using the same license is the safest choice.
-# Please avoid to pick license terms that are more restrictive than the
-# packaged work, as it may make Debian's contributions unacceptable upstream.
-# If you just want it to be GPL version 3, leave the following lines in.
+    Copyright (C) 2011 Javier Fernandez-Sanguino <jfs@debian.org>
 
 and is licensed under the GPL version 3,
 see "/usr/share/common-licenses/GPL-3".
