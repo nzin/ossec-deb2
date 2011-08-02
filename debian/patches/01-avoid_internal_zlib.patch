@@ -1,28 +1,14 @@
-Description: Upstream changes introduced in version 2.6-1
- This patch has been created by dpkg-source during the package build.
- Here's the last changelog entry, hopefully it gives details on why
- those changes were made:
- .
- ossec-hids (2.6-1) unstable; urgency=low
- .
-   * Initial release (Closes: #361954)
+Description: Disable compilation of embedded zlib
+ This patch disables the compilation of the zlib source included
+ by upstream and, instead, uses the system's zlib for the sources.
  .
  The person named in the Author field signed this changelog entry.
-Author: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
-Bug-Debian: http://bugs.debian.org/361954
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Origin: debian
+Forwarded: not-needed
+Reviewed-By: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
+Last-Update: 2011-07-30
 
----
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
-
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: http://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: <YYYY-MM-DD>
 
 --- ossec-hids-2.6.orig/src/Config.Make
 +++ ossec-hids-2.6/src/Config.Make
