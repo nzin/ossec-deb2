@@ -204,7 +204,7 @@ get-orig-source:
 
 clean-sources:
 	dh_testdir
-	dh_testroot
+#	dh_testroot
 	cd src && make clean
 # Clean up additional auto-generated files
 	for file in etc/ossec.mc src/Config.OS \
