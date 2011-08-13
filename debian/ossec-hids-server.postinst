@@ -95,9 +95,6 @@ EOF
                 fi
         done
 
-	# Update the rc.d's
-	update-rc.d ossec-hids-server defaults >/dev/null
-
 	# in the case we reconfigure we have to restart and not just to start.
 	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
 		invoke-rc.d ossec-hids-server stop || exit $?
