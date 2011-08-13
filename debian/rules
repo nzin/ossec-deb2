@@ -48,7 +48,7 @@ configure-local-stamp:
 build: build-server #build-agent
 
 # Build the server
-build-server: configure-server build-server-stamp 
+build-server: clean-sources configure-server build-server-stamp 
 build-server-stamp: 
 # For Prelude support:
 #	cd src && make setprelude
@@ -100,6 +100,7 @@ install-arch: build
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../var/log/ossec/ logs
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/rules/ rules
+
 	chmod -R 550 debian/ossec-hids-server/var/ossec
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/ossec
@@ -122,7 +123,7 @@ install-arch: build
 	install -m 640 etc/decoder.xml debian/ossec-hids-server/etc/ossec/
 	install -m 640 etc/internal_options.conf debian/ossec-hids-server/etc/ossec/
 	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-server/etc/ossec/shared/
-	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
+	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec-server.conf
 	cp -pr etc/rules/* debian/ossec-hids-server/etc/ossec/rules/
 	find debian/ossec-hids-server/etc/ossec/rules/ -type f -exec chmod a-x {} \;
 	chmod -R ug=rX,o= debian/ossec-hids-server/etc/ossec/rules/
