@@ -88,7 +88,7 @@ install-arch: build
 	dh_testroot
 	dh_prep -a
 	dh_installdirs -a
-	dh_installinit -a --name=ossec
+	dh_installinit -a --name=ossec-hids-server
 # Server files and directories
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
@@ -115,9 +115,7 @@ install-arch: build
 	chmod 750 debian/ossec-hids-server/var/log/ossec
 	chmod -R 550 debian/ossec-hids-server/etc/
 
-	install -m 754 src/init/ossec-server.sh debian/ossec-hids-server/etc/init.d/ossec-hids-server
-	cd debian/ossec-hids-server/ && ln -s etc/init.d/ossec-hids-server usr/lib/ossec/ossec-control
-
+	install -m 754 src/init/ossec-server.sh debian/ossec-hids-server/usr/lib/ossec/ossec-control 
 	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-server/var/ossec/agentless/
 	# configuration files:
 	install -m 640 etc/decoder.xml debian/ossec-hids-server/etc/ossec/
