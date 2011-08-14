@@ -89,6 +89,8 @@ install-arch: build
 	dh_prep -a
 	dh_installdirs -a
 	dh_installinit -a --name=ossec-hids-server
+	dh_installinit -a --name=ossec-hids-agent
+#	dh_installinit -a --name=ossec-hids-local
 
 # Server files and directories
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
