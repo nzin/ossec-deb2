@@ -121,7 +121,7 @@ install-arch: build
 	install -m 640 etc/decoder.xml debian/ossec-hids-server/etc/ossec/
 	install -m 640 etc/internal_options.conf debian/ossec-hids-server/etc/ossec/
 	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-server/etc/ossec/shared/
-	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec-server.conf
+	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
 	cp -pr etc/rules/* debian/ossec-hids-server/etc/ossec/rules/
 	find debian/ossec-hids-server/etc/ossec/rules/ -type f -exec chmod a-x {} \;
 	chmod -R ug=rX,o= debian/ossec-hids-server/etc/ossec/rules/
