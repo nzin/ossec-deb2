@@ -135,7 +135,7 @@ install-arch: build
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
 
 # Agent files and directories
-	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/bin/
+	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/lib/ossec/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd ; do \
 		install -m 755 agent-bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	done
