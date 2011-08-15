@@ -45,7 +45,7 @@ configure-local-stamp:
 	touch $@
 
 # Builds all binaries
-build: build-server build-agent #build-local
+build: build-server build-agent build-local
 
 # Build the server
 build-server: clean-sources configure-server build-server-stamp 
