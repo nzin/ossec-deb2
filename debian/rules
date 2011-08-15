@@ -90,7 +90,7 @@ install-arch: build
 	dh_installdirs -a
 	dh_installinit -a --name=ossec-hids-server
 	dh_installinit -a --name=ossec-hids-agent
-#	dh_installinit -a --name=ossec-hids-local
+	dh_installinit -a --name=ossec-hids-local
 
 # Server files and directories
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
@@ -167,7 +167,49 @@ install-arch: build
 	install -m 750 active-response/*.sh debian/ossec-hids-agent/var/ossec/active-response/bin/
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-agent/var/ossec/active-response/bin/
 
-# TODO: Local files and directories
+# Local files and directories
+	install -m 755 local-bin/ossec* debian/ossec-hids-local/usr/lib/ossec
+	for file in manage_agents syscheck_update verify-agent-conf  \
+		clear_stats list_agents agent_control syscheck_control \
+		rootcheck_control ; do \
+		install -m 755 local-bin/$$file debian/ossec-hids-local/usr/lib/ossec/ ; \
+	done
+	cd debian/ossec-hids-local/var/ossec && ln -s ../../usr/lib/ossec/ bin
+	cd debian/ossec-hids-local/var/ossec && ln -s ../../etc/ossec/ etc
+	cd debian/ossec-hids-local/var/ossec && ln -s ../../var/log/ossec/ logs
+	cd debian/ossec-hids-local/var/ossec && ln -s ../../etc/ossec/rules/ rules
+
+	chmod -R 550 debian/ossec-hids-local/var/ossec
+	chmod 770 debian/ossec-hids-local/var/ossec/queue/alerts
+	chmod 770 debian/ossec-hids-local/var/ossec/queue/ossec
+	chmod 750 debian/ossec-hids-local/var/ossec/queue/fts
+	chmod 750 debian/ossec-hids-local/var/ossec/queue/syscheck
+	chmod 750 debian/ossec-hids-local/var/ossec/queue/rootcheck
+	chmod 750 debian/ossec-hids-local/var/ossec/queue/diff
+	chmod 755 debian/ossec-hids-local/var/ossec/queue/agent-info
+	chmod 755 debian/ossec-hids-local/var/ossec/queue/rids
+	chmod 755 debian/ossec-hids-local/var/ossec/queue/agentless
+	chmod 750 debian/ossec-hids-local/var/ossec/stats
+	chmod 750 debian/ossec-hids-local/var/log/ossec
+	chmod -R 550 debian/ossec-hids-local/etc/
+
+	install -m 754 src/init/ossec-local.sh debian/ossec-hids-local/usr/lib/ossec/ossec-control 
+	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-local/var/ossec/agentless/
+	# configuration files:
+	install -m 640 etc/decoder.xml debian/ossec-hids-local/etc/ossec/
+	install -m 640 etc/internal_options.conf debian/ossec-hids-local/etc/ossec/
+	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-local/etc/ossec/shared/
+	install -m 640 etc/ossec-local.conf  debian/ossec-hids-local/etc/ossec/ossec.conf
+	cp -pr etc/rules/* debian/ossec-hids-local/etc/ossec/rules/
+	find debian/ossec-hids-local/etc/ossec/rules/ -type f -exec chmod a-x {} \;
+	chmod -R ug=rX,o= debian/ossec-hids-local/etc/ossec/rules/
+#	chmod ug-x debian/ossec-hids-local/etc/ossec/rules/*
+# These are only for local configuration, not provided upstream
+#	install -m 640 etc/local_decoder.xml debian/ossec-hids-local/etc/ossec/
+#	install -m 640 etc/local_internal_options.conf debian/ossec-hids-local/etc/ossec/
+	# other scripts
+	install -m 750 active-response/*.sh debian/ossec-hids-local/var/ossec/active-response/bin/
+	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-local/var/ossec/active-response/bin/
 
 install-indep: build-indep
 	dh_testdir
