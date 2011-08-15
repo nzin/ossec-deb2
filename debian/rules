@@ -41,7 +41,7 @@ configure-agent-stamp:
 configure-local: configure-local-stamp
 configure-local-stamp:
 	dh_testdir
-	echo "CEXTRA=-DDEFAULTDIR=\"/var/ossec\" -DLOCAL" > src/Config.OS
+	echo "CEXTRA=-DDEFAULTDIR=\\\"/var/ossec\\\" -DLOCAL" > src/Config.OS
 	touch $@
 
 # Builds all binaries
@@ -72,7 +72,7 @@ build-agent-stamp:
 # Note: we need to clean the build first
 build-local: clean-sources configure-local build-local-stamp 
 build-local-stamp: 
-# We have to clean and rebuild againt to set -DCLIENT
+# We have to clean and rebuild againt to set -DLOCAL
 	cd src && make all
 	cd src && make build
 	mv bin local-bin
