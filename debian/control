@@ -20,7 +20,7 @@ Description: documentation for ossec-hids.
 
 Package: ossec-hids-local
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect
 Conflicts: ossec-hids-server, ossec-hids-agent
 Description: Ossec's local installation binaries. Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems.
@@ -31,7 +31,7 @@ Description: Ossec's local installation binaries. Host-based Intrusion Detection
 
 Package: ossec-hids-server
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect
 Conflicts: ossec-hids-local, ossec-hids-agent
 Description: Ossec's server installation binaries. Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems.
@@ -42,7 +42,7 @@ Description: Ossec's server installation binaries. Host-based Intrusion Detectio
 
 Package: ossec-hids-agent
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect
 Conflicts: ossec-hids-local, ossec-hids-server
 Description: Ossec's client installation binaries. Host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control your systems.
