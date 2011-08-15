@@ -62,7 +62,8 @@ build-server-stamp:
 # Note: we need to clean the build first
 build-agent: clean-sources configure-agent build-agent-stamp 
 build-agent-stamp: 
-# We have to clean and rebuild againt to set -DCLIENT
+# For Prelude support:
+#	cd src && make setprelude
 	cd src && make all
 	cd src && make build
 	mv bin agent-bin
@@ -72,7 +73,8 @@ build-agent-stamp:
 # Note: we need to clean the build first
 build-local: clean-sources configure-local build-local-stamp 
 build-local-stamp: 
-# We have to clean and rebuild againt to set -DLOCAL
+# For Prelude support:
+#	cd src && make setprelude
 	cd src && make all
 	cd src && make build
 	mv bin local-bin
@@ -84,7 +86,6 @@ build-indep-stamp:
 	touch $@
 
 install-prep:
-
 	dh_testdir
 	dh_testroot
 	dh_prep -a
@@ -93,7 +94,6 @@ install-prep:
 install-local:
 
 	dh_installinit -a --name=ossec-hids-local
-
 	install -m 755 local-bin/ossec* debian/ossec-hids-local/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
@@ -104,7 +104,6 @@ install-local:
 	cd debian/ossec-hids-local/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-local/var/ossec && ln -s ../../var/log/ossec/ logs
 	cd debian/ossec-hids-local/var/ossec && ln -s ../../etc/ossec/rules/ rules
-
 	chmod -R 550 debian/ossec-hids-local/var/ossec
 	chmod 770 debian/ossec-hids-local/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-local/var/ossec/queue/ossec
@@ -118,7 +117,6 @@ install-local:
 	chmod 750 debian/ossec-hids-local/var/ossec/stats
 	chmod 750 debian/ossec-hids-local/var/log/ossec
 	chmod -R 550 debian/ossec-hids-local/etc/
-
 	install -m 754 src/init/ossec-local.sh debian/ossec-hids-local/usr/lib/ossec/ossec-control 
 	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-local/var/ossec/agentless/
 	# configuration files:
@@ -140,7 +138,6 @@ install-local:
 install-server:
 
 	dh_installinit -a --name=ossec-hids-server
-
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
@@ -151,7 +148,6 @@ install-server:
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../var/log/ossec/ logs
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/rules/ rules
-
 	chmod -R 550 debian/ossec-hids-server/var/ossec
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/ossec
@@ -165,7 +161,6 @@ install-server:
 	chmod 750 debian/ossec-hids-server/var/ossec/stats
 	chmod 750 debian/ossec-hids-server/var/log/ossec
 	chmod -R 550 debian/ossec-hids-server/etc/
-
 	install -m 754 src/init/ossec-server.sh debian/ossec-hids-server/usr/lib/ossec/ossec-control 
 	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-server/var/ossec/agentless/
 	# configuration files:
@@ -185,21 +180,16 @@ install-server:
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
 
 install-agent:
-
 	dh_installinit -a --name=ossec-hids-agent
-
 	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/lib/ossec/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd ; do \
 		install -m 755 agent-bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
 	done
 	install -m 755 src/init/ossec-client.sh debian/ossec-hids-server/usr/lib/ossec/ossec-control
-
 	dh_install -a
-
 	cd debian/ossec-hids-agent/var/ossec && ln -s ../../usr/lib/ossec/ bin
 	cd debian/ossec-hids-agent/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-agent/var/ossec && ln -s ../../var/log/ossec/ logs
-
 	chmod 750 debian/ossec-hids-agent/var/log/ossec
 	# TODO: Missing configuration files, extract from src/InstallAgent.sh
 	chmod -R 550 debian/ossec-hids-agent/var/ossec
@@ -276,7 +266,6 @@ get-orig-source:
 
 clean-sources:
 	dh_testdir
-#	dh_testroot
 	cd src && make clean
 # Clean up additional auto-generated files
 	for file in etc/ossec.mc src/Config.OS \
