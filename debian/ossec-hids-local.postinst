@@ -37,10 +37,10 @@ case "$1" in
         # TODO 
         #  - configure the results in the configuration file
         #  - setup active response (firewall response, whitelist, etc.)
-	db_get ossec-hids-server/enable_email || true;	EMAIL="$RET"
-	db_get ossec-hids-server/email_to     || true;	EMAIL_TO="$RET"
-	db_get ossec-hids-server/email_server || true;	EMAIL_SERVER="$RET"
-	db_get ossec-hids-server/enable_syslog ||  true; SYSLOG="$RET"
+	db_get ossec-hids-local/enable_email || true;	EMAIL="$RET"
+	db_get ossec-hids-local/email_to     || true;	EMAIL_TO="$RET"
+	db_get ossec-hids-local/email_server || true;	EMAIL_SERVER="$RET"
+	db_get ossec-hids-local/enable_syslog ||  true; SYSLOG="$RET"
 
 	# Failsafe in case the values above are blank (jfs)
 	[ -z "$EMAIL" ] && EMAIL="no"
@@ -97,9 +97,9 @@ EOF
 
 	# in the case we reconfigure we have to restart and not just to start.
 	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
-		invoke-rc.d ossec-hids-server stop || exit $?
+		invoke-rc.d ossec-hids-local stop || exit $?
 	else
-		/etc/init.d/ossec-hids-server stop || exit $?
+		/etc/init.d/ossec-hids-local stop || exit $?
 	fi
 	;;
     abort-upgrade)
