@@ -26,15 +26,13 @@ Other:
   OpenSSL. 
     See Message-ID: <20110803214711.GE19295@javifsp.no-ip.org>
   
-  Note: NO, debian/patches/00-disable-openSSL.patch is not enough. If the code
-  is not linked then it uses its own implementation for SHA-1 and MD5 which
-  comes (copy & paste) from the OpenSSL library headers.
+  Note1: debian/patches/00-openSSL-license-exception.patch includes the patch
+   that upstream needs to include in order to add the OpenSSL exception to the 
+   source code.
 
-- License review and update debian/copyright accordingly
-  NOTE: Some files are not (c) TrendMicro, for example, the following come from OpenSSL
-  and their (C) and license should be acknowledged:
-  src/os_crypto/sha1/md32_common.h, src/os_crypto/sha1/sha.h, and
-  src/os_crypto/sha1/sha_locl.h
+  Note2: NO, debian/patches/00-disable-openSSL.patch is not enough. If the code
+   is not linked then it uses its own implementation for SHA-1 and MD5 which
+   comes (copy & paste) from the OpenSSL library headers.
 
 - Debconf messages + po-debconf infrastructure
    Note: Debconf messages (+translations) can be based on the template
@@ -42,5 +40,15 @@ Other:
 
 - Remove ossec users on purge? (at least userm and userd)
 
+DONE
+----
+
+- License review and update debian/copyright accordingly
+  NOTE: Some files are not (c) TrendMicro, for example, the following come from OpenSSL
+  and their (C) and license should be acknowledged:
+  src/os_crypto/sha1/md32_common.h, src/os_crypto/sha1/sha.h, and
+  src/os_crypto/sha1/sha_locl.h
+
 - Move changes to debian/patches (if any).
     Setup dpatch infrastructure.
+
