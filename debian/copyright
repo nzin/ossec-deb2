@@ -1,17 +1,235 @@
 This work was packaged for Debian by Jose Antonio Quevedo Muñoz
-<joseantonio.quevedo@gmail.com>  and Javier Fernandez-Sanguino <jfs@debian.org>
-on July 2011.
+<joseantonio.quevedo@gmail.com>  and Javier Fernandez-Sanguino <jfs@debian.org>.
+Work started on July 2011 and finished in August 2012.
 
 It was downloaded from: http://www.ossec.net/files/
 
-Upstream Author: Daniel B. Cid <dcid@ossec.net>
+Upstream Author: Daniel B. Cid <dcid@ossec.net> / <daniel.cid@gmail.com>
+
+Other Authors:  
+	- Sebastien Tricaud
+
+	- For different rules under the etc/ subdirectory: Ahmet Ozturk, Stephen Kreusch,
+	 Dan Parriott <ddpbsd@gmail.com>, Michael Starks,
+	phishphreek@gmail.com, Joachim Vorrath
+	<joachim.vorrath@vorrath-net.de>, Jorge Augusto Senger <jorge@br10.com.br>,
+	Peter Ahlert <peter@ifup.de>, Ceg Ryan <cegryan@gmail.com>  and Daniel B. Cid
+
+	- For the different scripts under the contrib/ directory: Meir Michanie
+	  <meirm@riunx.com>, J.A.Senger <jorge@br10.com.br>
+
+	- For the different scripts under the active-responde directory: Ivan
+	  Lotina, Rafael M. Capovilla <under@underlinux.com.br>, Charles W.
+	  Kefauver <ckefauver@ibacom.es>, Ahmet Ozturk and Daniel B. Cid
+
 
 Copyright: 
-    Copyright (C) 2011 Trend Micro Inc.
+    Copyright (C) 2009-2011 Trend Micro Inc.
+
+    Some specific source files hold additional copyright holders (in addition to the one
+    listed above):
+
+    - src/analysisd/picviz.h: Copyright (C) 2009 Sebastien Tricaud  
+    - src/rootcheck/db/* : Copyright (C) 2007-2008 Daniel B. Cid 
+
+    The following files distributed with OSSEC's source are, on the other hand,
+    copyrighted by different authors:
+
+    - src/addagent/b64.c: Copyright (C) 2000-2004 by the monit project group.
+
+    - src/rootcheck/os_string.c: Copyright (c) 1980, 1987, 1993 - The Regents of
+	      the University of California.  All rights reserved.
+
+    - external/zlib-1.2.3/* - Copyright (C) 1995-2005 Jean-loup Gailly and Mark Adler
+
+    - src/os_crypto/blowfish/bf_locl.h, src/os_crypto/blowfish/bf_pi.h,
+      src/os_crypto/blowfish/bf_skey.c, src/os_crypto/blowfish/blowfish.h, 
+	src/os_crypto/blowfish/bf_enc.c, src/os_crypto/sha1/sha_locl.h,
+        src/os_crypto/sha1/md32_common.h, src/os_crypto/sha1/sha.h:
+		 Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+
+    - src/os_regex/examples/* - Copyright (C) 2004-2006 Daniel B. Cid 
+
+    - contrib/compile_alerts.pl - Copyright (C) Meir Michanie <meirm@riunx.com>, 
+
 
 License:
 
-    <Put the license of the package here indented by 4 spaces>
+     OSSEC HIDS is a free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License (version 2) as
+     published by the FSF - Free Software Foundation.
+
+     For the full license text please see "/usr/share/common-licenses/GPL-2".
+    
+     In addition, certain source files in this program permit linking with the
+     OpenSSL library (http://www.openssl.org), which otherwise wouldn't be allowed
+     under the GPL.  For purposes of identifying OpenSSL, most source files giving
+     this permission limit it to versions of OpenSSL having a license identical to
+     that listed in this file (see section "OpenSSL LICENSE" below). It is not
+     necessary for the copyright years to match between this file and the OpenSSL
+     version in question.  However, note that because this file is an extension of
+     the license statements of these source files, this file may not be changed
+     except with permission from all copyright holders of source files in this
+     program which reference this file.
+     
+     Note that this license applies to the source code, as well as
+     decoders, rules and any other data file included with OSSEC (unless
+     otherwise specified).
+    
+     For the purpose of this license, we consider an application to constitute a 
+     "derivative work" or a work based on this program if it does any of the
+     following (list not exclusive):
+    
+      * Integrates source code/data files from OSSEC.
+      * Includes OSSEC copyrighted material.
+      * Includes/integrates OSSEC into a proprietary executable installer.
+      * Links to a library or executes a program that does any of the above.
+    
+     This list is not exclusive, but just a clarification of our interpretation
+     of derived works. These restrictions only apply if you actually redistribute
+     OSSEC (or parts of it).
+    
+     We don't consider these to be added restrictions on top of the GPL, 
+     but just a clarification of how we interpret "derived works" as it 
+     applies to OSSEC. This is similar to the way Linus Torvalds has
+     announced his interpretation of how "derived works" applies to Linux kernel
+     modules. Our interpretation refers only to OSSEC - we don't speak
+     for any other GPL products. 
+    
+     OSSEC HIDS is distributed in the hope that it will be useful, but WITHOUT
+     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+     FITNESS FOR A PARTICULAR PURPOSE.
+    
+    -------------------------------------------------------------------------------
+    
+    OpenSSL License
+    ---------------
+    
+      LICENSE ISSUES
+      ==============
+    
+      The OpenSSL toolkit stays under a dual license, i.e. both the conditions of
+      the OpenSSL License and the original SSLeay license apply to the toolkit.
+      See below for the actual license texts. Actually both licenses are BSD-style
+      Open Source licenses. In case of any license issues related to OpenSSL
+      please contact openssl-core@openssl.org.
+    
+      OpenSSL License
+      ---------------
+    
+    /* ====================================================================
+     * Copyright (c) 1998-2001 The OpenSSL Project.  All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions
+     * are met:
+     *
+     * 1. Redistributions of source code must retain the above copyright
+     *    notice, this list of conditions and the following disclaimer. 
+     *
+     * 2. Redistributions in binary form must reproduce the above copyright
+     *    notice, this list of conditions and the following disclaimer in
+     *    the documentation and/or other materials provided with the
+     *    distribution.
+     *
+     * 3. All advertising materials mentioning features or use of this
+     *    software must display the following acknowledgment:
+     *    "This product includes software developed by the OpenSSL Project
+     *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+     *
+     * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+     *    endorse or promote products derived from this software without
+     *    prior written permission. For written permission, please contact
+     *    openssl-core@openssl.org.
+     *
+     * 5. Products derived from this software may not be called "OpenSSL"
+     *    nor may "OpenSSL" appear in their names without prior written
+     *    permission of the OpenSSL Project.
+     *
+     * 6. Redistributions of any form whatsoever must retain the following
+     *    acknowledgment:
+     *    "This product includes software developed by the OpenSSL Project
+     *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+     * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+     * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+     * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+     * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+     * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+     * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+     * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+     * OF THE POSSIBILITY OF SUCH DAMAGE.
+     * ====================================================================
+     *
+     * This product includes cryptographic software written by Eric Young
+     * (eay@cryptsoft.com).  This product includes software written by Tim
+     * Hudson (tjh@cryptsoft.com).
+     *
+     */
+    
+     Original SSLeay License
+     -----------------------
+    
+    /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+     * All rights reserved.
+     *
+     * This package is an SSL implementation written
+     * by Eric Young (eay@cryptsoft.com).
+     * The implementation was written so as to conform with Netscapes SSL.
+     * 
+     * This library is free for commercial and non-commercial use as long as
+     * the following conditions are aheared to.  The following conditions
+     * apply to all code found in this distribution, be it the RC4, RSA,
+     * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+     * included with this distribution is covered by the same copyright terms
+     * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+     * 
+     * Copyright remains Eric Young's, and as such any Copyright notices in
+     * the code are not to be removed.
+     * If this package is used in a product, Eric Young should be given attribution
+     * as the author of the parts of the library used.
+     * This can be in the form of a textual message at program startup or
+     * in documentation (online or textual) provided with the package.
+     * 
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions
+     * are met:
+     * 1. Redistributions of source code must retain the copyright
+     *    notice, this list of conditions and the following disclaimer.
+     * 2. Redistributions in binary form must reproduce the above copyright
+     *    notice, this list of conditions and the following disclaimer in the
+     *    documentation and/or other materials provided with the distribution.
+     * 3. All advertising materials mentioning features or use of this software
+     *    must display the following acknowledgement:
+     *    "This product includes cryptographic software written by
+     *     Eric Young (eay@cryptsoft.com)"
+     *    The word 'cryptographic' can be left out if the rouines from the library
+     *    being used are not cryptographic related :-).
+     * 4. If you include any Windows specific code (or a derivative thereof) from 
+     *    the apps directory (application code) you must include an acknowledgement:
+     *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+     * 
+     * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+     * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+     * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+     * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+     * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+     * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+     * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+     * SUCH DAMAGE.
+     * 
+     * The licence and distribution terms for any publically available version or
+     * derivative of this code cannot be changed.  i.e. this code cannot simply be
+     * copied and put under another distribution licence
+     * [including the GNU Public Licence.]
+     */
 
 The Debian packaging is:
     Copyright (C) 2011 Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
@@ -20,5 +238,179 @@ The Debian packaging is:
 and is licensed under the GPL version 3,
 see "/usr/share/common-licenses/GPL-3".
 
-# Please also look if there are files or directories which have a
-# different copyright/license attached and list them here.
+Additional licenses:
+
+    In addition to the above, the following files hold a different license:
+
+    -  src/addagent/b64.c
+
+	 * Copyright (C), 2000-2004 by the monit project group.
+	 * All Rights Reserved.
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 2 of the
+	 * License, or (at your option) any later version.
+
+   - etc/rules/openbsd_rules.xml, etc/rules/dropbear_rules.xml, etc/rules/bro-ids_rules.xml:
+     contrib/compile_alerts.pl, contrib/ossec2mysql.pl, contrib/ossec2mysqld.pl, 
+     contrib/ossectop.pl, contrib/ossec_report_contrib.pl:
+
+	This program is a free software; you can redistribute it
+	and/or modify it under the terms of the GNU General Public
+	License (version 2) as published by the FSF - Free Software
+	Foundation.
+
+	For the full license text please see "/usr/share/common-licenses/GPL-2". 
+
+   - etc/rules/dovecot_rules.xml, etc/rules/cimserver_rules.xml,
+     etc/rules/roundcube_rules.xml etc/rules/wordpress_rules.xml,
+     etc/rules/mcafee_av_rules.xml:
+
+	This program is a free software; you can redistribute it
+	and/or modify it under the terms of the GNU General Public
+	License (version 3) as published by the FSF - Free Software
+	Foundation.
+
+	For the full license text please see "/usr/share/common-licenses/GPL-3". 
+
+    - src/rootcheck/os_string.c:
+
+	 /*
+	  * Copyright (c) 1980, 1987, 1993
+	  *      The Regents of the University of California.  All rights reserved.
+	  *
+	  * Redistribution and use in source and binary forms, with or without
+	  * modification, are permitted provided that the following conditions
+	  * are met:
+	  * 1. Redistributions of source code must retain the above copyright
+	  *    notice, this list of conditions and the following disclaimer.
+	  * 2. Redistributions in binary form must reproduce the above copyright
+	  *    notice, this list of conditions and the following disclaimer in the
+	  *    documentation and/or other materials provided with the distribution.
+	  * 3. Neither the name of the University nor the names of its contributors
+	  *    may be used to endorse or promote products derived from this software
+	  *    without specific prior written permission.
+	  *
+	  * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+	  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	  * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+	  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+	  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+	  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+	  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+	  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+	  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	  * SUCH DAMAGE.
+	  */
+	
+     - All the files under src/external/zlib-1.2.3/  hold the following license:
+
+	 /* zlib.h -- interface of the 'zlib' general purpose compression library
+	   version 1.2.3, July 18th, 2005
+	 
+	   Copyright (C) 1995-2005 Jean-loup Gailly and Mark Adler
+	 
+	   This software is provided 'as-is', without any express or implied
+	   warranty.  In no event will the authors be held liable for any damages
+	   arising from the use of this software.
+	 
+	   Permission is granted to anyone to use this software for any purpose,
+	   including commercial applications, and to alter it and redistribute it
+	   freely, subject to the following restrictions:
+	 
+	   1. The origin of this software must not be misrepresented; you must not
+	      claim that you wrote the original software. If you use this software
+	      in a product, an acknowledgment in the product documentation would be
+	      appreciated but is not required.
+	   2. Altered source versions must be plainly marked as such, and must not be
+	      misrepresented as being the original software.
+	   3. This notice may not be removed or altered from any source distribution.
+	 
+	   Jean-loup Gailly        Mark Adler
+	   jloup@gzip.org          madler@alumni.caltech.edu
+	 
+	 
+	   The data format used by the zlib library is described by RFCs (Request for
+	   Comments) 1950 to 1952 in the files http://www.ietf.org/rfc/rfc1950.txt
+	   (zlib format), rfc1951.txt (deflate format) and rfc1952.txt (gzip format).
+	 */
+	  
+    - src/os_crypto/blowfish/bf_locl.h, src/os_crypto/blowfish/bf_pi.h,
+      src/os_crypto/blowfish/bf_skey.c, src/os_crypto/blowfish/blowfish.h, 
+      src/os_crypto/blowfish/bf_enc.c: Are modified versions of the OpenSSL library
+      which includes the following license note:
+    
+
+	 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
+	  * All rights reserved.
+	  *
+	  * This package is an SSL implementation written
+	  * by Eric Young (eay@cryptsoft.com).
+	  * The implementation was written so as to conform with Netscapes SSL.
+	  * 
+	  * This library is free for commercial and non-commercial use as long as
+	  * the following conditions are aheared to.  The following conditions
+	  * apply to all code found in this distribution, be it the RC4, RSA,
+	  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+	  * included with this distribution is covered by the same copyright terms
+	  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+	  * 
+	  * Copyright remains Eric Young's, and as such any Copyright notices in
+	  * the code are not to be removed.
+	  * If this package is used in a product, Eric Young should be given attribution
+	  * as the author of the parts of the library used.
+	  * This can be in the form of a textual message at program startup or
+	  * in documentation (online or textual) provided with the package.
+	  * 
+	  * Redistribution and use in source and binary forms, with or without
+	  * modification, are permitted provided that the following conditions
+	  * are met:
+	  * 1. Redistributions of source code must retain the copyright
+	  *    notice, this list of conditions and the following disclaimer.
+	  * 2. Redistributions in binary form must reproduce the above copyright
+	  *    notice, this list of conditions and the following disclaimer in the
+	  *    documentation and/or other materials provided with the distribution.
+	  * 3. All advertising materials mentioning features or use of this software
+	  *    must display the following acknowledgement:
+	  *    "This product includes cryptographic software written by
+	  *     Eric Young (eay@cryptsoft.com)"
+	  *    The word 'cryptographic' can be left out if the rouines from the library
+	  *    being used are not cryptographic related :-).
+	  * 4. If you include any Windows specific code (or a derivative thereof) from 
+	  *    the apps directory (application code) you must include an acknowledgement:
+	  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+	  * 
+	  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+	  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+	  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+	  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+	  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+	  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+	  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+	  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	  * SUCH DAMAGE.
+	  * 
+	  * The licence and distribution terms for any publically available version or
+	  * derivative of this code cannot be changed.  i.e. this code cannot simply be
+	  * copied and put under another distribution licence
+	  * [including the GNU Public Licence.]
+	  */
+
+    - src/os_crypto/md5/md5.h, src/os_crypto/md5/md5.c
+
+	 /*
+	  * This code implements the MD5 message-digest algorithm.
+	  * The algorithm is due to Ron Rivest.  This code was
+	  * written by Colin Plumb in 1993, no copyright is claimed.
+	  * This code is in the public domain; do with it what you wish.
+	  *
+    - src/examples/match.c, src/examples/regex_str.c, src/examples/regex.c
+
+	  * Under the public domain. It is just an example.
+	  * Some examples of the usage for the os_regex library.
+	 
+
