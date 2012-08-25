@@ -4,6 +4,10 @@ Things TODO for the OSSEC package:
 Packages:
 ---------
 
+- [all] Disable use of chroot() in the code (through #ifdef or a given
+  command line option) and check that the daemons can work fine without running
+  in chroot (i.e. chroot_flag = 0)
+
 - Check if /var/ossec/etc/ossec-init.conf needs to be generated. 
     Since it is used for upgrades in install.sh it might not be necessary.
     dpkg should handle upgrades by itself.
