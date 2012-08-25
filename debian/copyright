@@ -339,8 +339,10 @@ Additional licenses:
 	  
     - src/os_crypto/blowfish/bf_locl.h, src/os_crypto/blowfish/bf_pi.h,
       src/os_crypto/blowfish/bf_skey.c, src/os_crypto/blowfish/blowfish.h, 
-      src/os_crypto/blowfish/bf_enc.c: Are modified versions of the OpenSSL library
-      which includes the following license note:
+	src/os_crypto/blowfish/bf_enc.c, src/os_crypto/sha1/sha_locl.h,
+	src/os_crypto/sha1/md32_common.h, src/os_crypto/sha1/sha.h: Are
+	modified versions of the OpenSSL library which includes the following license
+	note:
     
 
 	 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
