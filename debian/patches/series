@@ -1,2 +1,3 @@
 00-openSSL-license-exception.patch
 01-avoid_internal_zlib.patch
+02-add-chroot-option.patch
