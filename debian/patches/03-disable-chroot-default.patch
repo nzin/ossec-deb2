@@ -1,3 +1,24 @@
+Description: Disable chroot by default
+ This patch changes the default behaviour of the daemons and
+ programs to prevent them from chrooting. In Debian
+ installations the /var/ossec directory is not a directory
+ they can chroot into since there are symbolic links pointing
+ out of it.
+ .
+ This is needed because the binaries have to be installed in 
+ /usr/{s,}bin to follow the FSSTND and do upgrades through
+ the package management system.
+ .
+ For more information see the README.Debian file distributed
+ with the package.
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Origin: debian
+Forwarded: not-needed
+Reviewed-By: 
+Last-Update: 2012-08-26
+
 Index: pkg-ossec/src/addagent/main.c
 ===================================================================
 --- pkg-ossec.orig/src/addagent/main.c	2012-08-26 14:01:18.000000000 +0200
