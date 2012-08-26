@@ -8,19 +8,31 @@ Packages:
   command line option) and check that the daemons can work fine without running
   in chroot (i.e. chroot_flag = 0)
 
-- Check if /var/ossec/etc/ossec-init.conf needs to be generated. 
-    Since it is used for upgrades in install.sh it might not be necessary.
-    dpkg should handle upgrades by itself.
+- Check if /var/ossec/etc/ossec-init.conf needs to be generated. This 
+  file needs to include the basic configuration for OSSEC including the
+  type of installation.
 
 - [all] Generate + install the init.d file for the packages
     DONE - for the server
 
-- [all] Setup system checking, rootkit detection and log monitor in the
-  post-install
+- [agent] Configuration:
+    + Adjust the configuration files (etc/ossec-agent.conf) to it them
+    automatically useful upon installation 
 
-- [agent] Configure with server IP addresss in post-install
+    + Configure with server IP addresss in post-install (requires debconf prompt)
 
-- [server] Configure email notifications and remote syslog in post-install
+    + Setup system checking, rootkit detection and log monitor in the
+    post-install
+
+- [server] Configuration:
+
+    + Adjust the configuration files (etc/ossec-server.conf) to make it useful
+      post-installation
+
+    + Configure email notifications and remote syslog in post-install (requires
+      debconf prompt)
+
+
 
 
 Other:
