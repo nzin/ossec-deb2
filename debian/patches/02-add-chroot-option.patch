@@ -1,7 +1,30 @@
+Description: Add chroot option
+ This patch introduces two new options to all of OSSEC programs.
+ The option '-C' enables chroot (default in OSSEC upstream) of the
+ program and the option '-N' disables use of chroot. When the latter
+ option is used the program will just change its main directory
+ to OSSEC's directory instead.
+ .
+ This makes it possible to provide a package in Debian without the
+ chrooting enabled (which is disabled in another separate patch to
+ make it possible to integrate this upstream).
+ . 
+ For the patch to work some of the programs have been modified
+ to make use of the getop() functionality. Previously, some programs
+ parsed command line arguments 'by hand'.
+ . 
+ The person named in the Author field signed this changelog entry.
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Origin: debian
+Forwarded: not-yet
+Reviewed-By: 
+Last-Update: 2012-08-26
+
+
 Index: pkg-ossec/src/os_auth/main-server.c
 ===================================================================
---- pkg-ossec.orig/src/os_auth/main-server.c	2012-08-25 21:55:33.000000000 +0200
-+++ pkg-ossec/src/os_auth/main-server.c	2012-08-26 13:36:38.000000000 +0200
+--- pkg-ossec.orig/src/os_auth/main-server.c	2012-08-26 13:49:00.000000000 +0200
++++ pkg-ossec/src/os_auth/main-server.c	2012-08-26 13:51:56.000000000 +0200
 @@ -48,6 +48,7 @@
      FILE *fp;
      int c, test_config = 0;
@@ -32,23 +55,26 @@ Index: pkg-ossec/src/os_auth/main-server.c
              default:
                  report_help();
                  break;
-@@ -138,7 +145,11 @@
+@@ -138,8 +145,13 @@
  
      
-     /* do_chroot */
+     /* chrooting */
 -    chdir(dir);
-+    if (do_chroot)
+-
++    if (do_chroot) 
 +	    chdir(dir);
 +    else
 +	    chdir(dir);
-+    /* Note: we currently we do not chroot so the option does not make any difference (yet) */
++    /* Note: there is no difference with chrooting or not in the main-server as
++     * upstream does not yet make one, the code is there to make it possible if
++     * upstream changes the behaviour */
  
  
- 
+     /* Signal manipulation */
 Index: pkg-ossec/src/os_csyslogd/main.c
 ===================================================================
---- pkg-ossec.orig/src/os_csyslogd/main.c	2012-08-25 22:39:47.000000000 +0200
-+++ pkg-ossec/src/os_csyslogd/main.c	2012-08-26 13:08:43.000000000 +0200
+--- pkg-ossec.orig/src/os_csyslogd/main.c	2012-08-26 13:47:38.000000000 +0200
++++ pkg-ossec/src/os_csyslogd/main.c	2012-08-26 13:49:01.000000000 +0200
 @@ -20,6 +20,7 @@
  int main(int argc, char **argv)
  {
@@ -79,17 +105,18 @@ Index: pkg-ossec/src/os_csyslogd/main.c
              default:
                  help(ARGV0);
                  break;
-@@ -148,13 +155,14 @@
+@@ -146,14 +153,15 @@
+     if(Privsep_SetGroup(gid) < 0)
+         ErrorExit(SETGID_ERROR,ARGV0,group);
  
-     
-     /* do_chroot */
+-    
+     /* chrooting */
 -    if(Privsep_Chroot(dir) < 0)
 -        ErrorExit(CHROOT_ERROR,ARGV0,dir);
 -
 -
 -    /* Now on chroot */
 -    nowChroot();
--
 +    if (do_chroot) {
 +	    if(Privsep_Chroot(dir) < 0)
 +		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
@@ -99,12 +126,12 @@ Index: pkg-ossec/src/os_csyslogd/main.c
 +	    chdir(dir);
 +    }
  
+ 
      
-     /* Changing user */        
 Index: pkg-ossec/src/shared/help.c
 ===================================================================
---- pkg-ossec.orig/src/shared/help.c	2012-08-25 22:43:50.000000000 +0200
-+++ pkg-ossec/src/shared/help.c	2012-08-26 13:09:35.000000000 +0200
+--- pkg-ossec.orig/src/shared/help.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/shared/help.c	2012-08-26 13:49:01.000000000 +0200
 @@ -35,6 +35,8 @@
      print_out("    -g <group>  Run as 'group'");
      print_out("    -c <config> Read the 'config' file");
@@ -116,8 +143,8 @@ Index: pkg-ossec/src/shared/help.c
  }
 Index: pkg-ossec/src/analysisd/analysisd.c
 ===================================================================
---- pkg-ossec.orig/src/analysisd/analysisd.c	2012-08-25 22:44:49.000000000 +0200
-+++ pkg-ossec/src/analysisd/analysisd.c	2012-08-26 13:07:28.000000000 +0200
+--- pkg-ossec.orig/src/analysisd/analysisd.c	2012-08-26 13:47:38.000000000 +0200
++++ pkg-ossec/src/analysisd/analysisd.c	2012-08-26 13:49:01.000000000 +0200
 @@ -132,6 +132,7 @@
  #endif
  {
@@ -169,8 +196,8 @@ Index: pkg-ossec/src/analysisd/analysisd.c
  
 Index: pkg-ossec/src/analysisd/makelists.c
 ===================================================================
---- pkg-ossec.orig/src/analysisd/makelists.c	2012-08-25 22:45:57.000000000 +0200
-+++ pkg-ossec/src/analysisd/makelists.c	2012-08-26 13:08:05.000000000 +0200
+--- pkg-ossec.orig/src/analysisd/makelists.c	2012-08-26 13:47:38.000000000 +0200
++++ pkg-ossec/src/analysisd/makelists.c	2012-08-26 13:49:01.000000000 +0200
 @@ -67,6 +67,8 @@
      print_out("    -g <group>  Run as 'group'");
      print_out("    -c <config> Read the 'config' file");
@@ -231,8 +258,8 @@ Index: pkg-ossec/src/analysisd/makelists.c
      /* Createing the lists for use in rules */
 Index: pkg-ossec/src/os_maild/maild.c
 ===================================================================
---- pkg-ossec.orig/src/os_maild/maild.c	2012-08-25 22:48:21.000000000 +0200
-+++ pkg-ossec/src/os_maild/maild.c	2012-08-26 13:09:05.000000000 +0200
+--- pkg-ossec.orig/src/os_maild/maild.c	2012-08-26 13:47:38.000000000 +0200
++++ pkg-ossec/src/os_maild/maild.c	2012-08-26 13:49:42.000000000 +0200
 @@ -31,6 +31,7 @@
  int main(int argc, char **argv)
  {
@@ -266,7 +293,7 @@ Index: pkg-ossec/src/os_maild/maild.c
 @@ -137,11 +144,13 @@
  
      
-     /* do_chroot */
+     /* chrooting */
 -    if(Privsep_Chroot(dir) < 0)
 -        ErrorExit(CHROOT_ERROR,ARGV0,dir);
 -
@@ -284,8 +311,8 @@ Index: pkg-ossec/src/os_maild/maild.c
      /* Changing user */        
 Index: pkg-ossec/src/addagent/main.c
 ===================================================================
---- pkg-ossec.orig/src/addagent/main.c	2012-08-25 23:00:38.000000000 +0200
-+++ pkg-ossec/src/addagent/main.c	2012-08-26 13:13:35.000000000 +0200
+--- pkg-ossec.orig/src/addagent/main.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/addagent/main.c	2012-08-26 13:49:01.000000000 +0200
 @@ -24,6 +24,8 @@
      printf("\t-l          List available agents.\n");
      printf("\t-e <id>     Extracts key for an agent (Manager only).\n");
@@ -353,8 +380,8 @@ Index: pkg-ossec/src/addagent/main.c
      #endif
 Index: pkg-ossec/src/monitord/main.c
 ===================================================================
---- pkg-ossec.orig/src/monitord/main.c	2012-08-25 22:58:45.000000000 +0200
-+++ pkg-ossec/src/monitord/main.c	2012-08-26 13:10:49.000000000 +0200
+--- pkg-ossec.orig/src/monitord/main.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/monitord/main.c	2012-08-26 13:50:33.000000000 +0200
 @@ -19,6 +19,7 @@
  int main(int argc, char **argv)
  {
@@ -388,7 +415,7 @@ Index: pkg-ossec/src/monitord/main.c
 @@ -169,11 +176,13 @@
  
      
-     /* do_chroot */
+     /* chrooting */
 -    if(Privsep_Chroot(dir) < 0)
 -        ErrorExit(CHROOT_ERROR,ARGV0,dir);
 -
@@ -406,8 +433,8 @@ Index: pkg-ossec/src/monitord/main.c
      /* Changing user */        
 Index: pkg-ossec/src/monitord/report.c
 ===================================================================
---- pkg-ossec.orig/src/monitord/report.c	2012-08-25 22:53:34.000000000 +0200
-+++ pkg-ossec/src/monitord/report.c	2012-08-26 13:10:17.000000000 +0200
+--- pkg-ossec.orig/src/monitord/report.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/monitord/report.c	2012-08-26 13:50:08.000000000 +0200
 @@ -24,6 +24,8 @@
      printf("\t-r <filter> <value> Show related entries.\n");
      printf("\t-n                  Creates a description for the report.\n");
@@ -450,7 +477,7 @@ Index: pkg-ossec/src/monitord/report.c
 @@ -173,11 +182,13 @@
  
      
-     /* do_chroot */
+     /* chrooting */
 -    if(Privsep_Chroot(dir) < 0)
 -        ErrorExit(CHROOT_ERROR,ARGV0,dir);
 -
@@ -460,7 +487,7 @@ Index: pkg-ossec/src/monitord/report.c
 +	    if(Privsep_Chroot(dir) < 0)
 +		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
 +	    nowChroot();
-+    } else {
++    } else { 
 +	    chdir(dir);
 +    }
  
@@ -468,8 +495,8 @@ Index: pkg-ossec/src/monitord/report.c
      /* Changing user */        
 Index: pkg-ossec/src/os_dbd/main.c
 ===================================================================
---- pkg-ossec.orig/src/os_dbd/main.c	2012-08-25 23:01:50.000000000 +0200
-+++ pkg-ossec/src/os_dbd/main.c	2012-08-26 13:14:01.000000000 +0200
+--- pkg-ossec.orig/src/os_dbd/main.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/os_dbd/main.c	2012-08-26 13:50:58.000000000 +0200
 @@ -55,6 +55,7 @@
  {
      int c, test_config = 0, run_foreground = 0;
@@ -503,7 +530,7 @@ Index: pkg-ossec/src/os_dbd/main.c
 @@ -215,12 +222,14 @@
  
      
-     /* do_chroot */
+     /* chrooting */
 -    if(Privsep_Chroot(dir) < 0)
 -        ErrorExit(CHROOT_ERROR,ARGV0,dir);
 -
@@ -515,7 +542,7 @@ Index: pkg-ossec/src/os_dbd/main.c
 +		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
 +	    /* Now on chroot */
 +	    nowChroot();
-+    } else {
++    } else { 
 +	    chdir(dir);
 +    }
  
@@ -523,8 +550,8 @@ Index: pkg-ossec/src/os_dbd/main.c
      /* Inserting server info into the db */
 Index: pkg-ossec/src/remoted/main.c
 ===================================================================
---- pkg-ossec.orig/src/remoted/main.c	2012-08-25 22:59:37.000000000 +0200
-+++ pkg-ossec/src/remoted/main.c	2012-08-26 13:13:01.000000000 +0200
+--- pkg-ossec.orig/src/remoted/main.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/remoted/main.c	2012-08-26 13:49:01.000000000 +0200
 @@ -20,6 +20,7 @@
      int i = 0,c = 0;
      int uid = 0, gid = 0;
@@ -581,8 +608,8 @@ Index: pkg-ossec/src/remoted/main.c
      /* Starting the signal manipulation */
 Index: pkg-ossec/src/util/agent_control.c
 ===================================================================
---- pkg-ossec.orig/src/util/agent_control.c	2012-08-25 23:02:58.000000000 +0200
-+++ pkg-ossec/src/util/agent_control.c	2012-08-26 13:14:37.000000000 +0200
+--- pkg-ossec.orig/src/util/agent_control.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/util/agent_control.c	2012-08-26 13:49:01.000000000 +0200
 @@ -34,6 +34,8 @@
      printf("\t-f <ar>     Used with -b, specifies which response to run.\n");
      printf("\t-L          List available active responses.\n");
@@ -648,8 +675,8 @@ Index: pkg-ossec/src/util/agent_control.c
      /* Setting the user */
 Index: pkg-ossec/src/util/rootcheck_control.c
 ===================================================================
---- pkg-ossec.orig/src/util/rootcheck_control.c	2012-08-25 23:07:53.000000000 +0200
-+++ pkg-ossec/src/util/rootcheck_control.c	2012-08-26 13:15:09.000000000 +0200
+--- pkg-ossec.orig/src/util/rootcheck_control.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/util/rootcheck_control.c	2012-08-26 13:49:01.000000000 +0200
 @@ -34,6 +34,8 @@
      printf("\t-q          Used with -i, prints all the outstanding issues.\n");
      printf("\t-L          Used with -i, prints the last scan.\n");
@@ -715,8 +742,8 @@ Index: pkg-ossec/src/util/rootcheck_control.c
      /* Setting the user */
 Index: pkg-ossec/src/util/clear_stats.c
 ===================================================================
---- pkg-ossec.orig/src/util/clear_stats.c	2012-08-25 23:12:25.000000000 +0200
-+++ pkg-ossec/src/util/clear_stats.c	2012-08-26 13:29:44.000000000 +0200
+--- pkg-ossec.orig/src/util/clear_stats.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/util/clear_stats.c	2012-08-26 13:49:01.000000000 +0200
 @@ -27,6 +27,8 @@
      printf("\t-a       Clear all the stats (averages).\n");
      printf("\t-d       Clear the daily averages.\n");
@@ -837,8 +864,8 @@ Index: pkg-ossec/src/util/clear_stats.c
      if(clear_daily)
 Index: pkg-ossec/src/util/syscheck_update.c
 ===================================================================
---- pkg-ossec.orig/src/util/syscheck_update.c	2012-08-25 23:09:36.000000000 +0200
-+++ pkg-ossec/src/util/syscheck_update.c	2012-08-26 13:29:07.000000000 +0200
+--- pkg-ossec.orig/src/util/syscheck_update.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/util/syscheck_update.c	2012-08-26 13:49:01.000000000 +0200
 @@ -27,6 +27,8 @@
      printf("\t-a       Update syscheck database for all agents.\n");
      printf("\t-u <id>  Update syscheck database for a specific agent.\n");
@@ -1128,8 +1155,8 @@ Index: pkg-ossec/src/util/syscheck_update.c
  
 Index: pkg-ossec/src/util/syscheck_control.c
 ===================================================================
---- pkg-ossec.orig/src/util/syscheck_control.c	2012-08-26 13:31:48.000000000 +0200
-+++ pkg-ossec/src/util/syscheck_control.c	2012-08-26 13:39:43.000000000 +0200
+--- pkg-ossec.orig/src/util/syscheck_control.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/util/syscheck_control.c	2012-08-26 13:49:01.000000000 +0200
 @@ -51,6 +51,7 @@
  
      int gid = 0;
@@ -1186,8 +1213,8 @@ Index: pkg-ossec/src/util/syscheck_control.c
      /* Setting the user */
 Index: pkg-ossec/src/client-agent/agentd.c
 ===================================================================
---- pkg-ossec.orig/src/client-agent/agentd.c	2012-08-26 13:36:47.000000000 +0200
-+++ pkg-ossec/src/client-agent/agentd.c	2012-08-26 13:39:26.000000000 +0200
+--- pkg-ossec.orig/src/client-agent/agentd.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/client-agent/agentd.c	2012-08-26 13:53:41.000000000 +0200
 @@ -24,7 +24,7 @@
  /* AgentdStart v0.2, 2005/11/09
   * Starts the agent daemon.
@@ -1200,7 +1227,7 @@ Index: pkg-ossec/src/client-agent/agentd.c
 @@ -48,11 +48,13 @@
  
      
-     /* do_chroot */
+     /* chrooting */
 -    if(Privsep_Chroot(dir) < 0)
 -        ErrorExit(CHROOT_ERROR, ARGV0, dir);
 -
@@ -1218,8 +1245,8 @@ Index: pkg-ossec/src/client-agent/agentd.c
      if(Privsep_SetUser(uid) < 0)
 Index: pkg-ossec/src/client-agent/agentd.h
 ===================================================================
---- pkg-ossec.orig/src/client-agent/agentd.h	2012-08-26 13:38:21.000000000 +0200
-+++ pkg-ossec/src/client-agent/agentd.h	2012-08-26 13:38:46.000000000 +0200
+--- pkg-ossec.orig/src/client-agent/agentd.h	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/client-agent/agentd.h	2012-08-26 13:49:01.000000000 +0200
 @@ -28,7 +28,7 @@
  int ClientConf(char *cfgfile);
  
@@ -1231,8 +1258,8 @@ Index: pkg-ossec/src/client-agent/agentd.h
  void *EventForward();
 Index: pkg-ossec/src/client-agent/main.c
 ===================================================================
---- pkg-ossec.orig/src/client-agent/main.c	2012-08-26 13:37:27.000000000 +0200
-+++ pkg-ossec/src/client-agent/main.c	2012-08-26 13:38:13.000000000 +0200
+--- pkg-ossec.orig/src/client-agent/main.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/client-agent/main.c	2012-08-26 13:49:01.000000000 +0200
 @@ -42,13 +42,14 @@
      
      int uid = 0;
@@ -1273,8 +1300,8 @@ Index: pkg-ossec/src/client-agent/main.c
      return(0);
 Index: pkg-ossec/src/util/list_agents.c
 ===================================================================
---- pkg-ossec.orig/src/util/list_agents.c	2012-08-26 13:32:08.000000000 +0200
-+++ pkg-ossec/src/util/list_agents.c	2012-08-26 13:35:58.000000000 +0200
+--- pkg-ossec.orig/src/util/list_agents.c	2012-08-26 13:47:39.000000000 +0200
++++ pkg-ossec/src/util/list_agents.c	2012-08-26 13:49:01.000000000 +0200
 @@ -25,6 +25,8 @@
      printf("\t-a    List all agents.\n");
      printf("\t-c    List the connected (active) agents.\n");
