@@ -77,7 +77,7 @@ do_test_rules()
 #
 do_start()
 {
-       [ -n "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
+       [ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
        ${DIRECTORY}/bin/ossec-control start $OUT 
        return $?
        # TODO REVIEW - Return
@@ -87,7 +87,7 @@ do_start()
 }
 
 do_stop() {
-       [ -n "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
+       [ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
        ${DIRECTORY}/bin/ossec-control stop $OUT
        return $?
        # TODO REVIEW - Return
@@ -98,7 +98,7 @@ do_stop() {
 }
 
 do_status() {
-       [ -n "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
+       [ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
        ${DIRECTORY}/bin/ossec-control status $OUT
        return $?
 }
@@ -112,7 +112,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    log_failure_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_failure_msg "review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
@@ -124,7 +124,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    log_failure_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_failure_msg "review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
@@ -155,7 +155,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    log_failure_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] &&  log_failure_msg "review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
