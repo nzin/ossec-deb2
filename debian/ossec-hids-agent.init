@@ -78,7 +78,7 @@ do_test_rules()
 do_start()
 {
        [ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
-       ${DIRECTORY}/bin/ossec-control start $OUT 
+       `${DIRECTORY}/bin/ossec-control start $OUT`
        return $?
        # TODO REVIEW - Return
        #   0 if daemon has been started
@@ -88,7 +88,7 @@ do_start()
 
 do_stop() {
        [ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
-       ${DIRECTORY}/bin/ossec-control stop $OUT
+       `${DIRECTORY}/bin/ossec-control stop $OUT`
        return $?
        # TODO REVIEW - Return
        #   0 if daemon has been stopped
@@ -99,7 +99,7 @@ do_stop() {
 
 do_status() {
        [ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
-       ${DIRECTORY}/bin/ossec-control status $OUT
+       `${DIRECTORY}/bin/ossec-control status $OUT`
        return $?
 }
 
