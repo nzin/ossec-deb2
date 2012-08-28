@@ -229,6 +229,7 @@ binary-arch: build install-arch
 	dh_installdocs -a 
 	dh_installexamples -a
 	dh_installdebconf -a
+	dh_installlogrotate -a
 	dh_installman -a 
 	dh_installchangelogs -a 
 	dh_link -a
@@ -249,6 +250,7 @@ binary-indep: build-indep install-indep
 	dh_installdocs -i
 	dh_installexamples -i
 	dh_installdebconf -i
+	dh_installlogrotate -i
 	dh_installman -i 
 	dh_installchangelogs -i
 	dh_link -i
