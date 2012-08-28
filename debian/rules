@@ -103,6 +103,7 @@ install-local:
 	cd debian/ossec-hids-local/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-local/var/ossec && ln -s ../../var/log/ossec/ logs
 	cd debian/ossec-hids-local/var/ossec && ln -s ../../etc/ossec/rules/ rules
+	cd debian/ossec-hids-local/var/ossec/var && ln -s ../../../var/ run
 	chmod -R 550 debian/ossec-hids-local/var/ossec
 	chmod 770 debian/ossec-hids-local/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-local/var/ossec/queue/ossec
@@ -147,6 +148,7 @@ install-server:
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../var/log/ossec/ logs
 	cd debian/ossec-hids-server/var/ossec && ln -s ../../etc/ossec/rules/ rules
+	cd debian/ossec-hids-local/var/ossec/var && ln -s ../../../var/ run
 	chmod -R 550 debian/ossec-hids-server/var/ossec
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-server/var/ossec/queue/ossec
@@ -190,7 +192,7 @@ install-agent:
 	cd debian/ossec-hids-agent/var/ossec && ln -s ../../usr/lib/ossec/ bin
 	cd debian/ossec-hids-agent/var/ossec && ln -s ../../etc/ossec/ etc
 	cd debian/ossec-hids-agent/var/ossec && ln -s ../../var/log/ossec/ logs
-	chmod 750 debian/ossec-hids-agent/var/log/ossec
+	cd debian/ossec-hids-local/var/ossec/var && ln -s ../../../var/ run
 	# TODO: Missing configuration files, extract from src/InstallAgent.sh
 	chmod -R 550 debian/ossec-hids-agent/var/ossec
 	chmod 750 debian/ossec-hids-agent/var/log/ossec

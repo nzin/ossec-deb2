@@ -16,3 +16,4 @@ var/ossec/queue/ossec
 var/ossec/queue/rids 
 var/ossec/queue/rootcheck
 var/ossec/queue/syscheck
+var/ossec/var/
