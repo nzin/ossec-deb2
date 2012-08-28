@@ -45,15 +45,6 @@ Other:
    questions in src/etc/templates/
 
 
-- Do not use src/init/ossec-server.sh in the init script but instead put the
-  relevant code init the init script
-
-  NOT for the moment - there is a lot of code in the control script and is
-    susceptible to change upstream.
-    For the time being it is patched to put the PIDfiles in the proper
-    location and to hardcode the pid directory
-
-
 DONE
 ----
 
@@ -85,4 +76,19 @@ DONE
 
 - [all] Generate + install the init.d file for the packages
     DONE 
+
+- Do not use src/init/ossec-server.sh in the init script but instead put the
+  relevant code in the init script
+
+  NOT for the moment - there is a lot of code in the control script and is
+    susceptible to change upstream.
+    For the time being it is patched to put the PIDfiles in the proper
+    location and to hardcode the pid directory
+
+  This makes the INIT script in Debian similar to the ones available 
+  in src/init: 
+	ossec-hids-aix.init      ossec-hids-rh.init       ossec-hids-suse.init
+	ossec-hids-gentoo.init   ossec-hids-solaris.init  
+  Although at the cost of having less contro.
+
 
