@@ -66,7 +66,7 @@ do_test_rules()
 {
 	echo | ${DIRECTORY}/ossec-logtest > /dev/null 2>&1;
 	if [ ! $? = 0 ]; then
-		log_failure_msg "the OSSEC ruleset is not valid, the daemon will not start. Review the output of ${DIRECTORY}/ossec-logtest"
+		log_progress_msg "the OSSEC ruleset is not valid, the daemon will not start. Review the output of ${DIRECTORY}/ossec-logtest"
 		return 1
 	fi
 	return 0
@@ -121,7 +121,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_failure_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg "review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
@@ -133,7 +133,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_failure_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg "review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
@@ -152,7 +152,7 @@ case "$1" in
 		;;
 	  *)
 	  	# Failed to stop
-		log_failure_msg "review the logfile $LOGFILE"
+		[ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_failure_msg "review the logfile $LOGFILE"
 		log_end_msg 1
 		;;
 	esac
@@ -164,7 +164,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] &&  log_failure_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] &&  log_progress_msg "review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
