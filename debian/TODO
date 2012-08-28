@@ -8,10 +8,6 @@ Packages:
   command line option) and check that the daemons can work fine without running
   in chroot (i.e. chroot_flag = 0)
 
-- Check if /var/ossec/etc/ossec-init.conf needs to be generated. This 
-  file needs to include the basic configuration for OSSEC including the
-  type of installation.
-
 - [all] Generate + install the init.d file for the packages
     DONE - for the server
 
@@ -66,5 +62,13 @@ DONE
   src/os_crypto/sha1/sha_locl.h
 
 - Move changes to debian/patches (if any).
-    Setup dpatch infrastructure.
+    Setup patch infrastructure.
+ 
+  DONE - uses quilt
 
+- Check if /var/ossec/etc/ossec-init.conf needs to be generated. This 
+  file needs to include the basic configuration for OSSEC including the
+  type of installation.
+
+  DONE - included in the packages based on upstream. Note: Date is fake, upstream
+   sets it on installation. Relevant?
