@@ -4,12 +4,8 @@ Things TODO for the OSSEC package:
 Packages:
 ---------
 
-- [all] Disable use of chroot() in the code (through #ifdef or a given
-  command line option) and check that the daemons can work fine without running
-  in chroot (i.e. chroot_flag = 0)
-
-- [all] Generate + install the init.d file for the packages
-    DONE - for the server
+- Do not use src/init/ossec-server.sh in the init script but instead put the
+  relevant code ini the init script
 
 - [agent] Configuration:
     + Adjust the configuration files (etc/ossec-agent.conf) to it them
@@ -27,8 +23,6 @@ Packages:
 
     + Configure email notifications and remote syslog in post-install (requires
       debconf prompt)
-
-
 
 
 Other:
@@ -72,3 +66,15 @@ DONE
 
   DONE - included in the packages based on upstream. Note: Date is fake, upstream
    sets it on installation. Relevant?
+
+- [all] Disable use of chroot() in the code (through #ifdef or a given
+  command line option) and check that the daemons can work fine without running
+  in chroot (i.e. chroot_flag = 0)
+
+   DONE - see patches in debian/patches/: 03-disable-chroot-default.patch,
+           02-add-chroot-option.patch    
+
+
+- [all] Generate + install the init.d file for the packages
+    DONE 
+
