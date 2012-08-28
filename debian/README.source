@@ -1,9 +1,9 @@
 ossec-hids for Debian
 ---------------------
 
-<this file describes information about the source package, see Debian policy
-manual section 4.14. You WILL either need to modify or delete this file>
+This package currently uses some patches that modify upstream sources to be
+built and installed in Debian systems, the infrastructure is in place to add
+these patches at built using quilt.
 
-
-
+Changes to the sources should be done using quilt, and patches should be stored at debian/patches.
 
