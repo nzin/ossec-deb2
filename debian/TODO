@@ -4,9 +4,6 @@ Things TODO for the OSSEC package:
 Packages:
 ---------
 
-- Do not use src/init/ossec-server.sh in the init script but instead put the
-  relevant code ini the init script
-
 - [agent] Configuration:
     + Adjust the configuration files (etc/ossec-agent.conf) to it them
     automatically useful upon installation 
@@ -24,6 +21,9 @@ Packages:
     + Configure email notifications and remote syslog in post-install (requires
       debconf prompt)
 
+- [all] Package purge:
+    - Remove the log files from the directory on purge
+    - Remove ossec users on purge
 
 Other:
 ------
@@ -44,7 +44,15 @@ Other:
    Note: Debconf messages (+translations) can be based on the template
    questions in src/etc/templates/
 
-- Remove ossec users on purge? (at least userm and userd)
+
+- Do not use src/init/ossec-server.sh in the init script but instead put the
+  relevant code init the init script
+
+  NOT for the moment - there is a lot of code in the control script and is
+    susceptible to change upstream.
+    For the time being it is patched to put the PIDfiles in the proper
+    location and to hardcode the pid directory
+
 
 DONE
 ----
