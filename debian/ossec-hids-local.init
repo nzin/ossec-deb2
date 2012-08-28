@@ -77,7 +77,10 @@ do_test_rules()
 #
 do_start()
 {
-	[ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
+	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
+		OUT=">>$LOGFILE 2>&1"
+		echo "`date -R` -- $0 start" >>$LOGFILE
+	fi
 	`eval "${DIRECTORY}/bin/ossec-control start $OUT"`
 	return $?
 	# TODO REVIEW - Return
@@ -87,7 +90,10 @@ do_start()
 }
 
 do_stop() {
-	[ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
+	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
+		OUT=">$LOGFILE 2>&1"
+		echo "`date -R` -- $0 stop" >>$LOGFILE
+	fi
 	`eval "${DIRECTORY}/bin/ossec-control stop $OUT"`
 	return $?
 	# TODO REVIEW - Return
@@ -98,7 +104,10 @@ do_stop() {
 }
 
 do_status() {
-	[ -z "$DEBIAN_SCRIPT_DEBUG" ] && OUT=">$LOGFILE 2>&1"
+	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
+		OUT=">$LOGFILE 2>&1"
+		echo "`date -R` -- $0 status" >>$LOGFILE
+	fi
 	`eval "${DIRECTORY}/bin/ossec-control status $OUT"`
 	return $?
 }
