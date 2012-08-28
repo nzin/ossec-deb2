@@ -4,3 +4,4 @@
 03-disable-chroot-default.patch
 04-control-lock-removal
 05-standard-pidfile-location
+06-control-return-status-value
