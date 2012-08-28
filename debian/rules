@@ -92,7 +92,7 @@ install-prep:
 	dh_installdirs -a
 
 install-local:
-	dh_installinit -a --name=ossec-hids-local
+	dh_installinit -a -pssec-hids-local
 	install -m 755 local-bin/ossec* debian/ossec-hids-local/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
@@ -136,7 +136,7 @@ install-local:
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-local/var/ossec/active-response/bin/
 
 install-server:
-	dh_installinit -a --name=ossec-hids-server
+	dh_installinit -a -possec-hids-server
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
@@ -180,7 +180,7 @@ install-server:
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-server/var/ossec/active-response/bin/
 
 install-agent:
-	dh_installinit -a --name=ossec-hids-agent
+	dh_installinit -a -possec-hids-agent
 	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/lib/ossec/
 	for file in agent-auth ossec-logcollector ossec-syscheckd ossec-execd ; do \
 		install -m 755 agent-bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
