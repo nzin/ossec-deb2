@@ -92,7 +92,6 @@ install-prep:
 	dh_installdirs -a
 
 install-local:
-
 	dh_installinit -a --name=ossec-hids-local
 	install -m 755 local-bin/ossec* debian/ossec-hids-local/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
@@ -124,6 +123,7 @@ install-local:
 	install -m 640 etc/internal_options.conf debian/ossec-hids-local/etc/ossec/
 	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-local/etc/ossec/shared/
 	install -m 640 etc/ossec-local.conf  debian/ossec-hids-local/etc/ossec/ossec.conf
+	install -m 640 debian/ossec-init.conf.local  debian/ossec-hids-local/etc/ossec-init.conf
 	cp -pr etc/rules/* debian/ossec-hids-local/etc/ossec/rules/
 	find debian/ossec-hids-local/etc/ossec/rules/ -type f -exec chmod a-x {} \;
 	chmod -R ug=rX,o= debian/ossec-hids-local/etc/ossec/rules/
@@ -136,7 +136,6 @@ install-local:
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-local/var/ossec/active-response/bin/
 
 install-server:
-
 	dh_installinit -a --name=ossec-hids-server
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
@@ -168,6 +167,7 @@ install-server:
 	install -m 640 etc/internal_options.conf debian/ossec-hids-server/etc/ossec/
 	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-server/etc/ossec/shared/
 	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
+	install -m 640 debian/ossec-init.conf.server  debian/ossec-hids-local/etc/ossec-init.conf
 	cp -pr etc/rules/* debian/ossec-hids-server/etc/ossec/rules/
 	find debian/ossec-hids-server/etc/ossec/rules/ -type f -exec chmod a-x {} \;
 	chmod -R ug=rX,o= debian/ossec-hids-server/etc/ossec/rules/
@@ -195,13 +195,13 @@ install-agent:
 	chmod -R 550 debian/ossec-hids-agent/var/ossec
 	chmod 750 debian/ossec-hids-agent/var/log/ossec
 	chmod -R 550 debian/ossec-hids-agent/etc/
-
 	install -m 754 src/init/ossec-client.sh debian/ossec-hids-agent/usr/lib/ossec/ossec-control 
 	install -m 750 src/agentlessd/scripts/* debian/ossec-hids-agent/var/ossec/agentless/
 	# configuration files:
 	install -m 640 etc/internal_options.conf debian/ossec-hids-agent/etc/ossec/
 	install -m 640 src/rootcheck/db/*.txt debian/ossec-hids-agent/etc/ossec/shared/
 	install -m 640 etc/ossec-agent.conf  debian/ossec-hids-agent/etc/ossec/ossec.conf
+	install -m 640 debian/ossec-init.conf.agent  debian/ossec-hids-local/etc/ossec-init.conf
 # These are only for local configuration, not provided upstream
 #	install -m 640 etc/local_internal_options.conf debian/ossec-hids-agent/etc/ossec/
 	# other scripts
