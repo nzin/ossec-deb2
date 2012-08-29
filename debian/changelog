@@ -11,4 +11,4 @@ ossec-hids (2.6-1) UNRELEASED; urgency=low
     - fix removal of pid files and locks
     - have the control script return the status through its exit value
 
- -- Javier Fernández-Sanguino <jfs@debian.org>  Wed, 29 Aug 2012 02:54:47
+ -- Javier Fernández-Sanguino <jfs@debian.org>  Wed, 29 Aug 2012 02:54:47 +0200
