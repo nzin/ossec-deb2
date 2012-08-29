@@ -38,7 +38,7 @@ Index: pkg-ossec/active-response/host-deny.sh
 Index: pkg-ossec/src/init/ossec-client.sh
 ===================================================================
 --- pkg-ossec.orig/src/init/ossec-client.sh	2012-08-29 00:50:30.000000000 +0200
-+++ pkg-ossec/src/init/ossec-client.sh	2012-08-29 02:04:52.000000000 +0200
++++ pkg-ossec/src/init/ossec-client.sh	2012-08-29 02:05:48.000000000 +0200
 @@ -51,9 +51,14 @@
      
      # Providing a lock.
@@ -57,7 +57,14 @@ Index: pkg-ossec/src/init/ossec-client.sh
              # Lock aquired (setting the pid)
              echo "$$" > ${LOCK_PID}
              return;
-@@ -81,14 +86,17 @@
+@@ -74,21 +79,23 @@
+         if [ "$i" = "${MAX_ITERATION}" ]; then
+             # Unlocking and executing
+             unlock;
+-            mkdir ${LOCK} > /dev/null 2>&1
+             echo "$$" > ${LOCK_PID}
+             return;
+         fi
      done
  }
  
@@ -81,7 +88,7 @@ Index: pkg-ossec/src/init/ossec-client.sh
 Index: pkg-ossec/src/init/ossec-local.sh
 ===================================================================
 --- pkg-ossec.orig/src/init/ossec-local.sh	2012-08-29 00:50:30.000000000 +0200
-+++ pkg-ossec/src/init/ossec-local.sh	2012-08-29 02:04:37.000000000 +0200
++++ pkg-ossec/src/init/ossec-local.sh	2012-08-29 02:05:38.000000000 +0200
 @@ -62,9 +62,14 @@
      
      # Providing a lock.
@@ -100,7 +107,15 @@ Index: pkg-ossec/src/init/ossec-local.sh
              # Lock aquired (setting the pid)
              echo "$$" > ${LOCK_PID}
              return;
-@@ -94,9 +99,13 @@
+@@ -85,7 +90,6 @@
+         if [ "$i" = "${MAX_ITERATION}" ]; then
+             # Unlocking and executing
+             unlock;
+-            mkdir ${LOCK} > /dev/null 2>&1
+             echo "$$" > ${LOCK_PID}
+             return;
+         fi
+@@ -94,9 +98,13 @@
  
  
  # Unlock function
@@ -118,7 +133,7 @@ Index: pkg-ossec/src/init/ossec-local.sh
 Index: pkg-ossec/src/init/ossec-server.sh
 ===================================================================
 --- pkg-ossec.orig/src/init/ossec-server.sh	2012-08-29 00:50:30.000000000 +0200
-+++ pkg-ossec/src/init/ossec-server.sh	2012-08-29 02:03:27.000000000 +0200
++++ pkg-ossec/src/init/ossec-server.sh	2012-08-29 02:05:44.000000000 +0200
 @@ -62,9 +62,14 @@
      
      # Providing a lock.
@@ -137,7 +152,15 @@ Index: pkg-ossec/src/init/ossec-server.sh
              # Lock aquired (setting the pid)
              echo "$$" > ${LOCK_PID}
              return;
-@@ -94,12 +99,15 @@
+@@ -85,7 +90,6 @@
+         if [ "$i" = "${MAX_ITERATION}" ]; then
+             # Unlocking and executing
+             unlock;
+-            mkdir ${LOCK} > /dev/null 2>&1
+             echo "$$" > ${LOCK_PID}
+             return;
+         fi
+@@ -94,12 +98,15 @@
  
  
  # Unlock function
