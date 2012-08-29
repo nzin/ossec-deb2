@@ -91,7 +91,7 @@ do_start()
 
 do_stop() {
 	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
-		OUT=">$LOGFILE 2>&1"
+		OUT=">>$LOGFILE 2>&1"
 		echo "`date -R` -- $0 stop" >>$LOGFILE
 	fi
 	`eval "${DIRECTORY}/bin/ossec-control stop $OUT"`
@@ -105,7 +105,7 @@ do_stop() {
 
 do_status() {
 	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
-		OUT=">$LOGFILE 2>&1"
+		OUT=">>$LOGFILE 2>&1"
 		echo "`date -R` -- $0 status" >>$LOGFILE
 	fi
 	`eval "${DIRECTORY}/bin/ossec-control status $OUT"`
