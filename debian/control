@@ -64,6 +64,7 @@ Description: OSSEC host-based Intrusion Detection System.
 
 
 Package: ossec-hids-doc
+Section: doc
 Architecture: all
 Description: documentation for ossec-hids.
  OSSEC is a full platform to monitor and control different computer
