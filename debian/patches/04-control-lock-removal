@@ -1,7 +1,7 @@
 Index: pkg-ossec/active-response/host-deny.sh
 ===================================================================
---- pkg-ossec.orig/active-response/host-deny.sh	2012-08-28 22:07:24.000000000 +0200
-+++ pkg-ossec/active-response/host-deny.sh	2012-08-28 23:22:29.000000000 +0200
+--- pkg-ossec.orig/active-response/host-deny.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/active-response/host-deny.sh	2012-08-29 02:03:05.000000000 +0200
 @@ -30,9 +30,14 @@
      i=0;
      # Providing a lock.
@@ -37,8 +37,8 @@ Index: pkg-ossec/active-response/host-deny.sh
  
 Index: pkg-ossec/src/init/ossec-client.sh
 ===================================================================
---- pkg-ossec.orig/src/init/ossec-client.sh	2012-08-28 23:10:02.000000000 +0200
-+++ pkg-ossec/src/init/ossec-client.sh	2012-08-28 23:13:51.000000000 +0200
+--- pkg-ossec.orig/src/init/ossec-client.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/src/init/ossec-client.sh	2012-08-29 02:04:52.000000000 +0200
 @@ -51,9 +51,14 @@
      
      # Providing a lock.
@@ -70,7 +70,7 @@ Index: pkg-ossec/src/init/ossec-client.sh
 -    rm -rf ${LOCK}
 +	[ ! -e "${LOCK}" ]  && return 0
 +	[ ! -d "${LOCK}" ]  && return 0
-+	[ -e "{$LOCK_PID}" ] &&  rm -f ${LOCK_PID}
++	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
  }
  
 -    
@@ -80,8 +80,8 @@ Index: pkg-ossec/src/init/ossec-client.sh
  {
 Index: pkg-ossec/src/init/ossec-local.sh
 ===================================================================
---- pkg-ossec.orig/src/init/ossec-local.sh	2012-08-28 23:11:56.000000000 +0200
-+++ pkg-ossec/src/init/ossec-local.sh	2012-08-28 23:13:00.000000000 +0200
+--- pkg-ossec.orig/src/init/ossec-local.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/src/init/ossec-local.sh	2012-08-29 02:04:37.000000000 +0200
 @@ -62,9 +62,14 @@
      
      # Providing a lock.
@@ -111,14 +111,14 @@ Index: pkg-ossec/src/init/ossec-local.sh
 -    rm -rf ${LOCK}
 +	[ ! -e "${LOCK}" ]  && return 0
 +	[ ! -d "${LOCK}" ]  && return 0
-+	[ -e "{$LOCK_PID}" ] &&  rm -f ${LOCK_PID}
++	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
  }
  
      
 Index: pkg-ossec/src/init/ossec-server.sh
 ===================================================================
---- pkg-ossec.orig/src/init/ossec-server.sh	2012-08-28 23:07:48.000000000 +0200
-+++ pkg-ossec/src/init/ossec-server.sh	2012-08-28 23:09:44.000000000 +0200
+--- pkg-ossec.orig/src/init/ossec-server.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/src/init/ossec-server.sh	2012-08-29 02:03:27.000000000 +0200
 @@ -62,9 +62,14 @@
      
      # Providing a lock.
@@ -148,7 +148,7 @@ Index: pkg-ossec/src/init/ossec-server.sh
 -    rm -rf ${LOCK}
 +	[ ! -e "${LOCK}" ]  && return 0
 +	[ ! -d "${LOCK}" ]  && return 0
-+	[ -e "{$LOCK_PID}" ] &&  rm -f ${LOCK_PID}
++	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
  }
  
 -    
