@@ -1,0 +1,9 @@
+# List of directories we symlink in the Debian package
+# these are in the format:
+# Original directory - Debian installation location
+/var/ossec/active-response  /usr/lib/ossec/active-response
+/var/ossec/bin  /usr/lib/ossec/
+/var/ossec/logs  /var/log/ossec/
+/var/ossec/rules  /etc/ossec/rules
+/var/ossec/etc  /etc/ossec/
+/var/ossec/var/run  /var/run/ossec-hids
