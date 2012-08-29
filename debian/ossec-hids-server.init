@@ -121,7 +121,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
@@ -133,7 +133,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
@@ -152,7 +152,7 @@ case "$1" in
 		;;
 	  *)
 	  	# Failed to stop
-		[ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg "review the logfile $LOGFILE"
+		[ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
 		log_end_msg 1
 		;;
 	esac
@@ -164,7 +164,7 @@ case "$1" in
         if  [ $myret -eq 0 ] ; then
             log_end_msg 0
         else
-	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg "review the logfile $LOGFILE"
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
             log_end_msg 1
         fi
         exit $myret
