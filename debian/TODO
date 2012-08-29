@@ -4,9 +4,14 @@ Things TODO for the OSSEC package:
 Packages:
 ---------
 
+- [all] Review ./src/headers/defs.h and the sources to make all access to make it 
+   possible to work with all files (pointed through chroot) when not chrooting.
+   This might require a new function that appends the DEFAULTDIR to a file
+   before accessing it the program is working without a chroot.
+
 - [agent] Configuration:
-    + Adjust the configuration files (etc/ossec-agent.conf) to it them
-    automatically useful upon installation 
+    + Adjust the configuration files (etc/ossec-agent.conf) to make it 
+    useful upon installation. 
 
     + Configure with server IP addresss in post-install (requires debconf prompt)
 
