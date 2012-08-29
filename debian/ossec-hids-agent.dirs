@@ -1,7 +1,17 @@
 usr/lib/ossec/
 usr/lib/ossec/active-response
+etc/ossec/rules
 etc/ossec/shared
 var/log/ossec
+var/ossec/.ssh
 var/ossec/active-response/
 var/ossec/agentless
+var/ossec/queue
+var/ossec/queue/agent-info 
+var/ossec/queue/agentless 
+var/ossec/queue/alerts 
+var/ossec/queue/diff
+var/ossec/queue/ossec/queue
+var/ossec/queue/rids 
+var/ossec/queue/syscheck
 var/ossec/var/
