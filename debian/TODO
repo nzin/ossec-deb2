@@ -29,6 +29,8 @@ Packages:
 - [all] Package purge:
     - Remove the log files from the directory on purge
     - Remove ossec users on purge
+    - Remove /var/ossec/queue/alerts/execq (possibly other queues too)
+
 
 Other:
 ------
