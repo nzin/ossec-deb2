@@ -136,6 +136,11 @@ install-local:
 	# other scripts
 	install -m 750 active-response/*.sh debian/ossec-hids-local/usr/lib/ossec/active-response
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-local/usr/lib/ossec/active-response
+	# information and scripts for chroot
+	install -m 644 debian/ossec-orig-target debian/ossec-hids-local/var/ossec/.ossec-orig-target
+	install -m 755 debian/ossec-hids-update-chroot debian/ossec-hids-local/usr/lib/ossec/
+	install -m 755 debian/ossec-hids-create-chroot debian/ossec-hids-local/usr/lib/ossec/
+	
 
 install-server:
 	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
@@ -181,6 +186,10 @@ install-server:
 	# other scripts
 	install -m 750 active-response/*.sh debian/ossec-hids-server/usr/lib/ossec/active-response/
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-server/usr/lib/ossec/active-response/
+	# information and scripts for chroot
+	install -m 644 debian/ossec-orig-target debian/ossec-hids-server/var/ossec/.ossec-orig-target
+	install -m 755 debian/ossec-hids-update-chroot debian/ossec-hids-server/usr/lib/ossec/
+	install -m 755 debian/ossec-hids-create-chroot debian/ossec-hids-server/usr/lib/ossec/
 
 install-agent:
 	install -m 755 agent-bin/ossec-agentd debian/ossec-hids-agent/usr/lib/ossec/
@@ -210,6 +219,10 @@ install-agent:
 	# other scripts
 	install -m 750 active-response/*.sh debian/ossec-hids-agent/usr/lib/ossec/active-response/
 	install -m 750 active-response/firewalls/*.sh debian/ossec-hids-agent/usr/lib/ossec/active-response/
+	# information and scripts for chroot
+	install -m 644 debian/ossec-orig-target debian/ossec-hids-agent/var/ossec/.ossec-orig-target
+	install -m 755 debian/ossec-hids-update-chroot debian/ossec-hids-agent/usr/lib/ossec/
+	install -m 755 debian/ossec-hids-create-chroot debian/ossec-hids-/usr/lib/ossec/
 
 install-arch: build install-prep install-server install-local install-agent
 
