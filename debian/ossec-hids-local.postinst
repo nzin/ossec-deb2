@@ -69,6 +69,7 @@ case "$1" in
         cat <<EOF
 queue/alerts     $OSSECUSER:$OSSECGROUP 770
 queue/ossec      $OSSECUSER:$OSSECGROUP 770
+queue/ossec/queue      $OSSECUSER:$OSSECGROUP 770
 queue/fts        $OSSECUSER:$OSSECGROUP 750
 queue/syscheck   $OSSECUSER:$OSSECGROUP 750
 queue/rootcheck  $OSSECUSER:$OSSECGROUP 750
@@ -80,17 +81,17 @@ stats            $OSSECUSER:$OSSECGROUP 750
 EOF
         } | while read dir owner mode; do
                 if ! echo "$dir" | grep -q "^/" ; then
-                    location=${HOMEDIR}$dir
+                    location=${HOMEDIR}/${dir}
                 else
                     location=$dir
                 fi
-	        if ! dpkg-statoverride --list ${HOMEDIR}$dir  >/dev/null
+	        if ! dpkg-statoverride --list ${HOMEDIR}/${dir}  >/dev/null
                 then
-                    if [ -e "${HOMEDIR}$dir" ] ; then
-                        chown $owner ${HOMEDIR}$dir
-                        chmod $mode ${HOMEDIR}$dir
+                    if [ -e "${HOMEDIR}/${dir}" ] ; then
+                        chown $owner ${HOMEDIR}/${dir}
+                        chmod $mode ${HOMEDIR}/${dir}
                     else
-                        echo "ERROR: Could not find ${HOMEDIR}$dir, please send a bug the maintainer of ossec" >&2
+                        echo "ERROR: Could not find ${HOMEDIR}/${dir}, please send a bug the maintainer of ossec" >&2
                     fi
                 fi
         done

@@ -106,6 +106,7 @@ install-local:
 	chmod -R 550 debian/ossec-hids-local/var/ossec
 	chmod 770 debian/ossec-hids-local/var/ossec/queue/alerts
 	chmod 770 debian/ossec-hids-local/var/ossec/queue/ossec
+	chmod 770 debian/ossec-hids-local/var/ossec/queue/ossec/queue
 	chmod 750 debian/ossec-hids-local/var/ossec/queue/fts
 	chmod 750 debian/ossec-hids-local/var/ossec/queue/syscheck
 	chmod 750 debian/ossec-hids-local/var/ossec/queue/rootcheck
