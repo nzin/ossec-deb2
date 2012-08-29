@@ -4,6 +4,16 @@ Things TODO for the OSSEC package:
 Packages:
 ---------
 
+- [all] Make it possible (through debconf?) to use a chroot environment or not.
+  If using a chroot environment the init.d script should create the chroot (or
+  update it) before starting the daemon
+
+  The following files could be used for this:
+     debian/ossec-hids-create-chroot  debian/ossec-hids-update-chroot
+
+  Note: Review how to add the command line option as argument to the daemons
+  through the control script 
+
 - [all] Review ./src/headers/defs.h and the sources to make all access to make it 
    possible to work with all files (pointed through chroot) when not chrooting.
    This might require a new function that appends the DEFAULTDIR to a file
