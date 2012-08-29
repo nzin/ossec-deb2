@@ -40,17 +40,17 @@ case "$1" in
 	usermod -c "Ossec IDS" \
 		-d $HOMEDIR \
 		-g $OSSECGROUP \
-		$OSSECUSER >/dev/null
+		$OSSECUSER >/dev/null  2>&1 || true
 
 	usermod -c "Ossec IDS Email alerter" \
 		-d $HOMEDIR \
 		-g $OSSECGROUP \
-		${OSSECUSER}m >/dev/null
+		${OSSECUSER}m >/dev/null  2>&1 || true
 
 	usermod -c "Ossec IDS Remote Commmunication" \
 		-d $HOMEDIR \
 		-g $OSSECGROUP \
-		${OSSECUSER}r >/dev/null
+		${OSSECUSER}r >/dev/null  2>&1 || true
 
     ;;
     configure)
