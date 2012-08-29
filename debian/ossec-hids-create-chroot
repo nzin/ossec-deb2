@@ -1,0 +1,113 @@
+#!/bin/sh
+# 
+# Script to create a chroot for OSSEC using as a basis
+# the contents of the DIRECTORY definition in /etc/ossec-init.conf
+#
+# (c) 2012 Javier Fernandez-Sanguino <jfs@debian.org>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+
+
+INSTALLDIR=/var/ossec   # Directory where OSSEC is installed
+CHROOTDIR=/var/chroot/ossec # Directory where we create the chroot
+ORIG_TARGET_FILE=.ossec-orig-target # File that describes the original directory and the symlinks made
+verbose="no"
+changed_chroot="no"
+
+sanity_check() {
+	if [ -e "$CHROOTDIR" ] ; then
+		echo "ERROR: The chroot directory ($CHROOTDIR) already exists."
+		echo "ERROR: If you want to update the contents use the ossec-hids-update-chroot script instead."
+		echo "To recreate the chroot, remove the directory manually and rerun the script."
+		exit 1
+	fi
+	if [ ! -e "$INSTALLDIR" ] ; then
+		echo "ERROR: The OSSEC installation directory ($INSTALLDIR) does not exist."
+		echo "Is one of the ossec-hids packages installed?"
+		exit 1
+	fi
+	if [ ! -e "${INSTALLDIR}/${ORIG_TARGET_FILE}" ] ; then
+		echo "ERROR: Cannot find the ${ORIG_TARGET_FILE} in ${INSTALLDIR}."
+		exit 1
+	fi
+}
+
+parse_args() {
+	while [ x"$1" != x ]; do
+		case $1 in
+			-h) 
+				helpmsg
+				exit 0;;
+			-v) 
+				verbose=yes
+				shift
+				continue;;
+			-*)
+				echo "WARNING: Unknown option $1"
+				shift
+				continue;;
+			*)
+				if [ "$changed_chroot" = "no" ]; then
+					CHROOTDIR=$1 # Argument changes the chroot directory
+					changed_chroot=yes
+					shift
+				else 
+					echo "ERROR: Too many arguments"
+					exit 1
+				fi
+				continue;;
+		esac
+	done	
+
+}
+
+helpmsg() {
+
+	echo "Usage: $0 [chroot_directory]"
+	echo "Creates a chroot directory for OSSEC."
+	echo "By default the directory is created in $CHROOTDIR."
+}
+
+parse_args $*
+sanity_check
+
+# Chreate the chroot directory
+[ "$verbose" = "yes" ] && echo "INFO: Creating chroot directory"
+mkdir -p $CHROOTDIR
+if [ ! -e "$CHROOTDIR" ] ; then
+	echo "ERROR: Could not create the chroot directory ($CHROOTDIR)"
+	exit 1
+fi
+
+# Now copy the contents of DIRECTORY
+cpargs=""
+[ "$verbose" = "yes" ] && echo "INFO: Copying the contents into $CHROOTDIR"
+[ "$verbose" = "yes" ] && cpargs="-v"
+cp -aPu $cpargs $INSTALLDIR/* $CHROOTDIR
+
+# Now go through the symlinks and copy the contents of the directories instead
+cat "${INSTALLDIR}/${ORIG_TARGET_FILE}" |
+grep -v ^# |
+while read linkdir targetdir; do
+	chrootlinkdir=`echo $linkdir | sed -e "s|^$INSTALLDIR|$CHROOTDIR|"`
+	if [ ! -L "$chrootlinkdir" ] ; then
+		echo "WARNING: $chrootlinkdir is not a symbolic link, not touching it" 
+	else
+		[ "$verbose" = "yes" ] && echo "INFO: Recreating $chrootlinkdir and copying files from $targetdir"
+		rm $chrootlinkdir # Remove symbolic link
+		mkdir -p $chrootlinkdir  # Recreate the directory
+		# only copy if there are any files there
+		if [ -n "`ls  $targetdir/* 2>/dev/null`" ] ; then
+			cp -aPu $cpargs $targetdir/* $chrootlinkdir
+		fi
+	fi
+done
+
+echo "A chroot for OSSEC has been created in $CHROOTDIR."
+echo "You have to manually adjust the configuration file /etc/ossec-init.conf to use it."
+
+exit 0
+
