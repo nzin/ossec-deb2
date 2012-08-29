@@ -1,0 +1,13 @@
+Index: pkg-ossec/src/headers/defs.h
+===================================================================
+--- pkg-ossec.orig/src/headers/defs.h	2012-08-29 02:36:15.000000000 +0200
++++ pkg-ossec/src/headers/defs.h	2012-08-29 02:41:16.000000000 +0200
+@@ -250,6 +250,8 @@
+     #define AGENTLESSDIRPATH    DEFAULTDIR AGENTLESSDIR
+     #define AGENTLESSPASSPATH   DEFAULTDIR AGENTLESSPASS
+     #define AGENTLESS_ENTRYDIRPATH  DEFAULTDIR AGENTLESS_ENTRYDIR
++    #define XML_DECODERPATH     DEFAULTDIR XML_DECODER
++    #define XML_LDECODERPATH    DEFAULTDIR XML_LDECODER 
+ #else
+     #define DEFAULTARPATH   "shared/ar.conf"
+     #define AR_BINDIRPATH   "active-response/bin"
