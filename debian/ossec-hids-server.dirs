@@ -1,9 +1,10 @@
 usr/lib/ossec/
+usr/lib/ossec/active-response
 etc/ossec/rules
 etc/ossec/shared
 var/log/ossec
 var/ossec/.ssh
-var/ossec/active-response/bin
+var/ossec/active-response
 var/ossec/agentless
 var/ossec/queue
 var/ossec/stats
