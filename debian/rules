@@ -91,6 +91,8 @@ install-prep:
 	dh_prep -a
 	dh_installdirs -a
 
+# TODO - simplify the install scripts having the common code in a single
+# install-common target that uses a parameter (PACKAGE) to set the DESTDIR
 install-local:
 	install -m 755 local-bin/ossec* debian/ossec-hids-local/usr/lib/ossec
 	for file in manage_agents syscheck_update verify-agent-conf  \
