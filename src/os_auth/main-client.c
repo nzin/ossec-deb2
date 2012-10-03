@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/os_auth/main-client.c, 2012/02/07 dcid Exp $
+ */
 
 /* Copyright (C) 2010 Trend Micro Inc.
  * All rights reserved.
@@ -7,6 +8,21 @@
  * and/or modify it under the terms of the GNU General Public
  * License (version 2) as published by the FSF - Free Software
  * Foundation
+ *
+ * In addition, as a special exception, the copyright holders give
+ * permission to link the code of portions of this program with the
+ * OpenSSL library under certain conditions as described in each
+ * individual source file, and distribute linked combinations
+ * including the two.
+ *
+ * You must obey the GNU General Public License in all respects
+ * for all of the code used other than OpenSSL.  If you modify
+ * file(s) with this exception, you may extend this exception to your
+ * version of the file(s), but you are not obligated to do so.  If you
+ * do not wish to do so, delete this exception statement from your
+ * version.  If you delete this exception statement from all source
+ * files in the program, then also delete it here.
+ *
  */
 
 #include "shared.h"
@@ -26,7 +42,6 @@ int main()
 #include "auth.h"
 
 
-#define TEST "GET / HTTP/1.0\r\n\r\n\r\n"
 
 void report_help()
 {
@@ -45,7 +60,11 @@ void report_help()
 int main(int argc, char **argv)
 {
     int c, test_config = 0;
-    int gid = 0, sock = 0, port = 1515, ret = 0;
+    #ifndef WIN32
+    int gid = 0;
+    #endif
+
+    int sock = 0, port = 1515, ret = 0;
     char *dir  = DEFAULTDIR;
     char *user = USER;
     char *group = GROUPGLOBAL;
@@ -129,6 +148,7 @@ int main(int argc, char **argv)
     debug1(STARTED_MSG,ARGV0);
 
 
+    #ifndef WIN32
     /* Check if the user/group given are valid */
     gid = Privsep_GetGroup(group);
     if(gid < 0)
@@ -150,6 +170,7 @@ int main(int argc, char **argv)
     /* Creating PID files */
     if(CreatePID(ARGV0, getpid()) < 0)
         ErrorExit(PID_ERROR,ARGV0);
+    #endif
 
     
     /* Start up message */
@@ -250,7 +271,7 @@ int main(int argc, char **argv)
                     if(!tmpstr)
                     {
                         printf("ERROR: Invalid key received. Closing connection.\n");
-                        exit(0);
+                        exit(1);
                     }
                     *tmpstr = '\0';
                     entry = OS_StrBreak(' ', key, 4); 
@@ -258,7 +279,7 @@ int main(int argc, char **argv)
                        !OS_IsValidName(entry[2]) || !OS_IsValidName(entry[3]))
                     {
                         printf("ERROR: Invalid key received (2). Closing connection.\n");
-                        exit(0);
+                        exit(1);
                     }
 
                     {
@@ -267,7 +288,7 @@ int main(int argc, char **argv)
                         if(!fp)
                         {
                             printf("ERROR: Unable to open key file: %s", KEYSFILE_PATH);
-                            exit(0);
+                            exit(1);
                         }
                         fprintf(fp, "%s\n", key);
                         fclose(fp);
@@ -278,7 +299,7 @@ int main(int argc, char **argv)
             case SSL_ERROR_ZERO_RETURN:
             case SSL_ERROR_SYSCALL:
                 printf("INFO: Connection closed.\n");
-                exit(1);
+                exit(0);
                 break;
             default:
                 printf("ERROR: SSL read (unable to receive message)\n");

@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/analysisd/decoders/syscheck.c, 2012/02/07 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -153,7 +154,7 @@ void DB_SetCompleted(Eventinfo *lf)
     int i = 0;
 
     /* Finding file pointer */
-    while(sdb.agent_ips[i] != NULL)
+    while(sdb.agent_ips[i] != NULL &&  i < MAX_AGENTS)
     {
         if(strcmp(sdb.agent_ips[i], lf->location) == 0)
         {
@@ -184,7 +185,7 @@ FILE *DB_File(char *agent, int *agent_id)
     int i = 0;
 
     /* Finding file pointer */
-    while(sdb.agent_ips[i] != NULL)
+    while(sdb.agent_ips[i] != NULL  &&  i < MAX_AGENTS)
     {
         if(strcmp(sdb.agent_ips[i], agent) == 0)
         {
@@ -198,6 +199,12 @@ FILE *DB_File(char *agent, int *agent_id)
     }
 
     /* If here, our agent wasn't found */
+    if (i == MAX_AGENTS)
+    {
+        merror("%s: Unable to open integrity file. Increase MAX_AGENTS.",ARGV0);
+        return(NULL);
+    }
+
     os_strdup(agent, sdb.agent_ips[i]);
 
 
@@ -701,6 +708,7 @@ int DB_Search(char *f_name, char *c_sum, Eventinfo *lf)
     
     fprintf(fp,"+++%s !%d %s\n", c_sum, lf->time, f_name);
 
+    fflush(fp);
 
     /* Alert if configured to notify on new files */
     if((Config.syscheck_alert_new == 1) && (DB_IsCompleted(agent_id)))

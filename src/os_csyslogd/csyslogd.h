@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/os_csyslogd/csyslogd.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -8,7 +9,7 @@
  * License (version 2) as published by the FSF - Free Software
  * Foundation.
  *
- * License details at the LICENSE file included with OSSEC or 
+ * License details at the LICENSE file included with OSSEC or
  * online at: http://www.ossec.net/en/licensing.html
  */
 
@@ -34,6 +35,10 @@ int OS_Alert_SendSyslog(alert_data *al_data, SyslogConfig *syslog_config);
 /* Database inserting main function */
 void OS_CSyslogD(SyslogConfig **syslog_config);
 
+/* Conditional Field Formatting */
+int field_add_int(char *dest, int size, const char *format, const int value );
+int field_add_string(char *dest, int size, const char *format, const char *value );
+int field_add_truncated(char *dest, int size, const char *format, const char *value,  int fmt_size );
 
 
 /** Global vars **/

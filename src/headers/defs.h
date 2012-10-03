@@ -1,6 +1,7 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/headers/defs.h, 2012/08/11 dcid Exp $
+ */
 
-/* Copyright (C) 2009 Trend Micro Inc.
+/* Copyright (C) 2009-2012 Trend Micro Inc.
  * All rights reserved.
  *
  * This program is a free software; you can redistribute it
@@ -20,6 +21,11 @@
 #ifndef __OS_HEADERS
 #define __OS_HEADERS
 
+
+/* TRUE / FALSE definitions 
+ */
+#define TRUE            1
+#define FALSE           0
 
 /* Read / Write definitions
  */
@@ -46,7 +52,7 @@
 
 /* Some Global names */
 #define __name      "OSSEC HIDS"
-#define __version   "v2.6"
+#define __version   "v2.7-beta1"
 #define __author    "Trend Micro Inc."
 #define __contact   "contact@ossec.net"
 #define __site      "http://www.ossec.net"

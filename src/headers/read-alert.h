@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/headers/read-alert.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -36,7 +37,15 @@ typedef struct _alert_data
     int dstport;
     char *user;
     char *filename;
+    char *old_md5;
+    char *new_md5;
+    char *old_sha1;
+    char *new_sha1;
     char **log;
+#ifdef GEOIP
+    char *geoipdatasrc;
+    char *geoipdatadst;
+#endif
 }alert_data;
 
 

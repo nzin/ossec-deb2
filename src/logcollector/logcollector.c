@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/logcollector/logcollector.c, 2012/03/28 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -191,6 +192,12 @@ void LogCollectorStart()
             {
                 logff[i].read = (void *)read_snortfull;
             }
+            #ifndef WIN32 
+            if(strcmp("ossecalert", logff[i].logformat) == 0)
+            {
+                logff[i].read = (void *)read_ossecalert;
+            }
+            #endif 
             else if(strcmp("nmapg", logff[i].logformat) == 0)
             {
                 logff[i].read = (void *)read_nmapg;

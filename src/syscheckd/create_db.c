@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/syscheckd/create_db.c, 2011/11/02 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -122,9 +123,9 @@ int read_file(char *file_name, int opts, OSMatch *restriction)
     
     /* No S_ISLNK on windows */
     #ifdef WIN32
-    else if(S_ISREG(statbuf.st_mode))
+    if(S_ISREG(statbuf.st_mode))
     #else
-    else if(S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))
+    if(S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))
     #endif    
     {
         os_md5 mf_sum;
@@ -152,7 +153,7 @@ int read_file(char *file_name, int opts, OSMatch *restriction)
                 {
                     if(S_ISREG(statbuf_lnk.st_mode))
                     {
-                        if(OS_MD5_SHA1_File(file_name, mf_sum, sf_sum) < 0)
+                        if(OS_MD5_SHA1_File(file_name, syscheck.prefilter_cmd, mf_sum, sf_sum) < 0)
                         {
                             strncpy(mf_sum, "xxx", 4);
                             strncpy(sf_sum, "xxx", 4);
@@ -160,10 +161,10 @@ int read_file(char *file_name, int opts, OSMatch *restriction)
                     }
                 }
             }
-            else if(OS_MD5_SHA1_File(file_name, mf_sum, sf_sum) < 0)
+            else if(OS_MD5_SHA1_File(file_name, syscheck.prefilter_cmd, mf_sum, sf_sum) < 0)
 
             #else
-            if(OS_MD5_SHA1_File(file_name, mf_sum, sf_sum) < 0)
+            if(OS_MD5_SHA1_File(file_name, syscheck.prefilter_cmd, mf_sum, sf_sum) < 0)
             #endif
             
             {
@@ -225,7 +226,7 @@ int read_file(char *file_name, int opts, OSMatch *restriction)
 
 
             /* Sending the new checksum to the analysis server */
-            alert_msg[912 +1] = '\0';
+            alert_msg[912] = '\0';
             snprintf(alert_msg, 912, "%d:%d:%d:%d:%s:%s %s", 
                      opts & CHECK_SIZE?(int)statbuf.st_size:0,
                      opts & CHECK_PERM?(int)statbuf.st_mode:0,
@@ -312,7 +313,7 @@ int read_dir(char *dir_name, int opts, OSMatch *restriction)
     char f_name[PATH_MAX +2]; 
     DIR *dp;
     
-	struct dirent *entry;
+    struct dirent *entry;
 
     f_name[PATH_MAX +1] = '\0';
 	
@@ -328,7 +329,7 @@ int read_dir(char *dir_name, int opts, OSMatch *restriction)
     
     /* Opening the directory given */
     dp = opendir(dir_name);
-	if(!dp)
+    if(!dp)
     {
         if(errno == ENOTDIR)
         {
@@ -406,6 +407,8 @@ int read_dir(char *dir_name, int opts, OSMatch *restriction)
         *s_name = '\0';
         
         strncpy(s_name, entry->d_name, PATH_MAX - dir_size -2);
+
+        /* Check integrity of the file */
         read_file(f_name, opts, restriction);
     }
 
@@ -480,6 +483,10 @@ int create_db()
         i++;
     }while(syscheck.dir[i] != NULL);
 
+    #if defined (USEINOTIFY) || defined (WIN32)
+    if(syscheck.realtime && (syscheck.realtime->fd >= 0))
+        verbose("%s: INFO: Real time file monitoring started.", ARGV0);
+    #endif
     
     merror("%s: INFO: Finished creating syscheck database (pre-scan "
            "completed).", ARGV0);

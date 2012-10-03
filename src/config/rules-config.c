@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/config/rules-config.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -12,7 +13,7 @@
 /* Functions to handle the configuration files
  */
 
-
+#include "config.h"
 #include "shared.h"
 #include "global-config.h"
 
@@ -67,6 +68,12 @@ int Read_Rules(XML_NODE node, void *configp, void *mailp)
      
     Config = (_Config *)configp;
      
+    /* initialise OSRegex */
+    regex.patterns = NULL;
+    regex.prts_closure = NULL;
+    regex.prts_str = NULL;
+    regex.sub_strings = NULL;
+
     while(node[i])
     {
         if(!node[i]->element)
@@ -196,6 +203,7 @@ int Read_Rules(XML_NODE node, void *configp, void *mailp)
                         if(!Config->decoders)
                         {
                             merror(MEM_ERROR, ARGV0);
+                            OSRegex_FreePattern(&regex);
                             return(-1);
                         }
 
@@ -273,6 +281,7 @@ int Read_Rules(XML_NODE node, void *configp, void *mailp)
                         if(!Config->includes)
                         {
                             merror(MEM_ERROR, ARGV0);
+                            OSRegex_FreePattern(&regex);
                             return(-1);
                         }
 
@@ -294,6 +303,7 @@ int Read_Rules(XML_NODE node, void *configp, void *mailp)
         else
         {
             merror(XML_INVELEM, ARGV0, node[i]->element);
+            OSRegex_FreePattern(&regex);
             return(OS_INVALID);
         }
         i++;
