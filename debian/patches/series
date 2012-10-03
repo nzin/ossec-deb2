@@ -1,2 +1,7 @@
-00-disable-openSSL.patch
+00-openSSL-license-exception.patch
 01-avoid_internal_zlib.patch
+02-add-chroot-option.patch
+03-disable-chroot-default.patch
+04-control-lock-removal
+05-standard-pidfile-location
+06-control-return-status-value

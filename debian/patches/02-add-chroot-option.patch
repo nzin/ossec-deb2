@@ -1,0 +1,1431 @@
+Description: Add chroot option
+ This patch introduces two new options to all of OSSEC programs.
+ The option '-C' enables chroot (default in OSSEC upstream) of the
+ program and the option '-N' disables use of chroot. When the latter
+ option is used the program will just change its main directory
+ to OSSEC's directory instead.
+ .
+ This makes it possible to provide a package in Debian without the
+ chrooting enabled (which is disabled in another separate patch to
+ make it possible to integrate this upstream).
+ . 
+ For the patch to work some of the programs have been modified
+ to make use of the getop() functionality. Previously, some programs
+ parsed command line arguments 'by hand'.
+ . 
+ The person named in the Author field signed this changelog entry.
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Origin: debian
+Forwarded: not-yet
+Reviewed-By: 
+Last-Update: 2012-08-26
+
+
+Index: pkg-ossec/src/os_auth/main-server.c
+===================================================================
+--- pkg-ossec.orig/src/os_auth/main-server.c	2012-08-30 01:39:37.000000000 +0200
++++ pkg-ossec/src/os_auth/main-server.c	2012-08-30 01:55:42.000000000 +0200
+@@ -48,6 +48,7 @@
+     FILE *fp;
+     int c, test_config = 0;
+     int gid = 0, client_sock = 0, sock = 0, port = 1515, ret = 0;
++    int do_chroot = 1;
+     char *dir  = DEFAULTDIR;
+     char *user = USER;
+     char *group = GROUPGLOBAL;
+@@ -67,7 +68,7 @@
+     /* Setting the name */
+     OS_SetName(ARGV0);
+         
+-    while((c = getopt(argc, argv, "Vdhu:g:D:c:m:p:")) != -1)
++    while((c = getopt(argc, argv, "Vdhu:g:D:c:m:p:NC")) != -1)
+     {
+         switch(c){
+             case 'V':
+@@ -110,6 +111,12 @@
+                     ErrorExit("%s: Invalid port: %s", ARGV0, optarg);
+                 }
+                 break;
++            case 'N': /* Disable the use of chroot */
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 report_help();
+                 break;
+@@ -138,8 +145,13 @@
+ 
+     
+     /* chrooting */
+-    chdir(dir);
+-
++    if (do_chroot) 
++	    chdir(dir);
++    else
++	    chdir(dir);
++    /* Note: there is no difference with chrooting or not in the main-server as
++     * upstream does not yet make one, the code is there to make it possible if
++     * upstream changes the behaviour */
+ 
+ 
+     /* Signal manipulation */
+Index: pkg-ossec/src/os_csyslogd/main.c
+===================================================================
+--- pkg-ossec.orig/src/os_csyslogd/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/os_csyslogd/main.c	2012-08-30 01:55:41.000000000 +0200
+@@ -20,6 +20,7 @@
+ int main(int argc, char **argv)
+ {
+     int c, test_config = 0,run_foreground = 0;
++    int do_chroot = 1;
+     int uid = 0,gid = 0;
+ 
+     /* Using MAILUSER (read only) */
+@@ -37,7 +38,7 @@
+     OS_SetName(ARGV0);
+         
+ 
+-    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1){
++    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:NC")) != -1){
+         switch(c){
+             case 'V':
+                 print_version();
+@@ -76,6 +77,12 @@
+             case 't':
+                 test_config = 1;    
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 help(ARGV0);
+                 break;
+@@ -146,14 +153,15 @@
+     if(Privsep_SetGroup(gid) < 0)
+         ErrorExit(SETGID_ERROR,ARGV0,group);
+ 
+-    
+     /* chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-
+-    /* Now on chroot */
+-    nowChroot();
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    /* Now on chroot */
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+ 
+ 
+     
+Index: pkg-ossec/src/shared/help.c
+===================================================================
+--- pkg-ossec.orig/src/shared/help.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/shared/help.c	2012-08-30 01:55:41.000000000 +0200
+@@ -34,7 +34,9 @@
+     print_out("    -u <user>   Run as 'user'");
+     print_out("    -g <group>  Run as 'group'");
+     print_out("    -c <config> Read the 'config' file");
+-    print_out("    -D <dir>    Chroot to 'dir'");
++    print_out("    -D <dir>    Chroot or change working directory to 'dir'");
++    print_out("    -N          Do not chroot");
++    print_out("    -C          Chroot the program (default behaviour)");
+     print_out(" ");
+     exit(1);
+ }
+Index: pkg-ossec/src/analysisd/analysisd.c
+===================================================================
+--- pkg-ossec.orig/src/analysisd/analysisd.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/analysisd/analysisd.c	2012-08-30 01:55:41.000000000 +0200
+@@ -132,6 +132,7 @@
+ #endif
+ {
+     int c = 0, m_queue = 0, test_config = 0,run_foreground = 0;
++    int do_chroot = 1;
+     char *dir = DEFAULTDIR;
+     char *user = USER;
+     char *group = GROUPGLOBAL;
+@@ -151,7 +152,7 @@
+     hourly_syscheck = 0;
+     hourly_firewall = 0;
+ 
+-    while((c = getopt(argc, argv, "Vtdhfu:g:D:c:")) != -1){
++    while((c = getopt(argc, argv, "Vtdhfu:g:D:c:NC")) != -1){
+         switch(c){
+ 	    case 'V':
+ 		print_version();
+@@ -187,6 +188,12 @@
+             case 't':
+                 test_config = 1;    
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 help(ARGV0);
+                 break;
+@@ -280,11 +287,13 @@
+         ErrorExit(SETGID_ERROR,ARGV0,group);
+ 
+     /* Chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-
+-    nowChroot();
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+     
+     
+ 
+Index: pkg-ossec/src/analysisd/makelists.c
+===================================================================
+--- pkg-ossec.orig/src/analysisd/makelists.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/analysisd/makelists.c	2012-08-30 01:55:41.000000000 +0200
+@@ -66,7 +66,9 @@
+     print_out("    -u <user>   Run as 'user'");
+     print_out("    -g <group>  Run as 'group'");
+     print_out("    -c <config> Read the 'config' file");
+-    print_out("    -D <dir>    Chroot to 'dir'");
++    print_out("    -D <dir>    Chroot or change working directory to 'dir'");
++    print_out("    -N          Do not chroot");
++    print_out("    -C          Chroot the daemon (default behaviour)");
+     print_out(" ");
+     exit(1);
+ }
+@@ -76,6 +78,7 @@
+ int main(int argc, char **argv)
+ {
+     int c = 0;
++    int do_chroot = 1;
+     char *dir = DEFAULTDIR;
+     char *user = USER;
+     char *group = GROUPGLOBAL;
+@@ -92,7 +95,7 @@
+     prev_year = 0;
+     memset(prev_month, '\0', 4);
+ 
+-    while((c = getopt(argc, argv, "Vdhfu:g:D:c:")) != -1){
++    while((c = getopt(argc, argv, "Vdhfu:g:D:c:NC")) != -1){
+         switch(c){
+ 	    case 'V':
+ 		print_version();
+@@ -125,6 +128,12 @@
+             case 'f':
+                 force = 1;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 help(ARGV0);
+                 break;
+@@ -157,11 +166,13 @@
+         ErrorExit(SETGID_ERROR,ARGV0,group);
+ 
+     /* Chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-    nowChroot();
+-    
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+     
+ 
+     /* Createing the lists for use in rules */
+Index: pkg-ossec/src/os_maild/maild.c
+===================================================================
+--- pkg-ossec.orig/src/os_maild/maild.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/os_maild/maild.c	2012-08-30 01:55:41.000000000 +0200
+@@ -31,6 +31,7 @@
+ int main(int argc, char **argv)
+ {
+     int c, test_config = 0,run_foreground = 0;
++    int do_chroot = 1;
+     int uid = 0,gid = 0;
+     char *dir  = DEFAULTDIR;
+     char *user = MAILUSER;
+@@ -45,7 +46,7 @@
+     OS_SetName(ARGV0);
+         
+ 
+-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
++    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:NC")) != -1){
+         switch(c){
+             case 'V':
+                 print_version();
+@@ -81,6 +82,12 @@
+             case 't':
+                 test_config = 1;    
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 help(ARGV0);
+                 break;
+@@ -137,11 +144,13 @@
+ 
+     
+     /* chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-    nowChroot();
+-
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+ 
+     
+     /* Changing user */        
+Index: pkg-ossec/src/addagent/main.c
+===================================================================
+--- pkg-ossec.orig/src/addagent/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/addagent/main.c	2012-08-30 01:55:41.000000000 +0200
+@@ -24,6 +24,8 @@
+     printf("\t-l          List available agents.\n");
+     printf("\t-e <id>     Extracts key for an agent (Manager only).\n");
+     printf("\t-i <id>     Import authentication key (Agent only).\n\n");
++    printf("\t-N          Do not chroot.\n");
++    printf("\t-C          Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -68,6 +70,7 @@
+     char *user_msg;
+ 
+     int c = 0, cmdlist = 0;
++    int do_chroot = 1;
+     char *cmdexport = NULL;
+     char *cmdimport = NULL;
+ 
+@@ -82,7 +85,7 @@
+     OS_SetName(ARGV0);
+ 
+ 
+-    while((c = getopt(argc, argv, "Vhle:i:")) != -1){
++    while((c = getopt(argc, argv, "Vhle:i:NC")) != -1){
+         switch(c){
+ 	        case 'V':
+ 		        print_version();
+@@ -112,6 +115,12 @@
+             case 'l':
+                 cmdlist = 1;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 helpmsg();
+                 break;
+@@ -143,16 +152,18 @@
+ 
+ 
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+ 
+ 
+-    /* Inside chroot now */
+-    nowChroot();
+-
+-
+     /* Starting signal handler */
+     StartSIG2(ARGV0, manage_shutdown);
+     #endif
+Index: pkg-ossec/src/monitord/main.c
+===================================================================
+--- pkg-ossec.orig/src/monitord/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/monitord/main.c	2012-08-30 01:55:41.000000000 +0200
+@@ -19,6 +19,7 @@
+ int main(int argc, char **argv)
+ {
+     int c, test_config = 0, run_foreground = 0;
++    int do_chroot = 1;
+     int uid=0,gid=0;
+     char *dir  = DEFAULTDIR;
+     char *user = USER;
+@@ -32,7 +33,7 @@
+     OS_SetName(ARGV0);
+         
+ 
+-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
++    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:NC")) != -1){
+         switch(c){
+             case 'V':
+                 print_version();
+@@ -68,6 +69,12 @@
+             case 't':
+                 test_config = 1;    
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 help(ARGV0);
+                 break;
+@@ -169,11 +176,13 @@
+ 
+     
+     /* chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-    nowChroot();
+-
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+ 
+     
+     /* Changing user */        
+Index: pkg-ossec/src/monitord/report.c
+===================================================================
+--- pkg-ossec.orig/src/monitord/report.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/monitord/report.c	2012-08-30 01:55:41.000000000 +0200
+@@ -24,6 +24,8 @@
+     printf("\t-r <filter> <value> Show related entries.\n");
+     printf("\t-n                  Creates a description for the report.\n");
+     printf("\t-s                  Show the alert dump.\n");
++    printf("\t-N                  Do not chroot.\n");
++    printf("\t-C                  Chroot the program (default behaviour).\n");
+     printf("\n");
+     printf("\tFilters allowed: group, rule, level, location,\n");
+     printf("\t                 user, srcip, filename\n");
+@@ -41,6 +43,7 @@
+ {
+     int c, test_config = 0;
+     int uid=0,gid=0;
++    int do_chroot = 1;
+     char *dir  = DEFAULTDIR;
+     char *user = USER;
+     char *group = GROUPGLOBAL;
+@@ -76,7 +79,7 @@
+     
+     r_filter.report_name = NULL;
+ 
+-    while((c = getopt(argc, argv, "Vdhstu:g:D:c:f:v:n:r:")) != -1)
++    while((c = getopt(argc, argv, "Vdhstu:g:D:c:f:v:n:r:NC")) != -1)
+     {
+         switch(c){
+             case 'V':
+@@ -144,6 +147,12 @@
+             case 's':
+                 r_filter.show_alerts = 1;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 report_help();
+                 break;
+@@ -173,11 +182,13 @@
+ 
+     
+     /* chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-    nowChroot();
+-
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    nowChroot();
++    } else { 
++	    chdir(dir);
++    }
+ 
+     
+     /* Changing user */        
+Index: pkg-ossec/src/os_dbd/main.c
+===================================================================
+--- pkg-ossec.orig/src/os_dbd/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/os_dbd/main.c	2012-08-30 01:55:41.000000000 +0200
+@@ -55,6 +55,7 @@
+ {
+     int c, test_config = 0, run_foreground = 0;
+     int uid = 0,gid = 0;
++    int do_chroot = 1;
+ 
+     /* Using MAILUSER (read only) */
+     char *dir  = DEFAULTDIR;
+@@ -72,7 +73,7 @@
+     OS_SetName(ARGV0);
+         
+ 
+-    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1){
++    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:NC")) != -1){
+         switch(c){
+             case 'V':
+                 db_info();
+@@ -111,6 +112,12 @@
+             case 't':
+                 test_config = 1;    
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 help(ARGV0);
+                 break;
+@@ -215,12 +222,14 @@
+ 
+     
+     /* chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-
+-    /* Now on chroot */
+-    nowChroot();
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    /* Now on chroot */
++	    nowChroot();
++    } else { 
++	    chdir(dir);
++    }
+ 
+ 
+     /* Inserting server info into the db */
+Index: pkg-ossec/src/remoted/main.c
+===================================================================
+--- pkg-ossec.orig/src/remoted/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/remoted/main.c	2012-08-30 01:55:41.000000000 +0200
+@@ -20,6 +20,7 @@
+     int i = 0,c = 0;
+     int uid = 0, gid = 0;
+     int test_config = 0,run_foreground = 0;
++    int do_chroot = 1;
+     
+     char *cfg = DEFAULTCPATH;
+     char *dir = DEFAULTDIR;
+@@ -31,7 +32,7 @@
+     OS_SetName(ARGV0);
+ 
+     
+-    while((c = getopt(argc, argv, "Vdthfu:g:c:D:")) != -1){
++    while((c = getopt(argc, argv, "Vdthfu:g:c:D:NC")) != -1){
+         switch(c){
+             case 'V':
+                 print_version();
+@@ -67,6 +68,17 @@
+                 if(!optarg)
+                     ErrorExit("%s: -D needs an argument",ARGV0);
+                 dir = optarg;
++                break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
++            default:
++		print_out("Unknown argument");
++                help(ARGV0);
++                break;
+         }
+     }
+ 
+@@ -113,11 +125,13 @@
+             ErrorExit(SETGID_ERROR, ARGV0, group);
+ 
+     /* Going on chroot */
+-    if(Privsep_Chroot(dir) < 0)
+-                ErrorExit(CHROOT_ERROR,ARGV0,dir);
+-
+-
+-    nowChroot();
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+ 
+ 
+     /* Starting the signal manipulation */
+Index: pkg-ossec/src/util/agent_control.c
+===================================================================
+--- pkg-ossec.orig/src/util/agent_control.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/util/agent_control.c	2012-08-30 01:55:41.000000000 +0200
+@@ -34,6 +34,8 @@
+     printf("\t-f <ar>     Used with -b, specifies which response to run.\n");
+     printf("\t-L          List available active responses.\n");
+     printf("\t-s          Changes the output to CSV (comma delimited).\n");
++    printf("\t-N          Do not chroot.\n");
++    printf("\t-C          Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -54,6 +56,7 @@
+     int c = 0, restart_syscheck = 0, restart_all_agents = 0, list_agents = 0;
+     int info_agent = 0, agt_id = 0, active_only = 0, csv_output = 0; 
+     int list_responses = 0, end_time = 0, restart_agent = 0;
++    int do_chroot = 1;
+ 
+     char shost[512];
+     
+@@ -72,7 +75,7 @@
+     }
+ 
+ 
+-    while((c = getopt(argc, argv, "VehdlLcsaru:i:b:f:R:")) != -1)
++    while((c = getopt(argc, argv, "VehdlLcsaru:i:b:f:R:NC")) != -1)
+     {
+         switch(c){
+             case 'V':
+@@ -139,6 +142,12 @@
+             case 'a':
+                 restart_all_agents = 1;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 helpmsg();
+                 break;
+@@ -164,14 +173,16 @@
+     
+     
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+-
+-
+-    /* Inside chroot now */
+-    nowChroot();
+  
+ 
+     /* Setting the user */
+Index: pkg-ossec/src/util/rootcheck_control.c
+===================================================================
+--- pkg-ossec.orig/src/util/rootcheck_control.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/util/rootcheck_control.c	2012-08-30 01:55:57.000000000 +0200
+@@ -34,6 +34,8 @@
+     printf("\t-q          Used with -i, prints all the outstanding issues.\n");
+     printf("\t-L          Used with -i, prints the last scan.\n");
+     printf("\t-s          Changes the output to CSV (comma delimited).\n");
++    printf("\t-N          Do not chroot.\n");
++    printf("\t-C          Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -48,6 +50,7 @@
+ 
+     int gid = 0;
+     int uid = 0;
++    int do_chroot = 1;
+     int c = 0, info_agent = 0, update_rootcheck = 0,
+                list_agents = 0, show_last = 0,
+                resolved_only = 0;
+@@ -68,7 +71,7 @@
+     }
+ 
+ 
+-    while((c = getopt(argc, argv, "VhqrDdLlcsu:i:")) != -1)
++    while((c = getopt(argc, argv, "VhqrDdLlcsu:i:NC")) != -1)
+     {
+         switch(c){
+             case 'V':
+@@ -116,6 +119,12 @@
+                 agent_id = optarg;
+                 update_rootcheck = 1;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 helpmsg();
+                 break;
+@@ -141,14 +150,16 @@
+     
+     
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+-
+-
+-    /* Inside chroot now */
+-    nowChroot();
+  
+ 
+     /* Setting the user */
+Index: pkg-ossec/src/util/clear_stats.c
+===================================================================
+--- pkg-ossec.orig/src/util/clear_stats.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/util/clear_stats.c	2012-08-30 01:55:42.000000000 +0200
+@@ -27,6 +27,8 @@
+     printf("\t-a       Clear all the stats (averages).\n");
+     printf("\t-d       Clear the daily averages.\n");
+     printf("\t-w       Clear the weekly averages.\n\n");
++    printf("\t-N       Do not chroot.\n");
++    printf("\t-C       Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -42,6 +44,8 @@
+     char *user = USER;
+     int gid;
+     int uid;
++    int c;
++    int do_chroot = 1;
+     
+ 
+     /* Setting the name */
+@@ -49,11 +53,42 @@
+         
+     
+     /* user arguments */
+-    if(argc != 2)
++
++    while((c = getopt(argc, argv, "hadwNC")) != -1)
+     {
+-        helpmsg();
++	    switch(c){
++	       case 'h':
++		       helpmsg();
++		       break;
++	       case 'a':
++		       clear_daily = 1;
++		       clear_weekly = 1;
++		       break;
++	       case 'd':
++		       clear_daily = 1;
++		       break;
++	       case 'w':
++		       clear_weekly = 1;
++		       break;
++	       case 'N':
++		       do_chroot = 0;
++		       break;
++	       case 'C':
++		       do_chroot = 1;
++		       break;
++	       default:
++		       printf("\n** Invalid option '%s'.\n", argv[1]);
++		       helpmsg();
++		       break;
++	    }
+     }
+-    
++
++    if(! clear_weekly && ! clear_daily)
++    {
++	    /* We did not get any valid a, d or w option */
++	    helpmsg();
++    }
++
+     /* Getting the group name */
+     gid = Privsep_GetGroup(group);
+     uid = Privsep_GetUser(user);
+@@ -71,14 +106,16 @@
+     
+     
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+-
+-
+-    /* Inside chroot now */
+-    nowChroot();
+  
+ 
+     /* Setting the user */
+@@ -87,30 +124,6 @@
+         ErrorExit(SETUID_ERROR, ARGV0, user);
+     }
+   
+-    /* User options */
+-    if(strcmp(argv[1], "-h") == 0)
+-    {
+-        helpmsg();
+-    }
+-    else if(strcmp(argv[1], "-a") == 0)
+-    {
+-        clear_daily = 1;
+-        clear_weekly = 1;
+-    }
+-    else if(strcmp(argv[1], "-d") == 0)
+-    {
+-        clear_daily = 1;
+-    }
+-    else if(strcmp(argv[1], "-w") == 0)
+-    {
+-        clear_weekly = 1;
+-    }
+-    else
+-    {
+-        printf("\n** Invalid option '%s'.\n", argv[1]);
+-        helpmsg();
+-    }
+-
+ 
+     /* Clear daily files */
+     if(clear_daily)
+Index: pkg-ossec/src/util/syscheck_update.c
+===================================================================
+--- pkg-ossec.orig/src/util/syscheck_update.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/util/syscheck_update.c	2012-08-30 01:55:41.000000000 +0200
+@@ -27,6 +27,8 @@
+     printf("\t-a       Update syscheck database for all agents.\n");
+     printf("\t-u <id>  Update syscheck database for a specific agent.\n");
+     printf("\t-u local Update syscheck database locally.\n\n");
++    printf("\t-N       Do not chroot.\n");
++    printf("\t-C       Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -39,6 +41,10 @@
+     char *user = USER;
+     int gid;
+     int uid;
++    int c;
++    int do_chroot = 1;
++    int list_agents, update_agents = 0;
++    char *agent_id = NULL;
+     
+ 
+     /* Setting the name */
+@@ -50,6 +56,33 @@
+     {
+         helpmsg();
+     }
++    while((c = getopt(argc, argv, "hlau:NC")) != -1)
++    {
++	    switch(c){
++	          case 'h':
++			  helpmsg();
++			  break;
++	          case 'l':
++			  list_agents = 1;
++			  break;
++	          case 'u':
++			  if(!optarg)
++			  {
++				  merror("%s: -u needs an argument",ARGV0);
++				  helpmsg();
++			  }
++			  agent_id = optarg;
++			  update_agents = 1;
++			  break;
++	          case 'a':
++			  agent_id = strdup("all");
++			  update_agents = 1;
++			  break;
++		  default:
++			  helpmsg();
++	    }
++    }
++
+     
+     /* Getting the group name */
+     gid = Privsep_GetGroup(group);
+@@ -68,14 +101,16 @@
+     
+     
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+-
+-
+-    /* Inside chroot now */
+-    nowChroot();
+  
+ 
+     /* Setting the user */
+@@ -85,11 +120,7 @@
+     }
+   
+     /* User options */
+-    if(strcmp(argv[1], "-h") == 0)
+-    {
+-        helpmsg();
+-    }
+-    else if(strcmp(argv[1], "-l") == 0)
++    if( list_agents )
+     {
+         printf("\nOSSEC HIDS %s: Updates the integrity check database.", 
+                                  ARGV0);
+@@ -97,108 +128,98 @@
+         printf("\n");
+         exit(0);
+     }
+-    else if(strcmp(argv[1], "-u") == 0)
++    else if( update_agents )
+     {
+-        if(argc != 3)
+-        {
+-            printf("\n** Option -u requires an extra argument\n");
+-            helpmsg();
+-        }
+-    }
+-    else if(strcmp(argv[1], "-a") == 0)
+-    {
+-        DIR *sys_dir;
+-        struct dirent *entry;
+-
+-        sys_dir = opendir(SYSCHECK_DIR);
+-        if(!sys_dir)
+-        {
+-            ErrorExit("%s: Unable to open: '%s'", ARGV0, SYSCHECK_DIR);
+-        }
+-
+-        while((entry = readdir(sys_dir)) != NULL)
+-        {
+-            FILE *fp;
+-            char full_path[OS_MAXSTR +1];
+-
+-            /* Do not even attempt to delete . and .. :) */
+-            if((strcmp(entry->d_name,".") == 0)||
+-               (strcmp(entry->d_name,"..") == 0))
+-            {
+-                continue;
+-            }
+-
+-            snprintf(full_path, OS_MAXSTR,"%s/%s", SYSCHECK_DIR, entry->d_name);
+-            
+-            fp = fopen(full_path, "w");
+-            if(fp)
+-            {
+-                fclose(fp);
+-            }
+-            if(entry->d_name[0] == '.')
+-            {
+-                unlink(full_path);
+-            }
+-        }
++	    if ( strcmp(agent_id, "all") == 0 )
++	    {
++		    DIR *sys_dir;
++		    struct dirent *entry;
++
++		    sys_dir = opendir(SYSCHECK_DIR);
++		    if(!sys_dir)
++		    {
++			    ErrorExit("%s: Unable to open: '%s'", ARGV0, SYSCHECK_DIR);
++		    }
++
++		    while((entry = readdir(sys_dir)) != NULL)
++		    {
++			    FILE *fp;
++			    char full_path[OS_MAXSTR +1];
++
++			    /* Do not even attempt to delete . and .. :) */
++			    if((strcmp(entry->d_name,".") == 0)||
++					    (strcmp(entry->d_name,"..") == 0))
++			    {
++				    continue;
++			    }
++
++			    snprintf(full_path, OS_MAXSTR,"%s/%s", SYSCHECK_DIR, entry->d_name);
++
++			    fp = fopen(full_path, "w");
++			    if(fp)
++			    {
++				    fclose(fp);
++			    }
++			    if(entry->d_name[0] == '.')
++			    {
++				    unlink(full_path);
++			    }
++		    }
++
++		    closedir(sys_dir);
++		    printf("\n** Integrity check database updated.\n\n");
++		    exit(0);
++	    }
++	    else if(strcmp(agent_id,"local") == 0)
++	    {
++		    /* local */
++		    char final_dir[1024];
++		    FILE *fp;
++		    snprintf(final_dir, 1020, "/%s/syscheck", SYSCHECK_DIR);
++
++		    fp = fopen(final_dir, "w");
++		    if(fp)
++		    {
++			    fclose(fp);
++		    }
++		    unlink(final_dir);
++
++
++		    /* Deleting cpt file */
++		    snprintf(final_dir, 1020, "/%s/.syscheck.cpt", SYSCHECK_DIR);
++
++		    fp = fopen(final_dir, "w");
++		    if(fp)
++		    {
++			    fclose(fp);
++		    }
++		    /* unlink(final_dir); */
++	    }
++	    /* external agents */
++	    else
++	    {
++		    int i;
++		    keystore keys;
++
++		    OS_ReadKeys(&keys);
++
++		    i = OS_IsAllowedID(&keys, argv[2]);
++		    if(i < 0)
++		    {
++			    printf("\n** Invalid agent id '%s'.\n", argv[2]);
++			    helpmsg();
++		    }
++
++		    /* Deleting syscheck */
++		    delete_syscheck(keys.keyentries[i]->name,keys.keyentries[i]->ip->ip,0);
++	    }
+ 
+-        closedir(sys_dir);
+-        printf("\n** Integrity check database updated.\n\n"); 
+-        exit(0);
++	    printf("\n** Integrity check database updated.\n\n");
++	    exit(0);
+     }
+-    else
+-    {
+-        printf("\n** Invalid option '%s'.\n", argv[1]);
+-        helpmsg();
+-    }
+-
+-    
+-    /* local */
+-    if(strcmp(argv[2],"local") == 0)
+-    {
+-        char final_dir[1024];
+-        FILE *fp;
+-        snprintf(final_dir, 1020, "/%s/syscheck", SYSCHECK_DIR);
+-        
+-        fp = fopen(final_dir, "w");
+-        if(fp)
+-        {
+-            fclose(fp);
+-        }
+-        unlink(final_dir);
+-
+ 
+-        /* Deleting cpt file */
+-        snprintf(final_dir, 1020, "/%s/.syscheck.cpt", SYSCHECK_DIR);
+-        
+-        fp = fopen(final_dir, "w");
+-        if(fp)
+-        {
+-            fclose(fp);
+-        }
+-        /* unlink(final_dir); */
+-    }
+-
+-    /* external agents */
+-    else
+-    {
+-        int i;
+-        keystore keys;
+-
+-        OS_ReadKeys(&keys);
+-
+-        i = OS_IsAllowedID(&keys, argv[2]);
+-        if(i < 0)
+-        {
+-            printf("\n** Invalid agent id '%s'.\n", argv[2]);
+-            helpmsg();
+-        }
+-        
+-        /* Deleting syscheck */
+-        delete_syscheck(keys.keyentries[i]->name,keys.keyentries[i]->ip->ip,0);
+-    }
+-   
+-    printf("\n** Integrity check database updated.\n\n"); 
+-    return(0);
++    printf("\n** No work to do (wrong options?).\n\n");
++    exit(0);
+ }
+ 
+ 
+Index: pkg-ossec/src/util/syscheck_control.c
+===================================================================
+--- pkg-ossec.orig/src/util/syscheck_control.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/util/syscheck_control.c	2012-08-30 01:55:42.000000000 +0200
+@@ -36,6 +36,8 @@
+     printf("\t-z          Used with the -f, zeroes the auto-ignore counter.\n");
+     printf("\t-d          Used with the -f, ignores that file.\n");
+     printf("\t-s          Changes the output to CSV (comma delimited).\n");
++    printf("\t-N          Do not chroot.\n");
++    printf("\t-C          Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -51,6 +53,7 @@
+ 
+     int gid = 0;
+     int uid = 0;
++    int do_chroot = 1;
+     int c = 0, info_agent = 0, update_syscheck = 0,
+                list_agents = 0, zero_counter = 0,
+                registry_only = 0;
+@@ -71,7 +74,7 @@
+     }
+ 
+ 
+-    while((c = getopt(argc, argv, "VhzrDdlcsu:i:f:")) != -1)
++    while((c = getopt(argc, argv, "VhzrDdlcsu:i:f:NC")) != -1)
+     {
+         switch(c){
+             case 'V':
+@@ -126,6 +129,12 @@
+                 agent_id = optarg;
+                 update_syscheck = 1;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+             default:
+                 helpmsg();
+                 break;
+@@ -151,14 +160,16 @@
+     
+     
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+-
+-
+-    /* Inside chroot now */
+-    nowChroot();
+  
+ 
+     /* Setting the user */
+Index: pkg-ossec/src/client-agent/agentd.c
+===================================================================
+--- pkg-ossec.orig/src/client-agent/agentd.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/client-agent/agentd.c	2012-08-30 01:39:39.000000000 +0200
+@@ -24,7 +24,7 @@
+ /* AgentdStart v0.2, 2005/11/09
+  * Starts the agent daemon.
+  */
+-void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
++void AgentdStart(char *dir, int uid, int gid, char *user, char *group, int do_chroot)
+ {
+     int rc = 0;
+     int pid = 0;
+@@ -48,11 +48,13 @@
+ 
+     
+     /* chrooting */
+-    if(Privsep_Chroot(dir) < 0)
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
+-
+-    
+-    nowChroot();
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    nowChroot();
++    } else {
++	    chdir(dir);
++    }
+ 
+ 
+     if(Privsep_SetUser(uid) < 0)
+Index: pkg-ossec/src/client-agent/agentd.h
+===================================================================
+--- pkg-ossec.orig/src/client-agent/agentd.h	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/client-agent/agentd.h	2012-08-30 01:39:39.000000000 +0200
+@@ -28,7 +28,7 @@
+ int ClientConf(char *cfgfile);
+ 
+ /* Agentd init function */
+-void AgentdStart(char *dir, int uid, int gid, char *user, char *group);
++void AgentdStart(char *dir, int uid, int gid, char *user, char *group, int do_chroot);
+ 
+ /* Event Forwarder */
+ void *EventForward();
+Index: pkg-ossec/src/client-agent/main.c
+===================================================================
+--- pkg-ossec.orig/src/client-agent/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/client-agent/main.c	2012-08-30 01:55:42.000000000 +0200
+@@ -42,13 +42,14 @@
+     
+     int uid = 0;
+     int gid = 0;
++    int do_chroot = 1;
+ 
+     
+     /* Setting the name */
+     OS_SetName(ARGV0);
+ 
+ 
+-    while((c = getopt(argc, argv, "Vtdhu:g:D:")) != -1){
++    while((c = getopt(argc, argv, "Vtdhu:g:D:NC")) != -1){
+         switch(c){
+             case 'V':
+                 print_version();
+@@ -77,6 +78,12 @@
+                     ErrorExit("%s: -D needs an argument",ARGV0);
+                 dir = optarg;
+                 break;
++            case 'N':
++                do_chroot = 0;
++                break;
++            case 'C':
++                do_chroot = 1;
++                break;
+         }
+     }
+ 
+@@ -129,7 +136,7 @@
+ 
+ 
+     /* Agentd Start */
+-    AgentdStart(dir, uid, gid, user, group);
++    AgentdStart(dir, uid, gid, user, group, do_chroot);
+ 
+     
+     return(0);
+Index: pkg-ossec/src/util/list_agents.c
+===================================================================
+--- pkg-ossec.orig/src/util/list_agents.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/util/list_agents.c	2012-08-30 01:55:42.000000000 +0200
+@@ -25,6 +25,8 @@
+     printf("\t-a    List all agents.\n");
+     printf("\t-c    List the connected (active) agents.\n");
+     printf("\t-n    List the not connected (active) agents.\n");
++    printf("\t-N    Do not chroot.\n");
++    printf("\t-C    Chroot the program (default behaviour).\n");
+     exit(1);
+ }
+ 
+@@ -41,6 +43,8 @@
+     int gid;
+     int uid;
+     int flag;
++    int c;
++    int do_chroot = 1;
+     
+ 
+     /* Setting the name */
+@@ -52,6 +56,36 @@
+     {
+         helpmsg();
+     }
++    /* User options */
++    while((c = getopt(argc, argv, "hacnNC")) != -1)
++    {
++	    switch(c){
++		    case 'h':
++			    helpmsg();
++			    break;
++		    case 'a':
++			    flag = GA_ALL;
++			    msg = "is available.";
++			    break;
++		    case 'c':
++			    flag = GA_ACTIVE;
++			    msg = "is active.";
++			    break;
++		    case 'n':
++			    flag = GA_NOTACTIVE;
++			    msg = "is not active.";
++			    break;
++		    case 'N':
++			    do_chroot = 0;
++			    break;
++		    case 'C':
++			    do_chroot = 1;
++			    break;
++		    default:
++			    helpmsg;
++	    }
++    }
++
+     
+     /* Getting the group name */
+     gid = Privsep_GetGroup(group);
+@@ -70,14 +104,16 @@
+     
+     
+     /* Chrooting to the default directory */
+-    if(Privsep_Chroot(dir) < 0)
+-    {
+-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
++    if (do_chroot) {
++	    if(Privsep_Chroot(dir) < 0)
++	    {
++		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
++	    }
++	    /* Inside chroot now */
++	    nowChroot();
++    } else {
++	    chdir(dir);
+     }
+-
+-
+-    /* Inside chroot now */
+-    nowChroot();
+  
+ 
+     /* Setting the user */
+@@ -86,32 +122,6 @@
+         ErrorExit(SETUID_ERROR, ARGV0, user);
+     }
+   
+-    /* User options */
+-    if(strcmp(argv[1], "-h") == 0)
+-    {
+-        helpmsg();
+-    }
+-    else if(strcmp(argv[1], "-a") == 0)
+-    {
+-        flag = GA_ALL;
+-        msg = "is available.";
+-    }
+-    else if(strcmp(argv[1], "-c") == 0)
+-    {
+-        flag = GA_ACTIVE;
+-        msg = "is active.";
+-    }
+-    else if(strcmp(argv[1], "-n") == 0)
+-    {
+-        flag = GA_NOTACTIVE;
+-        msg = "is not active.";
+-    }
+-    else
+-    {
+-        printf("\n** Invalid option '%s'.\n", argv[1]);
+-        helpmsg();
+-    }
+-
+ 
+     agent_list = get_agents(flag);
+     if(agent_list)

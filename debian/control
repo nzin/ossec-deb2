@@ -1,37 +1,80 @@
 Source: ossec-hids
 Section: utils
 Priority: extra
-Maintainer: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
+Maintainer: Jose Antonio Quevedo MuÃ±oz <joseantonio.quevedo@gmail.com>
 Uploaders: Javier Fernandez-Sanguino <jfs@debian.org>
-Build-Depends: debhelper (>= 7.0.50~), zlib1g-dev
+Build-Depends: debhelper (>= 7.0.50~), zlib1g-dev, libssl-dev
 Standards-Version: 3.8.4
 Homepage: http://www.ossec.net/
-#Vcs-Git: git://git.debian.org/collab-maint/ossec-hids.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/ossec-hids.git;a=summary
-
-Package: ossec-hids-doc
-Architecture: all
-Description: documentation for ossec-hids.
- OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
-
-Package: ossec-hids-local
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: ossec-hids-server, ossec-hids-agent
-Description: Ossec's local installation binaries. Host-based Intrusion Detection System.
- OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+Vcs-Git: git://git.debian.org/git/pkg-ossec/pkg-ossec.git
+Vcs-Browser: http://git.debian.org/?p=pkg-ossec/pkg-ossec.git;a=summary
 
 Package: ossec-hids-server
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: ossec-hids-local, ossec-hids-agent
-Description: Ossec's server installation binaries. Host-based Intrusion Detection System.
- OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6)
+Description: OSSEC host-based Intrusion Detection System.
+ OSSEC is a full platform to monitor and control different computer
+ systems. It provides features that make it useful to setup:
+   - a HIDS (host-based intrusion  detection) in order to detect when a
+     computer system has been compromised 
+   - a log monitoring system, reviewing system longs and reporting
+     anomalies
+   - a SIM/SIEM, reviewing information from different security 
+     sources like network intrusion detection system (such as 
+     Snort) and correlating them with other sources.
+ .
+ This package provides the binaries that are needed to install an OSSEC manager
+ which controls distributed agents.
 
 Package: ossec-hids-agent
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: ossec-hids-local, ossec-hids-server
-Description: Ossec's client installation binaries. Host-based Intrusion Detection System.
- OSSEC is a full platform to monitor and control your systems. It mixes together all the aspects of HIDS (host-based intrusion  detection), log monitoring and SIM/SIEM together.
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6)
+Conflicts: ossec-hids-server, ossec-hids-local
+Description: OSSEC host-based Intrusion Detection System.
+ OSSEC is a full platform to monitor and control different computer
+ systems. It provides features that make it useful to setup:
+   - a HIDS (host-based intrusion  detection) in order to detect when a
+     computer system has been compromised 
+   - a log monitoring system, reviewing system longs and reporting
+     anomalies
+   - a SIM/SIEM, reviewing information from different security 
+     sources like network intrusion detection system (such as 
+     Snort) and correlating them with other sources.
+ .
+ This package provides the binaries that are needed to install an OSSEC client,
+ that reports events to a central OSSEC manager.
 
+Package: ossec-hids-local
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6)
+Conflicts: ossec-hids-server, ossec-hids-agent
+Description: OSSEC host-based Intrusion Detection System.
+ OSSEC is a full platform to monitor and control different computer
+ systems. It provides features that make it useful to setup:
+   - a HIDS (host-based intrusion  detection) in order to detect when a
+     computer system has been compromised 
+   - a log monitoring system, reviewing system longs and reporting
+     anomalies
+   - a SIM/SIEM, reviewing information from different security 
+     sources like network intrusion detection system (such as 
+     Snort) and correlating them with other sources.
+ .
+ This package provides the binaries that are needed to install an OSSEC 'local'
+ installation for OSSEC deployments when only a system is monitored.
+
+
+Package: ossec-hids-doc
+Section: doc
+Architecture: all
+Description: documentation for ossec-hids.
+ OSSEC is a full platform to monitor and control different computer
+ systems. It provides features that make it useful to setup:
+   - a HIDS (host-based intrusion  detection) in order to detect when a
+     computer system has been compromised 
+   - a log monitoring system, reviewing system longs and reporting
+     anomalies
+   - a SIM/SIEM, reviewing information from different security 
+     sources like network intrusion detection system (such as 
+     Snort) and correlating them with other sources.
+ .
+ This package provides the documentation of the OSSEC platform.

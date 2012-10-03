@@ -1,28 +1,19 @@
-Description: Upstream changes introduced in version 2.6-1 to link against openSSL.
- This patch has been created by dpkg-source during the package build.
- Here's the last changelog entry, hopefully it gives details on why
- those changes were made:
+Description: Prevent linking from OpenSSL
+ Patch to prevent the source from being built using the openssl 
+ libraries provided by the system.
  .
- ossec-hids (2.6-1) unstable; urgency=low
- .
-   * Initial release (Closes: #361954)
+ NOTE: [jfs] Even with this patch the code CANNOT be re-distributed as the
+ license lacks the OpenSSL exception and the build system will use
+ the embedded copies of OpenSSL functions ( src/os_crypto/sha1/md32_common.h,
+ src/os_crypto/sha1/sha.h, and src/os_crypto/sha1/sha_locl.h) instead.
  .
  The person named in the Author field signed this changelog entry.
 Author: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
 Bug-Debian: http://bugs.debian.org/361954
-
----
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
-
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: http://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: <YYYY-MM-DD>
+Reviewed-by: Javier Fernandez-Sanguino <jfs@debian.org>
+Last-Update: 2011-08-03
+Origin: debian
+Forwarded: not-needed
 
 --- ossec-hids-2.6.orig/src/Makeall
 +++ ossec-hids-2.6/src/Makeall

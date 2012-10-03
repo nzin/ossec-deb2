@@ -1,0 +1,180 @@
+Index: pkg-ossec/active-response/host-deny.sh
+===================================================================
+--- pkg-ossec.orig/active-response/host-deny.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/active-response/host-deny.sh	2012-08-29 02:03:05.000000000 +0200
+@@ -30,9 +30,14 @@
+     i=0;
+     # Providing a lock.
+     while [ 1 ]; do
+-        mkdir ${LOCK} > /dev/null 2>&1
+-        MSL=$?
+-        if [ "${MSL}" = "0" ]; then
++        [ ! -e "${LOCK}" ] && mkdir -p ${LOCK} > /dev/null 2>&1
++	# Ensure we can make the LOCK properly first
++	if [ ! -d "${LOCK}" ] ; then
++		echo "ERROR: The configured lock directory ${LOCK} is not a directory or it does not exist, cannot continue" 
++		exit 1
++	fi
++	# If there is no PIDfile then we can set the pid and break
++	if [ ! -e "${LOCK_PID}" ] ; then
+             # Lock aquired (setting the pid)
+             echo "$$" > ${LOCK_PID}
+             return;
+@@ -71,9 +76,13 @@
+ }
+ 
+ # Unlock function
++# Just remove the lock file if it is there, keep the lock directory
++# for later. We don't remove the directory (rm -rf is dangerous in a shell script)
+ unlock()
+ {
+-   rm -rf ${LOCK} 
++   [ ! -e "${LOCK}" ]  && return 0
++   [ ! -d "${LOCK}" ]  && return 0
++   [ -e "{$LOCK_PID}" ] &&  rm -f ${LOCK_PID}
+ }
+ 
+ 
+Index: pkg-ossec/src/init/ossec-client.sh
+===================================================================
+--- pkg-ossec.orig/src/init/ossec-client.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/src/init/ossec-client.sh	2012-08-29 02:05:48.000000000 +0200
+@@ -51,9 +51,14 @@
+     
+     # Providing a lock.
+     while [ 1 ]; do
+-        mkdir ${LOCK} > /dev/null 2>&1
+-        MSL=$?
+-        if [ "${MSL}" = "0" ]; then
++        [ ! -e "${LOCK}" ] && mkdir -p ${LOCK} > /dev/null 2>&1
++        # Ensure we can make the LOCK properly first
++	if [ ! -d "${LOCK}" ] ; then
++		echo "ERROR: The configured lock directory ${LOCK} is not a directory or it does not exist, cannot continue" 
++		exit 1
++	fi
++	# If there is no PIDfile then we can set the pid and break
++	if [ ! -e "${LOCK_PID}" ] ; then
+             # Lock aquired (setting the pid)
+             echo "$$" > ${LOCK_PID}
+             return;
+@@ -74,21 +79,23 @@
+         if [ "$i" = "${MAX_ITERATION}" ]; then
+             # Unlocking and executing
+             unlock;
+-            mkdir ${LOCK} > /dev/null 2>&1
+             echo "$$" > ${LOCK_PID}
+             return;
+         fi
+     done
+ }
+ 
+-
+ # Unlock function
++# Just remove the lock file if it is there, keep the lock directory
++# for later. We don't remove the directory (rm -rf is dangerous in a shell script)
+ unlock()
+ {
+-    rm -rf ${LOCK}
++	[ ! -e "${LOCK}" ]  && return 0
++	[ ! -d "${LOCK}" ]  && return 0
++	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
+ }
+ 
+-    
++
+ # Help message
+ help()
+ {
+Index: pkg-ossec/src/init/ossec-local.sh
+===================================================================
+--- pkg-ossec.orig/src/init/ossec-local.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/src/init/ossec-local.sh	2012-08-29 02:05:38.000000000 +0200
+@@ -62,9 +62,14 @@
+     
+     # Providing a lock.
+     while [ 1 ]; do
+-        mkdir ${LOCK} > /dev/null 2>&1
+-        MSL=$?
+-        if [ "${MSL}" = "0" ]; then
++        [ ! -e "${LOCK}" ] && mkdir -p ${LOCK} > /dev/null 2>&1
++        # Ensure we can make the LOCK properly first
++	if [ ! -d "${LOCK}" ] ; then
++		echo "ERROR: The configured lock directory ${LOCK} is not a directory or it does not exist, cannot continue" 
++		exit 1
++	fi
++	# If there is no PIDfile then we can set the pid and break
++	if [ ! -e "${LOCK_PID}" ] ; then
+             # Lock aquired (setting the pid)
+             echo "$$" > ${LOCK_PID}
+             return;
+@@ -85,7 +90,6 @@
+         if [ "$i" = "${MAX_ITERATION}" ]; then
+             # Unlocking and executing
+             unlock;
+-            mkdir ${LOCK} > /dev/null 2>&1
+             echo "$$" > ${LOCK_PID}
+             return;
+         fi
+@@ -94,9 +98,13 @@
+ 
+ 
+ # Unlock function
++# Just remove the lock file if it is there, keep the lock directory
++# for later. We don't remove the directory (rm -rf is dangerous in a shell script)
+ unlock()
+ {
+-    rm -rf ${LOCK}
++	[ ! -e "${LOCK}" ]  && return 0
++	[ ! -d "${LOCK}" ]  && return 0
++	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
+ }
+ 
+     
+Index: pkg-ossec/src/init/ossec-server.sh
+===================================================================
+--- pkg-ossec.orig/src/init/ossec-server.sh	2012-08-29 00:50:30.000000000 +0200
++++ pkg-ossec/src/init/ossec-server.sh	2012-08-29 02:05:44.000000000 +0200
+@@ -62,9 +62,14 @@
+     
+     # Providing a lock.
+     while [ 1 ]; do
+-        mkdir ${LOCK} > /dev/null 2>&1
+-        MSL=$?
+-        if [ "${MSL}" = "0" ]; then
++	[ ! -e "${LOCK}" ] && mkdir ${LOCK} > /dev/null 2>&1
++	# Ensure we can make the LOCK properly first
++	if [ ! -d "${LOCK}" ] ; then
++		echo "ERROR: The configured lock directory ${LOCK} is not a directory or it does not exist, cannot continue" 
++		exit 1
++	fi
++	# If there is no PIDfile then we can set the pid and break
++	if [ ! -e "${LOCK_PID}" ] ; then
+             # Lock aquired (setting the pid)
+             echo "$$" > ${LOCK_PID}
+             return;
+@@ -85,7 +90,6 @@
+         if [ "$i" = "${MAX_ITERATION}" ]; then
+             # Unlocking and executing
+             unlock;
+-            mkdir ${LOCK} > /dev/null 2>&1
+             echo "$$" > ${LOCK_PID}
+             return;
+         fi
+@@ -94,12 +98,15 @@
+ 
+ 
+ # Unlock function
++# Just remove the lock file if it is there, keep the lock directory
++# for later. We don't remove the directory (rm -rf is dangerous in a shell script)
+ unlock()
+ {
+-    rm -rf ${LOCK}
++	[ ! -e "${LOCK}" ]  && return 0
++	[ ! -d "${LOCK}" ]  && return 0
++	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
+ }
+ 
+-    
+ # Help message
+ help()
+ {

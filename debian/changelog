@@ -1,5 +1,14 @@
-ossec-hids (2.6-1) unstable; urgency=low
+ossec-hids (2.6-1) UNRELEASED; urgency=low
 
-  * Initial release (Closes: #361954)
+  * Preliminary release (Closes: #361954)
+    - Provides basic functionaly (start/stop) but it still missing proper
+      configuration through debconf and the components do not fully work yet
+  * Add patches to:
+    - add SSL license exception
+    - avoid using internal zlib distributed with the package, use the system's
+    - avoid chrooting the daemons
+    - fix pidfile locations
+    - fix removal of pid files and locks
+    - have the control script return the status through its exit value
 
- -- Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>  Sun, 13 Mar 2011 03:24:51 +0100
+ -- Javier Fernández-Sanguino <jfs@debian.org>  Wed, 29 Aug 2012 02:54:47 +0200

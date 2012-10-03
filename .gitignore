@@ -1,0 +1,68 @@
+### These files should get ignored no matter where they appear.
+
+# Editors leave these lying around
+\#*\#
+.#*
+*~
+*.swp
+
+# C stuff
+*.o
+
+# Windows stuff
+*.obj
+*.exe
+*.lib
+
+# Patch leaves these lying arround
+*.orig
+*.rej
+
+# gcov stuff
+*.gcno
+*.gcov
+*.gcda
+
+
+# Libtool stuff
+.libs
+*.lo
+*.la
+
+# ctags stuff
+TAGS
+
+# quilt stuff
+.pc
+
+## The initial / makes these files only get ignored in particular directories.
+/autom4te.cache
+
+# Libtool adds these, at least sometimes
+/m4/libtool.m4
+/m4/ltoptions.m4
+/m4/ltsugar.m4
+/m4/ltversion.m4
+/m4/lt~obsolete.m4
+
+# Autotools stuff
+.deps
+
+# Autoconf stuff
+/aclocal.m4
+/compile
+/doxygen
+/config.guess
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/config.h
+/config.h.in
+/libtool
+/ltmain.sh
+/missing
+/stamp-h1
+/stamp-h2
+

@@ -1,0 +1,179 @@
+#!/bin/sh
+#
+# Debian init.d file for OSSEC HIDS (agent)
+# Created for Debian by Javier Fernandez-Sanguino <jfs@debian.org>
+#
+# OSSEC HIDS is a free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License (version 2) as
+# published by the FSF - Free Software Foundation.
+
+### BEGIN INIT INFO
+# Provides:          ossec-hids-agent
+# Required-Start:    $time $network $local_fs $remote_fs
+# Required-Stop:     $network $remote_fs
+# Should-Start:      $syslog
+# Should-Stop:       
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Host-based intrusion detection system (agent)
+# Description:       Agent for the host-based intrusion detection system that will
+#                    perform log analysis, file integrity checking, policy
+#                    monitoring, rootkit detection, real-time alerting and
+#                    active response. 
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="OSSEC Host-based Intrusion Detection System agent"
+NAME=ossec-hids-agent
+DAEMON=/usr/lib/ossec/ossec-agentd
+DAEMON_ARGS=""
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit if the package is not installed
+[ -x $DAEMON ] || exit 0
+
+# Load the information for the main configuration file
+[ -e /etc/ossec-init.conf ] && . /etc/ossec-init.conf
+if [ -z "${DIRECTORY}" ]; then
+    DIRECTORY="/var/ossec"
+fi
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+test $DEBIAN_SCRIPT_DEBUG && set -v -x
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+# If we don't find DIRECTORY then exit without error, the
+# package is not properly installed
+[ ! -e "${DIRECTORY}" ] && exit 0
+
+# Create the directory for the pidfiles
+[ ! -e /var/run/ossec-hids ] && mkdir -p /var/run/ossec-hids
+
+# Log file for the ossec-control file
+LOGDIR=${DIRECTORY}/logs
+LOGFILE=${LOGDIR}/ossec-control.log
+
+# Function that tests the rules
+do_test_rules()
+{
+	echo | ${DIRECTORY}/ossec-logtest > /dev/null 2>&1;
+	if [ ! $? = 0 ]; then
+		log_progress_msg "the OSSEC ruleset is not valid, the daemon will not start. Review the output of ${DIRECTORY}/ossec-logtest"
+		return 1
+	fi
+	return 0
+}
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
+		OUT=">>$LOGFILE 2>&1"
+		echo "`date -R` -- $0 start" >>$LOGFILE
+	fi
+	`eval "${DIRECTORY}/bin/ossec-control start $OUT"`
+	return $?
+	# TODO REVIEW - Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+}
+
+do_stop() {
+	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
+		OUT=">>$LOGFILE 2>&1"
+		echo "`date -R` -- $0 stop" >>$LOGFILE
+	fi
+	`eval "${DIRECTORY}/bin/ossec-control stop $OUT"`
+	return $?
+	# TODO REVIEW - Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+}
+
+do_status() {
+	if [ -z "$DEBIAN_SCRIPT_DEBUG" ] ; then
+		OUT=">>$LOGFILE 2>&1"
+		echo "`date -R` -- $0 status" >>$LOGFILE
+	fi
+	`eval "${DIRECTORY}/bin/ossec-control status $OUT"`
+	return $?
+}
+
+
+case "$1" in
+  start)
+        log_daemon_msg "Starting $DESC " "$NAME"
+	do_start
+        myret=$?
+        if  [ $myret -eq 0 ] ; then
+            log_end_msg 0
+        else
+	     [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
+            log_end_msg 1
+        fi
+        exit $myret
+	;;
+  stop) 
+        log_daemon_msg "Stopping $DESC " "$NAME"
+	do_stop
+        myret=$?
+        if  [ $myret -eq 0 ] ; then
+            log_end_msg 0
+        else
+            [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
+            log_end_msg 1
+        fi
+        exit $myret
+	;;
+  restart|force-restart|reload|force-reload)
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			1) log_end_msg 1 ;; # Old process is still running
+			*) log_end_msg 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+	  	# Failed to stop
+		[ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
+		log_end_msg 1
+		;;
+	esac
+	;;
+  status)
+        log_daemon_msg "Status of $NAME"
+	do_status
+        myret=$?
+        if  [ $myret -eq 0 ] ; then
+            log_end_msg 0
+        else
+	    [ -z "$DEBIAN_SCRIPT_DEBUG" ] && log_progress_msg " - failed review the logfile $LOGFILE"
+	    log_end_msg 1
+        fi
+        exit $myret
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|force-restart|reload|force-reload|status}"
+	exit 1
+esac
+
+exit 0
+
+

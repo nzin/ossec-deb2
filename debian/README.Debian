@@ -1,6 +1,47 @@
-ossec-hids for Debian
+OSSEC for Debian
 ---------------------
 
-<possible notes regarding this package - if none, delete this file>
 
- -- Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>  Sun, 13 Mar 2011 03:24:51 +0100
+  OSSEC for Debian has been changes to integrate it with the distribution.
+  The most significant change is the introduction of two new command line
+  options (-N and -C) to disable and to enable, respectively, chrooting
+  of the daemon.
+
+  Upstream installs all the binaries so that they run in a chroot environment
+  (/var/ossec). However, installing binaries in the chroot will not follow
+  the FFSTND and using a chroot will make it difficult to handle packages
+  upgrades (for bug fixes and new upstream releases) since this is not
+  handled by Debian's package management system. Consequently, this
+  behaviour is disabled by default.
+
+  The Debian maintainers acknowledge that this control enhances system's
+  security. The command line options introduced make it possible for users
+  to enable this behaviour. In order to run OSSEC in a chroot environment 
+  the system administrator needs to first setup a chroot for OSSEC and
+  configure (in the ossec-init.conf file) the location of the chroot directory.
+
+  To setup the chroot you can use /var/ossec as a basis, but remember to
+  change the symbolic links with the actual files/directories they point to.
+
+  The Debian maintainers provide two scripts that can be used to create and
+  setup the chroot. These script are:
+
+    - /usr/lib/ossec/ossec-hids-create-chroot: Creates a chroot using the
+       contents distributed in the package, copying /var/ossec and replacing
+       symlinks with the actual files. By default it is created under
+       /var/chroot/ossec
+
+    - /usr/lib/ossec/ossec-hids-update-chroot: Updates a chroot using the
+       contents distributed in the package.
+
+  To setup the chroot using these scripts you need to
+
+    1.- Run /usr/lib/ossec/ossec-hids-create-chroot
+    2.- Edit /etc/ossec-init.conf and change DIRECTORY to /var/chroot/ossec
+ 
+  When the package is upgraded you have to run the /usr/lib/ossec/ossec-hids-update-chroot
+  manually to update the binaries in the chroot
+
+
+
+ -- Javier Fernández-Sanguino <jfs@debian.org>  Sun, 26 Aug 2012 13:04:23 +0200

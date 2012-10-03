@@ -40,7 +40,7 @@ case "$1" in
 	usermod -c "Ossec IDS" \
 		-d $HOMEDIR \
 		-g $OSSECGROUP \
-		$OSSECUSER >/dev/null 2>&1 || true
+		$OSSECUSER >/dev/null  2>&1 || true
 
 	usermod -c "Ossec IDS Email alerter" \
 		-d $HOMEDIR \

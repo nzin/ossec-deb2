@@ -1,0 +1,15 @@
+/var/log/ossec/*.log {
+        weekly
+	missingok
+	rotate 4
+	compress
+	delaycompress
+	notifempty
+	create 640 ossec adm
+	sharedscripts
+	postrotate
+		if [ -n "`ls /var/run/ossec-hids/*.pid`" ]; then
+			/etc/init.d/ossec-hids-server restart > /dev/null
+		fi
+	endscript
+}

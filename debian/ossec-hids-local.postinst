@@ -37,10 +37,10 @@ case "$1" in
         # TODO 
         #  - configure the results in the configuration file
         #  - setup active response (firewall response, whitelist, etc.)
-	db_get ossec-hids-server/enable_email || true;	EMAIL="$RET"
-	db_get ossec-hids-server/email_to     || true;	EMAIL_TO="$RET"
-	db_get ossec-hids-server/email_server || true;	EMAIL_SERVER="$RET"
-	db_get ossec-hids-server/enable_syslog ||  true; SYSLOG="$RET"
+	db_get ossec-hids-local/enable_email || true;	EMAIL="$RET"
+	db_get ossec-hids-local/email_to     || true;	EMAIL_TO="$RET"
+	db_get ossec-hids-local/email_server || true;	EMAIL_SERVER="$RET"
+	db_get ossec-hids-local/enable_syslog ||  true; SYSLOG="$RET"
 
 	# Failsafe in case the values above are blank (jfs)
 	[ -z "$EMAIL" ] && EMAIL="no"
@@ -55,7 +55,7 @@ case "$1" in
 	# 5. adjust file and directory permissions
         if ! dpkg-statoverride --list ${CONF_FILE} >/dev/null && [ -e ${CONF_FILE} ] 
         then
-            chown ossec:ossec ${CONF_FILE}
+            chown $OSSECUSER:$OSSECGROUP ${CONF_FILE}
             chmod 640 ${CONF_FILE}
 	fi
 
@@ -67,17 +67,17 @@ case "$1" in
 
         { 
         cat <<EOF
-queue/alerts     ossec:ossec 770
-queue/ossec      ossec:ossec 770
-queue/ossec/queue      ossec:ossec 770
-queue/fts        ossec:ossec 750
-queue/syscheck   ossec:ossec 750
-queue/rootcheck  ossec:ossec 750
-queue/diff       ossec:ossec 750
-queue/agent-info ossec:ossec 755
-queue/rids       ossec:ossec 755
-queue/agentless  ossec:ossec 755
-stats            ossec:ossec 750
+queue/alerts     $OSSECUSER:$OSSECGROUP 770
+queue/ossec      $OSSECUSER:$OSSECGROUP 770
+queue/ossec/queue      $OSSECUSER:$OSSECGROUP 770
+queue/fts        $OSSECUSER:$OSSECGROUP 750
+queue/syscheck   $OSSECUSER:$OSSECGROUP 750
+queue/rootcheck  $OSSECUSER:$OSSECGROUP 750
+queue/diff       $OSSECUSER:$OSSECGROUP 750
+queue/agent-info $OSSECUSER:$OSSECGROUP 755
+queue/rids       $OSSECUSER:$OSSECGROUP 755
+queue/agentless  $OSSECUSER:$OSSECGROUP 755
+stats            $OSSECUSER:$OSSECGROUP 750
 EOF
         } | while read dir owner mode; do
                 if ! echo "$dir" | grep -q "^/" ; then
@@ -98,9 +98,9 @@ EOF
 
 	# in the case we reconfigure we have to restart and not just to start.
 	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
-		invoke-rc.d ossec-hids-server stop || exit $?
+		invoke-rc.d ossec-hids-local stop || exit $?
 	else
-		/etc/init.d/ossec-hids-server stop || exit $?
+		/etc/init.d/ossec-hids-local stop || exit $?
 	fi
 	;;
     abort-upgrade)
