@@ -22,7 +22,7 @@ fi
 
 
 NAME="OSSEC HIDS"
-VERSION="v2.6"
+VERSION="v2.7-beta1"
 AUTHOR="Trend Micro Inc."
 DAEMONS="ossec-monitord ossec-logcollector ossec-remoted ossec-syscheckd ossec-analysisd ossec-maild ossec-execd ${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON}"
 
@@ -177,14 +177,17 @@ disable()
 # Status function
 status()
 {
+    RETVAL=0
     for i in ${DAEMONS}; do
         pstatus ${i};
         if [ $? = 0 ]; then
             echo "${i} not running..."
+            RETVAL=1
         else
             echo "${i} is running..."
         fi
-    done             
+    done
+    exit $RETVAL
 }
 
 testconfig()
@@ -206,9 +209,10 @@ start()
     SDAEMONS="${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON} ossec-maild ossec-execd ossec-analysisd ossec-logcollector ossec-remoted ossec-syscheckd ossec-monitord"
     
     echo "Starting $NAME $VERSION (by $AUTHOR)..."
-    echo | ${DIR}/ossec-logtest > /dev/null 2>&1;
+    echo | ${DIR}/bin/ossec-logtest > /dev/null 2>&1;
     if [ ! $? = 0 ]; then
         echo "OSSEC analysisd: Testing rules failed. Configuration error. Exiting."
+        exit 1;
     fi    
     lock;
     checkpid;
@@ -306,8 +310,14 @@ case "$1" in
   restart)
     testconfig
 	stopa
+        sleep 1;
 	start
 	;;
+  reload)
+        DAEMONS="ossec-monitord ossec-logcollector ossec-remoted ossec-syscheckd ossec-analysisd ossec-maild ${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON}"
+	stopa
+	start
+        ;;
   status)
     status
 	;;

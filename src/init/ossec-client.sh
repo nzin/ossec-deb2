@@ -11,7 +11,7 @@ DIR=`dirname $PWD`;
 
 ###  Do not modify bellow here ###
 NAME="OSSEC HIDS"
-VERSION="v2.6"
+VERSION="v2.7-beta1"
 AUTHOR="Trend Micro Inc."
 DAEMONS="ossec-logcollector ossec-syscheckd ossec-agentd ossec-execd"
 
@@ -226,6 +226,12 @@ case "$1" in
   restart)
     testconfig
 	stopa
+        sleep 1;
+	start
+	;;
+  reload)
+	DAEMONS="ossec-logcollector ossec-syscheckd ossec-agentd"
+	stopa
 	start
 	;;
   status)
@@ -237,3 +243,4 @@ case "$1" in
   *)
     help
 esac
+

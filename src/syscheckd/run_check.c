@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/syscheckd/run_check.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2010 Trend Micro Inc.
  * All right reserved.
@@ -236,12 +237,6 @@ void start_daemon()
     }
 
     
-    #if defined (USEINOTIFY) || defined (WIN32)
-    if(syscheck.realtime && (syscheck.realtime->fd >= 0))
-        verbose("%s: INFO: Starting real time file monitoring.", ARGV0);
-    #endif
-    
-
     /* Checking every SYSCHECK_WAIT */    
     while(1)
     {
@@ -518,7 +513,7 @@ int c_read_file(char *file_name, char *oldsum, char *newsum)
         if(sha1sum || md5sum)
         {
             /* Generating checksums of the file. */
-            if(OS_MD5_SHA1_File(file_name, mf_sum, sf_sum) < 0)
+            if(OS_MD5_SHA1_File(file_name, syscheck.prefilter_cmd, mf_sum, sf_sum) < 0)
             {
                 strncpy(sf_sum, "xxx", 4);
                 strncpy(mf_sum, "xxx", 4);
@@ -537,7 +532,7 @@ int c_read_file(char *file_name, char *oldsum, char *newsum)
                 if(sha1sum || md5sum)
                 {
                     /* Generating checksums of the file. */
-                    if(OS_MD5_SHA1_File(file_name, mf_sum, sf_sum) < 0)
+                    if(OS_MD5_SHA1_File(file_name, syscheck.prefilter_cmd, mf_sum, sf_sum) < 0)
                     {
                         strncpy(sf_sum, "xxx", 4);
                         strncpy(mf_sum, "xxx", 4);

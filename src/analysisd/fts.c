@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/analysisd/fts.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -87,6 +88,7 @@ int FTS_Init()
         if(fp_list)
             fclose(fp_list);
         
+        chmod(FTS_QUEUE, 0777);
         fp_list = fopen(FTS_QUEUE, "r+");
         if(!fp_list)
         {
@@ -128,6 +130,7 @@ int FTS_Init()
         if(fp_ignore)
             fclose(fp_ignore);
         
+        chmod(IG_QUEUE, 0777);
         fp_ignore = fopen(IG_QUEUE, "r+");
         if(!fp_ignore)
         {

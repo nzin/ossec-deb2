@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/os_crypto/md5_sha1/md5_sha1_op.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -17,7 +18,7 @@
 #define __MD5SHA1_OP_H
 
 
-int OS_MD5_SHA1_File(char *fname, char *md5output, char *sha1output);
+int OS_MD5_SHA1_File(char *fname, char *prefilter_cmd, char *md5output, char *sha1output);
 
 
 #endif

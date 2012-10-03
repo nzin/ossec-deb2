@@ -22,7 +22,7 @@ fi
 
 
 NAME="OSSEC HIDS"
-VERSION="v2.6"
+VERSION="v2.7-beta1"
 AUTHOR="Trend Micro Inc."
 DAEMONS="ossec-monitord ossec-logcollector ossec-syscheckd ossec-analysisd ossec-maild ossec-execd ${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON}"
 
@@ -177,14 +177,17 @@ disable()
 # Status function
 status()
 {
+    RETVAL=0
     for i in ${DAEMONS}; do
         pstatus ${i};
         if [ $? = 0 ]; then
+            RETVAL=1
             echo "${i} not running..."
         else
             echo "${i} is running..."
         fi
-    done             
+    done
+    exit $RETVAL
 }
 
 testconfig()
@@ -207,9 +210,10 @@ start()
     SDAEMONS="${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON} ossec-maild ossec-execd ossec-analysisd ossec-logcollector ossec-syscheckd ossec-monitord"
     
     echo "Starting $NAME $VERSION (by $AUTHOR)..."
-    echo | ${DIR}/ossec-logtest > /dev/null 2>&1;
+    echo | ${DIR}/bin/ossec-logtest > /dev/null 2>&1;
     if [ ! $? = 0 ]; then
         echo "ossec-analysisd: Configuration error. Exiting."
+        exit 1;
     fi    
 
     lock;
@@ -237,6 +241,14 @@ start()
     # to internally create their PID files.
     sleep 2;
     unlock;
+
+    ls -la "${DIR}/ossec-agent/" >/dev/null 2>&1
+    if [ $? = 0 ]; then
+        echo ""
+        echo "Starting sub agent directory (for hybrid mode)"
+        ${DIR}/ossec-agent/bin/ossec-control start
+    fi
+    
     echo "Completed."
 }
 
@@ -291,6 +303,13 @@ stopa()
      done    
     
     unlock;
+
+    ls -la "${DIR}/ossec-agent/" >/dev/null 2>&1
+    if [ $? = 0 ]; then
+        echo ""
+        echo "Stopping sub agent directory (for hybrid mode)"
+        ${DIR}/ossec-agent/bin/ossec-control stop
+    fi
     echo "$NAME $VERSION Stopped"
 }
 
@@ -308,6 +327,7 @@ case "$1" in
   restart)
     testconfig
 	stopa
+        sleep 1;
 	start
 	;;
   status)

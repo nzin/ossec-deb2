@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/os_dbd/alert.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -187,7 +188,16 @@ int OS_Alert_InsertDB(alert_data *al_data, DBConfig *db_config)
     i = 0;
     while(al_data->log[i])
     {
-        fulllog = os_LoadString(fulllog, al_data->log[i]);
+        long len = strlen(al_data->log[i]);
+        char templog[len+2];
+        if (al_data->log[i+1]) {
+            snprintf(templog, len, "%s\n", al_data->log[i]);
+        }
+        else {
+            snprintf(templog, len, "%s", al_data->log[i]);
+        }
+        fulllog = os_LoadString(fulllog, templog);
+//      fulllog = os_LoadString(fulllog, al_data->log[i]);
         i++;
     }
     osdb_escapestr(fulllog);

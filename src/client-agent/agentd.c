@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/client-agent/agentd.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -81,7 +82,12 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
         
     OS_ReadKeys(&keys);
     OS_StartCounter(&keys);
+
+    /* cmoraes : changed the following call to 
     os_write_agent_info(keys.keyentries[0]->name, NULL, keys.keyentries[0]->id);
+    */
+    os_write_agent_info(keys.keyentries[0]->name, NULL, keys.keyentries[0]->id,
+                        logr->profile);
 
 
     /* Start up message */

@@ -1,4 +1,5 @@
-<!-- @(#) $Id$
+<!-- @(#) $Id: ./etc/rules/pix_rules.xml, 2011/11/01 dcid Exp $
+
   -  Official PIX rules for OSSEC.
   -
   -  Copyright (C) 2009 Trend Micro Inc.
@@ -227,7 +228,7 @@
 
   <rule id="4386" level="10" frequency="8" timeframe="240">
     <if_matched_sid>4334</if_matched_sid>
-    <description>Nultiple AAA (VPN) authentication failures.</description>
+    <description>Multiple AAA (VPN) authentication failures.</description>
     <group>authentication_failures,</group>
   </rule>
 </group> <!-- SYSLOG,PIX -->

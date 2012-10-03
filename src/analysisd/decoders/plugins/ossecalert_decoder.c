@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/analysisd/decoders/plugins/ossecalert_decoder.c, 2012/03/28 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -54,7 +55,8 @@ void *OSSECAlert_Decoder_Exec(Eventinfo *lf)
 
 
     /* Checking the alert level. */
-    if(strncmp("Alert Level: ", lf->log, 12) != 0)
+    if(strncmp("Alert Level: ", lf->log, 12) != 0 &&
+       strncmp("ossec: Alert Level:", lf->log, 18) != 0)
     {
         return(NULL);
     }

@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/analysisd/testrule.c, 2012/07/23 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -92,6 +93,28 @@ int ReadDecodeXML(char *file);
 int SetDecodeXML();
 
 
+void logtest_help(const char *prog)
+{
+    print_out(" ");
+    print_out("%s %s - %s (%s)", __name, __version, __author, __contact);
+    print_out("%s", __site);
+    print_out(" ");
+    print_out("  %s: -[Vatfdh] [-U ut_str] [-u user] [-g group] [-c config] [-D dir]", prog);
+    print_out("    -V          Version and license message");
+    print_out("    -a          Alerts output");
+    print_out("    -t          Test configuration");
+    print_out("    -v          Verbose (full) output/rule debugging");
+    print_out("    -d          Execute in debug mode");
+    print_out("    -h          This help message");
+    print_out("    -U <rule:alert:decoder>   Unit test. Refer to contrib/ossec-testing/runtests.py");
+    print_out("    -u <user>   Run as 'user'");
+    print_out("    -g <group>  Run as 'group'");
+    print_out("    -c <config> Read the 'config' file");
+    print_out("    -D <dir>    Chroot to 'dir'");
+    print_out(" ");
+    exit(1);
+}
+
 
 
 /** int main(int argc, char **argv)
@@ -120,7 +143,7 @@ int main(int argc, char **argv)
     active_responses = NULL;
     memset(prev_month, '\0', 4);
 
-    while((c = getopt(argc, argv, "VatfdhU:u:g:D:c:")) != -1){
+    while((c = getopt(argc, argv, "VatvdhU:u:g:D:c:")) != -1){
         switch(c){
 	    case 'V':
 		print_version();
@@ -129,7 +152,7 @@ int main(int argc, char **argv)
                 t_config = 1;
                 break;
             case 'h':
-                help(ARGV0);
+                logtest_help(ARGV0);
                 break;
             case 'd':
                 nowDebug();
@@ -161,11 +184,11 @@ int main(int argc, char **argv)
             case 'a':
                 alert_only = 1;
                 break;    
-            case 'f':
+            case 'v':
                 full_output = 1;    
                 break;
             default:
-                help(ARGV0);
+                logtest_help(ARGV0);
                 break;
         }
 
@@ -266,7 +289,7 @@ int main(int argc, char **argv)
                 listfiles = Config.lists;
                 while(listfiles && *listfiles)
                 {
-                    verbose("%s: INFO: Reading loading the lists file: '%s'", ARGV0, *listfiles);
+                    verbose("%s: INFO: Reading the lists file: '%s'", ARGV0, *listfiles);
                     if(Lists_OP_LoadList(*listfiles) < 0)
                         ErrorExit(LISTS_ERROR, ARGV0, *listfiles);
                     free(*listfiles);
@@ -659,7 +682,7 @@ void OS_ReadMSG(int m_queue, char *ut_str)
                 char holder[1024];
                 holder[1] = '\0';
                 exit_code = 3;
-                if(strcasecmp(ut_decoder_name, lf->decoder_info->name) == 0)
+                if(lf->decoder_info->name != NULL && strcasecmp(ut_decoder_name, lf->decoder_info->name) == 0)
                 {
                     exit_code--;
                     snprintf(holder, 1023, "%d", currently_rule->sigid);

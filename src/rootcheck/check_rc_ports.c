@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/rootcheck/check_rc_ports.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -41,6 +42,7 @@
 
 int run_netstat(int proto, int port)
 {
+    int ret;
     char nt[OS_SIZE_1024 +1];
 
     if(proto == IPPROTO_TCP)
@@ -53,10 +55,17 @@ int run_netstat(int proto, int port)
         return(0);
     }
 
-    if(system(nt) == 0)    
+    ret = system(nt);
+
+    if(ret == 0)    
         return(1);
+
+    else if(ret == 1)
+    {
+        return(0);
+    }
     
-    return(0);    
+    return(1);
 }
 
 
