@@ -15,14 +15,10 @@
 
 
 
-/* strnlen is a GNU extension */
-#ifdef __linux__
- #define _GNU_SOURCE
- #include <string.h>
-#endif
+#include "shared.h"
+
 #include "csyslogd.h"
 #include "os_net/os_net.h"
-
 
 
 /* OS_SyslogD: Monitor the alerts and sends them via syslog.
@@ -33,6 +29,7 @@ void OS_CSyslogD(SyslogConfig **syslog_config)
     int s = 0;
     time_t tm;
     struct tm *p;
+    int tries = 0;
 
     file_queue *fileq;
     alert_data *al_data;
@@ -45,7 +42,17 @@ void OS_CSyslogD(SyslogConfig **syslog_config)
 
     /* Initating file queue - to read the alerts */
     os_calloc(1, sizeof(file_queue), fileq);
-    Init_FileQueue(fileq, p, 0);
+    while( (Init_FileQueue(fileq, p, 0) ) < 0 ) {
+        tries++;
+        if( tries > OS_CSYSLOGD_MAX_TRIES ) {
+            merror("%s: ERROR: Could not open queue after %d tries, exiting!",
+                   ARGV0, tries
+            );
+            exit(1);
+        }
+        sleep(1);
+    }
+    debug1("%s: INFO: File queue connected.", ARGV0 );
 
 
     /* Connecting to syslog. */
@@ -103,7 +110,7 @@ void OS_CSyslogD(SyslogConfig **syslog_config)
 int field_add_string(char *dest, int size, const char *format, const char *value ) {
     char buffer[OS_SIZE_2048];
     int len = 0;
-    int dest_sz = size - strnlen(dest, OS_SIZE_2048);
+    int dest_sz = size - strlen(dest); 
 
     if(dest_sz <= 0 ) {
         // Not enough room in the buffer
@@ -128,7 +135,7 @@ int field_add_string(char *dest, int size, const char *format, const char *value
 int field_add_truncated(char *dest, int size, const char *format, const char *value, int fmt_size ) {
     char buffer[OS_SIZE_2048];
 
-    int available_sz = size - strnlen(dest, OS_SIZE_2048);
+    int available_sz = size - strlen(dest);
     int total_sz = strlen(value) + strlen(format) - fmt_size;
     int field_sz = available_sz - strlen(format) + fmt_size;
 
@@ -148,24 +155,27 @@ int field_add_truncated(char *dest, int size, const char *format, const char *va
                 ((value[0] != 'u') && (value[1] != 'n') && (value[4] != 'k'))
             )
     ) {
-        if( (truncated=malloc(field_sz)) == NULL ) {
-            // Memory error
-            return -3;
-        }
 
-        if( total_sz > available_sz ) {
-            // Truncate and add a trailer
-            os_substr(truncated, value, 0, field_sz - strlen(trailer) - 1);
-            strcat(truncated, trailer);
+        if( (truncated=malloc(field_sz + 1)) != NULL ) {
+            if( total_sz > available_sz ) {
+                // Truncate and add a trailer
+                os_substr(truncated, value, 0, field_sz - strlen(trailer));
+                strcat(truncated, trailer);
+            }
+            else {
+                strncpy(truncated,value,field_sz);
+            }
+
+            len = snprintf(buffer, available_sz, format, truncated);
+            strncat(dest, buffer, available_sz);
         }
         else {
-            strncpy(truncated,value,field_sz);
+            // Memory Error
+            len = -3;
         }
-
-        len = snprintf(buffer, available_sz, format, truncated);
-        strncat(dest, buffer, available_sz);
-        free(truncated);
     }
+    // Free the temporary pointer
+    free(truncated);
 
     return len;
 }
@@ -174,7 +184,7 @@ int field_add_truncated(char *dest, int size, const char *format, const char *va
 int field_add_int(char *dest, int size, const char *format, const int value ) {
     char buffer[255];
     int len = 0;
-    int dest_sz = size - strnlen(dest, OS_SIZE_2048);
+    int dest_sz = size - strlen(dest);
 
     if(dest_sz <= 0 ) {
         // Not enough room in the buffer
