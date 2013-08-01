@@ -47,20 +47,16 @@ setagent:
 		@echo "CEXTRA=-DCLIENT" >> ./Config.OS
 
 setclang:
-		@mv LOCATION LOCATION.backup
-		@sed -e "s/^CC=.*/CC=clang/g" LOCATION.backup > LOCATION
-		@rm LOCATION.backup
+		@sed -i '' -e "s/^CC=.*/CC=clang/g" LOCATION
 
 unsetclang:
-		@mv LOCATION LOCATION.backup
-		@sed -e "s/^CC=.*/CC=gcc/g" LOCATION.backup > LOCATION
-		@rm LOCATION.backup
+		@sed -i '' -e "s/^CC=.*/CC=gcc/g" LOCATION
 
 setprelude:
 		@echo "CPRELUDE=-DPRELUDE -lprelude `libprelude-config --pthread-cflags` `libprelude-config --libs`" >> ./Config.OS
         
 setgeoip:
-		@echo "CGEOIP=-DGEOIP -I/usr/local/include -L/usr/local/lib -lGeoIP" >> ./Config.OS
+		@echo "CGEOIP=-DGEOIP -lGeoIP" >> ./Config.OS
 
 setdb:
 		@cd ./os_dbd; echo "CDB=`./dbmake.sh`" >> ../Config.OS;

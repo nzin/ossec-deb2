@@ -1,5 +1,5 @@
-OSSEC v2.7.1
-Copyright (C) 2013 Trend Micro Inc.
+OSSEC v2.7-beta1
+Copyright (C) 2012 Trend Micro Inc.
 
 Many thanks to everyone who contributed and helped with
 the ossec project. Below is the list of all the people
@@ -15,21 +15,14 @@ who helped us since our first release (0.1).
   - Slava Semushin <php-coder at altlinux.org>
   - Ahmet Ozturk <oahmet ( at )  metu.edu.tr>
   - Scott R. Shinn 
-  - George Kargiotakis
   - Jason Stelzer
-  - Xavier Mertens
-  - Stjepan Gros
-  - Brad Lhotsky
+  - Stjepan
   - cmlara
-  - Christian Gottsche (cgzones)
   - Dominic
   - JB Cheng
-  - Cristobel Rosa ( at ) alienvault
-  - jp.zurbrugg
-  - bil_hays (at) unc edu
 
 
--Testing/Patches Rules and other contributions.
+-Testing/Patches and other contributions.
   - Cédric Bleimling <cedri at dryades.org
   - Dean Takemori <dtakemori at thdfsg.com>
   - Sebastien Tricaud <toady at gscore.org>
@@ -58,11 +51,6 @@ who helped us since our first release (0.1).
   - Danny Fullerton
   - Jeremy Hanmer
   - Pepe Sanz
-  - Kat Fitzgerald
-  - Regis Houssin
-  - carlopmart
-  - Ash Kumar
-  - Alexandro Silva
   
   
 -Translations

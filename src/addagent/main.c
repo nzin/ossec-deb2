@@ -25,8 +25,7 @@ void helpmsg()
     printf("\t-l          List available agents.\n");
     printf("\t-e <id>     Extracts key for an agent (Manager only).\n");
     printf("\t-i <id>     Import authentication key (Agent only).\n");
-    printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n");
-    printf("\t            <file> contains lines in IP,NAME format.\n\n");
+    printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n\n");
     exit(1);
 }
 

@@ -9,7 +9,7 @@
  * License (version 2) as published by the FSF - Free Software
  * Foundation.
  *
- * License details at the LICENSE file included with OSSEC or
+ * License details at the LICENSE file included with OSSEC or 
  * online at: http://www.ossec.net/en/licensing.html
  */
 
@@ -71,7 +71,6 @@ int main(int argc, char **argv)
 {
     char *tmpstr;
     char mypath[OS_MAXSTR +1];
-    char myfinalpath[OS_MAXSTR +1];
     char myfile[OS_MAXSTR +1];
 
     /* Setting the name */
@@ -80,10 +79,9 @@ int main(int argc, char **argv)
 
     /* Find where I'm */
     mypath[OS_MAXSTR] = '\0';
-    myfinalpath[OS_MAXSTR] = '\0';
     myfile[OS_MAXSTR] = '\0';
-
-
+    
+    
     /* mypath is going to be the whole path of the file */
     strncpy(mypath, argv[0], OS_MAXSTR);
     tmpstr = strrchr(mypath, '\\');
@@ -102,14 +100,15 @@ int main(int argc, char **argv)
     }
     chdir(mypath);
     getcwd(mypath, OS_MAXSTR -1);
-    snprintf(myfinalpath, OS_MAXSTR, "\"%s\\%s\"", mypath, myfile);
-
-
+    strncat(mypath, "\\", OS_MAXSTR - (strlen(mypath) + 2));
+    strncat(mypath, myfile, OS_MAXSTR - (strlen(mypath) + 2));
+    
+     
     if(argc > 1)
     {
         if(strcmp(argv[1], "install-service") == 0)
         {
-            return(InstallService(myfinalpath));
+            return(InstallService(mypath));
         }
         else if(strcmp(argv[1], "uninstall-service") == 0)
         {
@@ -164,6 +163,7 @@ int local_start()
     }
     logr->port = DEFAULT_SECURE;
 
+
     /* Getting debug level */
     debug_level = getDefine_Int("windows","debug", 0, 2);
     while(debug_level != 0)
@@ -171,12 +171,12 @@ int local_start()
         nowDebug();
         debug_level--;
     }
-    accept_manager_commands = getDefine_Int("logcollector",
+    accept_manager_commands = getDefine_Int("logcollector", 
                               "remote_commands", 0, 1);
 
-
-
-
+    
+    
+    
     /* Configuration file not present */
     if(File_DateofChange(cfg) < 0)
         ErrorExit("%s: Configuration file '%s' not found",ARGV0,cfg);
@@ -187,7 +187,7 @@ int local_start()
     {
         ErrorExit("%s: WSAStartup() failed", ARGV0);
     }
-
+                                
 
     /* Read agent config */
     debug1("%s: DEBUG: Reading agent configuration.", ARGV0);
@@ -195,20 +195,7 @@ int local_start()
     {
         ErrorExit(CLIENT_ERROR,ARGV0);
     }
-    if(logr->notify_time == 0)
-    {
-        logr->notify_time = NOTIFY_TIME;
-    }
-    if(logr->max_time_reconnect_try == 0 )
-    {
-      logr->max_time_reconnect_try = NOTIFY_TIME * 3;
-    }
-    if(logr->max_time_reconnect_try <= logr->notify_time)
-    {
-      logr->max_time_reconnect_try = (logr->notify_time * 3);
-      verbose("%s Max time to reconnect can't be less than notify_time(%d), using notify_time*3 (%d)",ARGV0,logr->notify_time,logr->max_time_reconnect_try);
-    }
-    verbose("%s Using notify time: %d and max time to reconnect: %d",ARGV0,logr->notify_time,logr->max_time_reconnect_try);
+
 
     /* Reading logcollector config file */
     debug1("%s: DEBUG: Reading logcollector configuration.", ARGV0);
@@ -223,7 +210,7 @@ int local_start()
     {
         ErrorExit(AG_NOKEYS_EXIT, ARGV0);
     }
-
+                                
 
 
     /* If there is not file to monitor, create a clean entry
@@ -248,11 +235,11 @@ int local_start()
     {
         logr->execdq = -1;
     }
-
-
+    
+    
     /* Reading keys */
     verbose(ENC_READ, ARGV0);
-
+        
     OS_ReadKeys(&keys);
     OS_StartCounter(&keys);
     os_write_agent_info(keys.keyentries[0]->name, NULL, keys.keyentries[0]->id, NULL);
@@ -279,47 +266,47 @@ int local_start()
 
 
     /* Starting syscheck thread */
-    if(CreateThread(NULL,
-                    0,
-                    (LPTHREAD_START_ROUTINE)skthread,
-                    NULL,
-                    0,
+    if(CreateThread(NULL, 
+                    0, 
+                    (LPTHREAD_START_ROUTINE)skthread, 
+                    NULL, 
+                    0, 
                     (LPDWORD)&threadID) == NULL)
     {
         merror(THREAD_ERROR, ARGV0);
     }
 
-
+    
 
     /* Checking if server is connected */
     os_setwait();
-
+        
     start_agent(1);
-
+            
     os_delwait();
 
 
     /* Sending integrity message for agent configs */
     intcheck_file(cfg, "");
     intcheck_file(OSSEC_DEFINES, "");
-
+                
 
     /* Starting receiver thread */
-    if(CreateThread(NULL,
-                    0,
-                    (LPTHREAD_START_ROUTINE)receiver_thread,
-                    NULL,
-                    0,
+    if(CreateThread(NULL, 
+                    0, 
+                    (LPTHREAD_START_ROUTINE)receiver_thread, 
+                    NULL, 
+                    0, 
                     (LPDWORD)&threadID2) == NULL)
     {
         merror(THREAD_ERROR, ARGV0);
     }
-
-
+    
+    
     /* Sending agent information message */
     send_win32_info(time(0));
-
-
+    
+    
     /* Startting logcollector -- main process here */
     LogCollectorStart();
 
@@ -332,26 +319,27 @@ int local_start()
 int SendMSG(int queue, char *message, char *locmsg, char loc)
 {
     int _ssize;
-
+    
     time_t cu_time;
-
+    
     char *pl;
     char tmpstr[OS_MAXSTR+2];
     char crypt_msg[OS_MAXSTR +2];
-
-    DWORD dwWaitResult;
+    
+    DWORD dwWaitResult; 
 
     tmpstr[OS_MAXSTR +1] = '\0';
     crypt_msg[OS_MAXSTR +1] = '\0';
 
-    debug2("%s: DEBUG: Attempting to send message to server.", ARGV0);
 
+    debug2("%s: DEBUG: Attempting to send message to server.", ARGV0);
+    
     /* Using a mutex to synchronize the writes */
     while(1)
     {
         dwWaitResult = WaitForSingleObject(hMutex, 1000000L);
 
-        if(dwWaitResult != WAIT_OBJECT_0)
+        if(dwWaitResult != WAIT_OBJECT_0) 
         {
             switch(dwWaitResult)
             {
@@ -362,8 +350,8 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
                 case WAIT_ABANDONED:
                     merror("%s: Error waiting mutex (abandoned).", ARGV0);
                     return(0);
-                default:
-                    merror("%s: Error waiting mutex.", ARGV0);
+                default:    
+                    merror("%s: Error waiting mutex.", ARGV0);    
                     return(0);
             }
         }
@@ -372,29 +360,28 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
             /* Lock acquired */
             break;
         }
-    }	/*end - while for mutex...*/
+    }
+
 
     cu_time = time(0);
-
+    
 
     #ifndef ONEWAY
     /* Check if the server has responded */
-    if((cu_time - available_server) > logr->notify_time)
+    if((cu_time - available_server) > (NOTIFY_TIME - 180))
     {
         debug1("%s: DEBUG: Sending info to server (c1)...", ARGV0);
-        verbose("%s More than %d seconds without server response...sending win32info", ARGV0,logr->notify_time);
         send_win32_info(cu_time);
 
 
         /* Attempting to send message again. */
-        if((cu_time - available_server) > logr->notify_time)
+        if((cu_time - available_server) > NOTIFY_TIME)
         {
-            /* Try again... */
             sleep(1);
             send_win32_info(cu_time);
             sleep(1);
 
-            if((cu_time - available_server) > logr->notify_time)
+            if((cu_time - available_server) > NOTIFY_TIME)
             {
                 send_win32_info(cu_time);
             }
@@ -402,16 +389,16 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
 
 
         /* If we reached here, the server is unavailable for a while. */
-        if((cu_time - available_server) > logr->max_time_reconnect_try)
+        if((cu_time - available_server) > ((3 * NOTIFY_TIME) - 180))
         {
             int wi = 1;
-            verbose("%s More than %d seconds without server response...is server alive? and Is there connection?", ARGV0,logr->max_time_reconnect_try);
+
 
             /* Last attempt before going into reconnect mode. */
             debug1("%s: DEBUG: Sending info to server (c3)...", ARGV0);
             sleep(1);
             send_win32_info(cu_time);
-            if((cu_time - available_server) > logr->max_time_reconnect_try)
+            if((cu_time - available_server) > ((3 * NOTIFY_TIME) - 180))
             {
                 sleep(1);
                 send_win32_info(cu_time);
@@ -421,7 +408,7 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
 
             /* Checking and generating log if unavailable. */
             cu_time = time(0);
-            if((cu_time - available_server) > logr->max_time_reconnect_try)
+            if((cu_time - available_server) > ((3 * NOTIFY_TIME) - 180))
             {
                 int global_sleep = 1;
                 int mod_sleep = 12;
@@ -433,7 +420,7 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
 
 
                 /* Going into reconnect mode. */
-                while((cu_time - available_server) > logr->max_time_reconnect_try)
+                while((cu_time - available_server) > ((3*NOTIFY_TIME) - 180))
                 {
                     /* Sending information to see if server replies */
                     if(logr->sock != -1)
@@ -459,12 +446,12 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
                     {
                         int curr_rip = logr->rip_id;
                         merror("%s: INFO: Trying next server ip in "
-                               "line: '%s'.",
+                               "line: '%s'.", 
                                ARGV0,
                                logr->rip[logr->rip_id + 1] != NULL?
                                logr->rip[logr->rip_id + 1]:
                                logr->rip[0]);
-
+                        
                         connect_server(logr->rip_id +1);
 
                         if(logr->rip_id != curr_rip)
@@ -492,7 +479,7 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
                     }
                 }
 
-                verbose(AG_CONNECTED, ARGV0, logr->rip[logr->rip_id],
+                verbose(AG_CONNECTED, ARGV0, logr->rip[logr->rip_id], 
                                              logr->port);
                 verbose(SERVER_UP, ARGV0);
             }
@@ -513,7 +500,7 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
     }
 
 
-
+    
     /* locmsg cannot have the C:, as we use it as delimiter */
     pl = strchr(locmsg, ':');
     if(pl)
@@ -526,9 +513,9 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
         pl = locmsg;
     }
 
-
+    
     debug2("%s: DEBUG: Sending message to server: '%s'", ARGV0, message);
-
+    
     snprintf(tmpstr,OS_MAXSTR,"%c:%s:%s", loc, pl, message);
 
     _ssize = CreateSecMSG(&keys, tmpstr, crypt_msg, 0);
@@ -540,9 +527,9 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
         merror(SEC_ERROR,ARGV0);
         if(!ReleaseMutex(hMutex))
         {
-            merror("%s: Error releasing mutex.", ARGV0);
+            merror("%s: Error releasing mutex.", ARGV0);        
         }
-
+        
         return(-1);
     }
 
@@ -557,7 +544,7 @@ int SendMSG(int queue, char *message, char *locmsg, char loc)
     {
         merror("%s: Error releasing mutex.", ARGV0);
     }
-    return(0);
+    return(0);        
 }
 
 
@@ -566,12 +553,12 @@ int StartMQ(char * path, short int type)
 {
     /* Connecting to the server. */
     connect_server(0);
-
+    
     if((path == NULL) && (type == 0))
     {
         return(0);
     }
-
+    
     return(0);
 }
 
@@ -588,7 +575,7 @@ void send_win32_info(time_t curr_time)
 
 
     debug1("%s: DEBUG: Sending keep alive message.", ARGV0);
-    verbose("%s Sending keep alive message....", ARGV0);
+
 
     /* fixing time */
     __win32_curr_time = curr_time;
@@ -617,8 +604,8 @@ void send_win32_info(time_t curr_time)
 
         __win32_shared_time = __win32_curr_time;
     }
-
-
+    
+    
     /* get shared files */
     if(!__win32_shared)
     {
