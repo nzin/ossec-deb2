@@ -1,4 +1,4 @@
-ossec-hids (2.7.1-beta1) UNRELEASED; urgency=low
+ossec-hids (2.7.1-beta-1-1) UNRELEASED; urgency=low
 
   * Preliminary release (Closes: #361954)
     - Provides basic functionaly (start/stop) but it still missing proper
