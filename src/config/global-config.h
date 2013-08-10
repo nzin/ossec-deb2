@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/config/global-config.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -73,6 +74,13 @@ typedef struct __Config
 
     /* Global rule hash. */
     void *g_rules_hash;
+
+#ifdef GEOIP
+    /* GeoIP support */
+    u_int8_t loggeoip;
+    char *geoip_db_path;
+    char *geoip6_db_path;
+#endif
 
 }_Config;
 

@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/config/syscheck-config.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -210,6 +211,9 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
     char **dir;
     char *tmp_str;
     dir = OS_StrBreak(',', dirs, MAX_DIR_SIZE); /* Max number */
+    char **dir_org = dir;
+
+    int ret = 0, i;
 
     /* Dir can not be null */
     if(dir == NULL)
@@ -256,7 +260,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
         if(!g_attrs || !g_values)
         {
             merror(SYSCHECK_NO_OPT, ARGV0, dirs);
-            return(0);
+            ret = 0;
+            goto out_free;
         }
 
         attrs = g_attrs;
@@ -282,7 +287,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking sum */
@@ -299,7 +305,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking md5sum */
@@ -315,7 +322,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking sha1sum */
@@ -331,7 +339,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking permission */
@@ -347,7 +356,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking size */
@@ -363,7 +373,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking owner */
@@ -379,7 +390,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             /* Checking group */
@@ -395,7 +407,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             else if(strcmp(*attrs, xml_real_time) == 0)
@@ -410,7 +423,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             else if(strcmp(*attrs, xml_report_changes) == 0)
@@ -425,7 +439,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
                 else
                 {
                     merror(SK_INV_OPT, ARGV0, *values, *attrs);
-                    return(0);
+                    ret = 0;
+                    goto out_free;
                 }
             }
             else if(strcmp(*attrs, xml_restrict) == 0)
@@ -435,7 +450,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
             else
             {
                 merror(SK_INV_ATTR, ARGV0, *attrs);
-                return(0);
+                ret = 0;
+                goto out_free;
             }
             attrs++; values++;
         }
@@ -446,7 +462,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
         {
             merror(SYSCHECK_NO_OPT, ARGV0, dirs);
             if(restrictfile) free(restrictfile);
-            return(0);
+            ret = 0;
+            goto out_free;
         }
         
         
@@ -469,7 +486,8 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
             if(strcmp(syscheck->dir[i], tmp_dir) == 0)
             {
                 merror(SK_DUP, ARGV0, tmp_dir);
-                return(1);
+                ret = 1;
+                goto out_free;
             }
 
             i++;
@@ -488,13 +506,15 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
             if(glob(tmp_dir, 0, NULL, &g) != 0)
             {
                 merror(GLOB_ERROR, ARGV0, tmp_dir);
-                return(1);
+                ret = 1;
+                goto out_free;
             }
 
             if(g.gl_pathv[0] == NULL)
             {
                 merror(GLOB_NFOUND, ARGV0, tmp_dir);
-                return(1);
+                ret = 1;
+                goto out_free;
             }
             
             while(g.gl_pathv[gindex])
@@ -525,7 +545,17 @@ int read_attr(config *syscheck, char *dirs, char **g_attrs, char **g_values)
         dir++;    
     }
     
-    return(1);
+    ret = 1;
+
+out_free:
+
+    i = 0;
+    while(dir_org[i])
+        free(dir_org[i++]);
+
+    free(dir_org);
+
+    return ret;
 }
 
 
@@ -546,6 +576,7 @@ int Read_Syscheck(XML_NODE node, void *configp, void *mailp)
     char *xml_alert_new_files = "alert_new_files";
     char *xml_disabled = "disabled";
     char *xml_scan_on_start = "scan_on_start";
+    char *xml_prefilter_cmd = "prefilter_cmd";
 
     /* Configuration example 
     <directories check_all="yes">/etc,/usr/bin</directories>
@@ -827,6 +858,34 @@ int Read_Syscheck(XML_NODE node, void *configp, void *mailp)
         else if(strcmp(node[i]->element,xml_alert_new_files) == 0)
         {
             /* alert_new_files option is not read here. */
+        }
+        else if(strcmp(node[i]->element,xml_prefilter_cmd) == 0)
+        {
+            char cmd[OS_MAXSTR];
+            struct stat statbuf;
+
+            #ifdef WIN32
+            ExpandEnvironmentStrings(node[i]->content, cmd, sizeof(cmd) -1);
+            #else
+            strncpy(cmd, node[i]->content, sizeof(cmd)-1);
+            #endif
+
+            if (strlen(cmd) > 0) {
+                char statcmd[OS_MAXSTR];
+                char *ix;
+                strncpy(statcmd, cmd, sizeof(statcmd)-1);
+                if (NULL != (ix = strchr(statcmd, ' '))) { *ix = '\0'; }
+                if (stat(statcmd, &statbuf) == 0) {
+                    // More checks needed (perms, owner, etc.)
+                    os_calloc(1, strlen(cmd)+1, syscheck->prefilter_cmd);
+                    strncpy(syscheck->prefilter_cmd, cmd, strlen(cmd));
+                }
+                else
+                {
+                    merror(XML_VALUEERR,ARGV0, node[i]->element, node[i]->content);
+                    return(OS_INVALID);
+                }
+            }
         }
         else
         {

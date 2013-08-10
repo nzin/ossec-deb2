@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/addagent/manage_agents.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -29,6 +30,7 @@ int remove_agent();
 /* Extract or import a key */
 int k_extract(char *cmdextract);
 int k_import(char *cmdimport);
+int k_bulkload(char *cmdbulk);
 
 /* Validation functions */
 int OS_IsValidName(char *u_name);
@@ -86,8 +88,8 @@ fpos_t fp_pos;
 #define ADDED           "Added.\n"
 #define ADD_NOT         "Not Adding ..\n"
 #define PRESS_ENTER     "** Press ENTER to return to the main menu.\n"
-#define MUST_RESTART    "\n** You must restart the server for your changes" \
-                        " to have effect.\n\n"
+#define MUST_RESTART    "\n** You must restart OSSEC for your changes" \
+                        " to take effect.\n\n"
 
 /* Add errors */
 #define ADD_ERROR_ID    "\n** ID '%s' already present. They must be unique.\n\n"

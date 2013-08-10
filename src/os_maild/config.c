@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/os_maild/config.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -39,6 +40,9 @@ int MailConf(int test_config, char *cfgfile, MailConfig *Mail)
     Mail->gran_format = NULL;
     Mail->groupping = 1;
     Mail->strict_checking = 0;
+#ifdef GEOIP
+    Mail->geoip = 0;
+#endif
 
     if(ReadConfig(modules, cfgfile, NULL, Mail) < 0)
         return(OS_INVALID);

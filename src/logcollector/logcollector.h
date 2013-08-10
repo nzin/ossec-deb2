@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/logcollector/logcollector.h, 2012/03/28 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -31,7 +32,7 @@
 
 
 /* Read logcollector config */
-int LogCollectorConfig(char * cfgfile);
+int LogCollectorConfig(char * cfgfile, int accept_remote);
 
 /* Stary log collector daemon */
 void LogCollectorStart();
@@ -44,6 +45,9 @@ void *read_syslog(int pos, int *rc, int drop_it);
 
 /* Read snort full file */
 void *read_snortfull(int pos, int *rc, int drop_it);
+
+/* Read ossec alert file */
+void *read_ossecalert(int pos, int *rc, int drop_it);
 
 /* Read nmap grepable format */
 void *read_nmapg(int pos, int *rc, int drop_it);

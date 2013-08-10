@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/win32/win_service.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -24,8 +25,8 @@
 #endif
 
 static LPTSTR g_lpszServiceName        = "OssecSvc";
-static LPTSTR g_lpszServiceDisplayName = "OSSEC Hids";
-static LPTSTR g_lpszServiceDescription = "OSSEC Hids Windows Agent";
+static LPTSTR g_lpszServiceDisplayName = "OSSEC HIDS";
+static LPTSTR g_lpszServiceDescription = "OSSEC HIDS Windows Agent";
 
 static SERVICE_STATUS          ossecServiceStatus;
 static SERVICE_STATUS_HANDLE   ossecServiceStatusHandle;

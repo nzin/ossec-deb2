@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# @(#) $Id$
+# @(#) $Id: ./src/agentlessd/scripts/register_host.sh, 2012/07/23 dcid Exp $
+
 # Agentless monitoring
 #
 # Copyright (C) 2009 Trend Micro Inc.
@@ -88,6 +89,7 @@ elif [ "x$1" = "xadd" ]; then
         echo "ERROR: Unable to creating entry (echo failed)."
         exit 1;
     fi    
+    chmod 744 $MYPASS
     echo "*Host $2 added."
 
 else

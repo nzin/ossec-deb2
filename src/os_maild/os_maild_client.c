@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/os_maild/os_maild_client.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -13,6 +14,10 @@
 #include "shared.h"
 #include "maild.h"
 
+/* GeoIP Stuff */
+#ifdef GEOIP
+#include "config/config.h"
+#endif
 
 /* OS_RecvMailQ, 
  * v0.1, 2005/03/15
@@ -25,6 +30,10 @@ MailMsg *OS_RecvMailQ(file_queue *fileq, struct tm *p,
     int i = 0, body_size = OS_MAXSTR -3, log_size, sms_set = 0,donotgroup = 0;
     char logs[OS_MAXSTR + 1];
     char *subject_host;
+#ifdef GEOIP
+    char geoip_msg_src[OS_SIZE_1024 +1];
+    char geoip_msg_dst[OS_SIZE_1024 +1];
+#endif
     
     MailMsg *mail;
     alert_data *al_data;
@@ -103,8 +112,38 @@ MailMsg *OS_RecvMailQ(file_queue *fileq, struct tm *p,
         *subject_host = '-';
     }
 
+#ifdef GEOIP
+    /* Get GeoIP information */
+    if (Mail->geoip) {
+       if (al_data->geoipdatasrc) {
+           snprintf(geoip_msg_src, OS_SIZE_1024, "Src Location: %s\r\n", al_data->geoipdatasrc);
+       } else {
+           geoip_msg_src[0] = '\0';
+       }
+       if (al_data->geoipdatadst) {
+           snprintf(geoip_msg_dst, OS_SIZE_1024, "Dst Location: %s\r\n", al_data->geoipdatadst);
+       } else {
+           geoip_msg_dst[0] = '\0';
+       }
+    }
+    else {
+       geoip_msg_src[0] = '\0';
+       geoip_msg_dst[0] = '\0';
+    }
+#endif
     
     /* Body */
+#ifdef GEOIP
+    snprintf(mail->body, BODY_SIZE -1, MAIL_BODY,
+            al_data->date,
+            al_data->location,
+            al_data->rule,
+            al_data->level,
+            al_data->comment,
+            geoip_msg_src,
+            geoip_msg_dst,
+            logs);
+#else
     snprintf(mail->body, BODY_SIZE -1, MAIL_BODY,
             al_data->date,
             al_data->location,
@@ -112,7 +151,7 @@ MailMsg *OS_RecvMailQ(file_queue *fileq, struct tm *p,
             al_data->level,
             al_data->comment,
             logs);
-
+#endif
 
     /* Checking for granular email configs */
     if(Mail->gran_to)

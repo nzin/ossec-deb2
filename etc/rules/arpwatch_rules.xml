@@ -1,4 +1,5 @@
-<!-- @(#) $Id$
+<!-- @(#) $Id: ./etc/rules/arpwatch_rules.xml, 2011/09/08 dcid Exp $
+
   -  Official Arpwatch rules for OSSEC.
   -
   -  Copyright (C) 2009 Trend Micro Inc.
@@ -72,6 +73,14 @@
     <match>reused old ethernet address</match>
     <description>An IP has reverted to an old ethernet address.</description>
   </rule>
+
+  <rule id="7209" level="7">
+    <if_sid>7200</if_sid>
+    <match>ethernet mismatch</match>
+    <description>Possible arpspoofing attempt.</description>
+    <group>ip_spoof,</group>
+  </rule>
+
 
 
 </group> <!-- SYSLOG,arpwatch, -->

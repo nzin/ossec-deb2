@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/syscheckd/config.c, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -37,7 +38,10 @@ int Read_Syscheck_Config(char * cfgfile)
     syscheck.registry = NULL;
     syscheck.reg_fp = NULL;
     #endif
+    syscheck.prefilter_cmd = NULL;
 
+
+    debug2("%s: Reading Configuration [%s]", "syscheckd", cfgfile);
 
     /* Reading config */
     if(ReadConfig(modules, cfgfile, &syscheck, NULL) < 0)
@@ -45,6 +49,8 @@ int Read_Syscheck_Config(char * cfgfile)
 
 
     #ifdef CLIENT
+    debug2("%s: Reading Client Configuration [%s]", "syscheckd", cfgfile);
+
     /* Reading shared config */
     modules|= CAGENT_CONFIG;
     ReadConfig(modules, AGENTCONFIG, &syscheck, NULL);

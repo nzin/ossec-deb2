@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/error_messages/error_messages.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -97,6 +98,8 @@
 #define IMSG_ERROR	    "%s(1222): ERROR: Invalid msg: %s"
 #define SNDMAIL_ERROR	"%s(1223): ERROR: Error Sending email to %s (smtp server)"
 #define XML_INV_GRAN_MAIL "%s(1224): ERROR: Invalid 'email_alerts' config (missing parameters)."
+#define CHLDWAIT_ERROR  "%s(1261): ERROR: Waiting for child process. (status: %d)."
+#define TOOMANY_WAIT_ERROR "%s(1262): ERROR: Too many errors waiting for child process(es)."
 
 
 /* rootcheck */
@@ -126,6 +129,9 @@
 #define INVALID_CAT      "%s(1273): ERROR: Invalid category '%s' chosen."
 #define INVALID_CONFIG   "%s(1274): ERROR: Invalid configuration. Element '%s': %s."
 #define INVALID_HOSTNAME "%s(1275): ERROR: Invalid hostname in syslog message: '%s'."
+#ifdef GEOIP
+#define INVALID_GEOIP_DB "%s(1276): ERROR: Cannot open GeoIP database: '%s'."
+#endif
 
 
 /* Log collector */

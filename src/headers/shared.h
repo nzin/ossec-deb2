@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/headers/shared.h, 2011/09/08 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -218,6 +219,7 @@ char *__local_name;
 #include "file-queue.h"
 #include "read-agents.h"
 #include "report_op.h"
+#include "string_op.h"
 
 #include "os_xml/os_xml.h"
 #include "os_regex/os_regex.h"

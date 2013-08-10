@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/addagent/manage_agents.c, 2012/02/07 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All rights reserved.
@@ -197,7 +198,7 @@ int add_agent()
     do
     {
         /* Default ID */
-        i = 1024;
+        i = MAX_AGENTS + 768;
         snprintf(id, 8, "%03d", i);
         while(!IDExist(id))
         {

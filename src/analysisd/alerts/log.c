@@ -1,4 +1,5 @@
-/* @(#) $Id$ */
+/* @(#) $Id: ./src/analysisd/alerts/log.c, 2012/03/30 dcid Exp $
+ */
 
 /* Copyright (C) 2009 Trend Micro Inc.
  * All right reserved.
@@ -18,6 +19,86 @@
 #include "eventinfo.h"
 #include "config.h"
 
+#ifdef GEOIP
+/* GeoIP Stuff */
+#include "GeoIP.h"
+#include "GeoIPCity.h"
+
+#define RFC1918_10     (167772160 & 4278190080)        /* 10/8 */
+#define RFC1918_172    (2886729728 & 4293918720)       /* 172.17/12 */
+#define RFC1918_192    (3232235520 & 4294901760)       /* 192.168/16 */
+#define NETMASK_8      4278190080      /* 255.0.0.0    */
+#define NETMASK_12     4293918720      /* 255.240.0.0  */
+#define NETMASK_16     4294901760      /* 255.255.0.0  */
+
+static const char * _mk_NA( const char * p ){
+	return p ? p : "N/A";
+}
+
+/* StrIP2Long */
+/* Convert an dot-quad IP address into long format
+ */
+unsigned long StrIP2Int(char *ip) {
+        unsigned int c1,c2,c3,c4;
+       /* IP address is not coming from user input -> We can trust it */
+       /* only minimal checking is performed */
+        int len = strlen(ip);
+        if ((len < 7) || (len > 15)) return 0;
+
+        sscanf(ip, "%d.%d.%d.%d", &c1, &c2, &c3, &c4);
+        return((unsigned long)c4+c3*256+c2*256*256+c1*256*256*256);
+}
+
+
+/* GeoIPLookup */
+/* Use the GeoIP API to locate an IP address
+ */
+char *GeoIPLookup(char *ip)
+{
+	GeoIP	*gi;
+	GeoIPRecord	*gir;
+	char buffer[OS_SIZE_1024 +1];
+        unsigned long longip;
+
+	/* Dumb way to detect an IPv6 address */
+	if (strchr(ip, ':')) {
+		/* Use the IPv6 DB */
+		gi = GeoIP_open(Config.geoip_db_path, GEOIP_INDEX_CACHE);
+		if (gi == NULL) {
+			merror(INVALID_GEOIP_DB, ARGV0, Config.geoip6_db_path);
+			return("Unknown");
+		}
+		gir = GeoIP_record_by_name_v6(gi, (const char *)ip);
+	}
+	else {
+		/* Use the IPv4 DB */
+                /* If we have a RFC1918 IP, do not perform a DB lookup (performance) */
+                longip = StrIP2Int(ip);
+                if (longip == 0 ) return("Unknown");
+                if ((longip & NETMASK_8)  == RFC1918_10 ||
+                    (longip & NETMASK_12) == RFC1918_172 ||
+                    (longip & NETMASK_16) == RFC1918_192) return("");
+
+		gi = GeoIP_open(Config.geoip_db_path, GEOIP_INDEX_CACHE);
+		if (gi == NULL) {
+			merror(INVALID_GEOIP_DB, ARGV0, Config.geoip_db_path);
+			return("Unknown");
+		}
+		gir = GeoIP_record_by_name(gi, (const char *)ip);
+	}
+	if (gir != NULL) {
+		sprintf(buffer,"%s,%s,%s",
+				_mk_NA(gir->country_code),
+				_mk_NA(GeoIP_region_name_by_code(gir->country_code, gir->region)),
+				_mk_NA(gir->city)
+		);
+		GeoIP_delete(gi);
+		return(buffer);
+	}
+	GeoIP_delete(gi);
+	return("Unknown");
+}
+#endif /* GEOIP */
 
 /* Drop/allow patterns */
 OSMatch FWDROPpm;
@@ -32,6 +113,15 @@ OSMatch FWALLOWpm;
  */
 void OS_Store(Eventinfo *lf)
 {
+    if(strcmp(lf->location, "ossec-keepalive") == 0)
+    {
+        return;
+    }
+    if(strstr(lf->location, "->ossec-keepalive") != NULL)
+    {
+        return;
+    }
+
     fprintf(_eflog,
             "%d %s %02d %s %s%s%s %s\n",
             lf->year,
@@ -51,10 +141,20 @@ void OS_Store(Eventinfo *lf)
 
 void OS_LogOutput(Eventinfo *lf)
 {
+#ifdef GEOIP
+    char geoip_msg_src[OS_SIZE_1024 +1];
+    char geoip_msg_dst[OS_SIZE_1024 +1];
+    geoip_msg_src[0] = '\0';
+    geoip_msg_dst[0] = '\0';
+    if (Config.loggeoip) {
+ 	if (lf->srcip) { strncpy(geoip_msg_src, GeoIPLookup(lf->srcip), OS_SIZE_1024); }
+	if (lf->dstip) { strncpy(geoip_msg_dst, GeoIPLookup(lf->dstip), OS_SIZE_1024); }
+    }
+#endif
     printf(
            "** Alert %d.%ld:%s - %s\n"
             "%d %s %02d %s %s%s%s\nRule: %d (level %d) -> '%s'"
-            "%s%s%s%s%s%s%s%s%s%s\n%.1256s\n",
+            "%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n%.1256s\n",
             lf->time,
             __crt_ftell,
             lf->generated_rule->alert_opts & DO_MAILALERT?" mail ":"",
@@ -73,11 +173,27 @@ void OS_LogOutput(Eventinfo *lf)
             lf->srcip == NULL?"":"\nSrc IP: ",
             lf->srcip == NULL?"":lf->srcip,
 
+#ifdef GEOIP
+            (strlen(geoip_msg_src) == 0)?"":"\nSrc Location: ",
+            (strlen(geoip_msg_src) == 0)?"":geoip_msg_src,
+#else
+	    "",
+            "",
+#endif
+
             lf->srcport == NULL?"":"\nSrc Port: ",
             lf->srcport == NULL?"":lf->srcport,
 
             lf->dstip == NULL?"":"\nDst IP: ",
             lf->dstip == NULL?"":lf->dstip,
+
+#ifdef GEOIP
+            (strlen(geoip_msg_dst) == 0)?"":"\nDst Location: ",
+            (strlen(geoip_msg_dst) == 0)?"":geoip_msg_dst,
+#else
+            "",
+            "",
+#endif
 
             lf->dstport == NULL?"":"\nDst Port: ",
             lf->dstport == NULL?"":lf->dstport,
@@ -112,11 +228,21 @@ void OS_LogOutput(Eventinfo *lf)
 /* _writefile: v0.2, 2005/02/09 */
 void OS_Log(Eventinfo *lf)
 {
+#ifdef GEOIP
+    char geoip_msg_src[OS_SIZE_1024 +1];
+    char geoip_msg_dst[OS_SIZE_1024 +1];
+    geoip_msg_src[0] = '\0';
+    geoip_msg_dst[0] = '\0';
+    if (Config.loggeoip) {
+        if (lf->srcip) { strncpy(geoip_msg_src, GeoIPLookup(lf->srcip), OS_SIZE_1024 ); }
+        if (lf->dstip) { strncpy(geoip_msg_dst, GeoIPLookup(lf->dstip), OS_SIZE_1024 ); }
+    }
+#endif
     /* Writting to the alert log file */
     fprintf(_aflog,
             "** Alert %d.%ld:%s - %s\n"
             "%d %s %02d %s %s%s%s\nRule: %d (level %d) -> '%s'"
-            "%s%s%s%s%s%s%s%s%s%s\n%.1256s\n",
+            "%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n%.1256s\n",
             lf->time,
             __crt_ftell,
             lf->generated_rule->alert_opts & DO_MAILALERT?" mail ":"",
@@ -135,11 +261,27 @@ void OS_Log(Eventinfo *lf)
             lf->srcip == NULL?"":"\nSrc IP: ",
             lf->srcip == NULL?"":lf->srcip,
 
+#ifdef GEOIP
+            (strlen(geoip_msg_src) == 0)?"":"\nSrc Location: ",
+            (strlen(geoip_msg_src) == 0)?"":geoip_msg_src,
+#else
+            "",
+            "",
+#endif
+
             lf->srcport == NULL?"":"\nSrc Port: ",
             lf->srcport == NULL?"":lf->srcport,
 
             lf->dstip == NULL?"":"\nDst IP: ",
             lf->dstip == NULL?"":lf->dstip,
+
+#ifdef GEOIP
+            (strlen(geoip_msg_dst) == 0)?"":"\nDst Location: ",
+            (strlen(geoip_msg_dst) == 0)?"":geoip_msg_dst,
+#else
+            "",
+            "",
+#endif
 
             lf->dstport == NULL?"":"\nDst Port: ",
             lf->dstport == NULL?"":lf->dstport,
@@ -195,7 +337,8 @@ int FW_Log(Eventinfo *lf)
      * action, there is no point in going
      * forward over here
      */
-    if(!lf->action || !lf->srcip)
+    if(!lf->action || !lf->srcip || !lf->dstip || !lf->srcport || 
+       !lf->dstport || !lf->protocol)
     {
         return(0);
     }
