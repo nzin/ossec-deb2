@@ -10,9 +10,9 @@ Reviewed-By: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
 Last-Update: 2011-07-30
 
 
---- ossec-hids-2.6.orig/src/Config.Make
-+++ ossec-hids-2.6/src/Config.Make
-@@ -22,6 +22,6 @@ OS_CRYPTO = ${PT}os_crypto/os_crypto.a
+--- a/src/Config.Make
++++ b/src/Config.Make
+@@ -22,6 +22,6 @@
  OS_SHARED = ${PT}shared/lib_shared.a
  OS_ROOTCHECK = ${PT}rootcheck/rootcheck_lib.a
  OS_CONFIG = ${PT}config/lib_config.a
@@ -21,9 +21,9 @@ Last-Update: 2011-07-30
 +OS_ZLIB = ${PT}os_zlib/os_zlib.c
 +OS_LINK = ${IEXTRA} -I/usr/include -lz
  DBS = cdb/cdb.a
---- ossec-hids-2.6.orig/src/Makeall
-+++ ossec-hids-2.6/src/Makeall
-@@ -129,10 +129,10 @@ fi
+--- a/src/Makeall
++++ b/src/Makeall
+@@ -129,10 +129,10 @@
  # Getting values for each action
  if [ "X${ARGV}" = "Xall" ]; then
      DIRECTORIES="${LIBS} ${SOURCES} ${BINARIES}" 
