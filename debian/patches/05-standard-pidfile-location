@@ -1,7 +1,5 @@
-Index: pkg-ossec/active-response/host-deny.sh
-===================================================================
---- pkg-ossec.orig/active-response/host-deny.sh	2012-08-29 02:03:05.000000000 +0200
-+++ pkg-ossec/active-response/host-deny.sh	2012-08-29 02:10:06.000000000 +0200
+--- a/active-response/host-deny.sh
++++ b/active-response/host-deny.sh
 @@ -9,12 +9,14 @@
  USER=$2
  IP=$3
@@ -23,10 +21,8 @@ Index: pkg-ossec/active-response/host-deny.sh
  UNAME=`uname`
  
  
-Index: pkg-ossec/src/init/ossec-client.sh
-===================================================================
---- pkg-ossec.orig/src/init/ossec-client.sh	2012-08-29 02:05:48.000000000 +0200
-+++ pkg-ossec/src/init/ossec-client.sh	2012-08-29 02:10:06.000000000 +0200
+--- a/src/init/ossec-client.sh
++++ b/src/init/ossec-client.sh
 @@ -4,10 +4,14 @@
  # Author: Daniel B. Cid <daniel.cid@gmail.com>
  
@@ -120,10 +116,8 @@ Index: pkg-ossec/src/init/ossec-client.sh
          
       done    
      
-Index: pkg-ossec/src/init/ossec-local.sh
-===================================================================
---- pkg-ossec.orig/src/init/ossec-local.sh	2012-08-29 02:05:38.000000000 +0200
-+++ pkg-ossec/src/init/ossec-local.sh	2012-08-29 02:10:06.000000000 +0200
+--- a/src/init/ossec-local.sh
++++ b/src/init/ossec-local.sh
 @@ -5,11 +5,13 @@
  
  
@@ -169,7 +163,7 @@ Index: pkg-ossec/src/init/ossec-local.sh
              fi    
          done    
      done    
-@@ -199,7 +201,7 @@
+@@ -202,7 +204,7 @@
  {
      # We first loop to check the config. 
      for i in ${SDAEMONS}; do
@@ -178,16 +172,16 @@ Index: pkg-ossec/src/init/ossec-local.sh
          if [ $? != 0 ]; then
              echo "${i}: Configuration error. Exiting"
              unlock;
-@@ -215,7 +217,7 @@
+@@ -218,7 +220,7 @@
      SDAEMONS="${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON} ossec-maild ossec-execd ossec-analysisd ossec-logcollector ossec-syscheckd ossec-monitord"
      
      echo "Starting $NAME $VERSION (by $AUTHOR)..."
--    echo | ${DIR}/ossec-logtest > /dev/null 2>&1;
-+    echo | ${DIRECTORY}/ossec-logtest > /dev/null 2>&1;
+-    echo | ${DIR}/bin/ossec-logtest > /dev/null 2>&1;
++    echo | ${DIRECTORY}/bin/ossec-logtest > /dev/null 2>&1;
      if [ ! $? = 0 ]; then
          echo "ossec-analysisd: Configuration error. Exiting."
-     fi    
-@@ -228,7 +230,7 @@
+         exit 1;
+@@ -232,7 +234,7 @@
      for i in ${SDAEMONS}; do
          pstatus ${i};
          if [ $? = 0 ]; then
@@ -196,7 +190,7 @@ Index: pkg-ossec/src/init/ossec-local.sh
              if [ $? != 0 ]; then
                  unlock;
                  exit 1;
-@@ -258,13 +260,13 @@
+@@ -270,13 +272,13 @@
          return 0;
      fi
          
@@ -213,7 +207,7 @@ Index: pkg-ossec/src/init/ossec-local.sh
                  continue;
              fi
                  
-@@ -289,12 +291,12 @@
+@@ -301,12 +303,12 @@
          if [ $? = 1 ]; then
              echo "Killing ${i} .. ";
              
@@ -228,10 +222,8 @@ Index: pkg-ossec/src/init/ossec-local.sh
          
       done    
      
-Index: pkg-ossec/src/init/ossec-server.sh
-===================================================================
---- pkg-ossec.orig/src/init/ossec-server.sh	2012-08-29 02:05:44.000000000 +0200
-+++ pkg-ossec/src/init/ossec-server.sh	2012-08-29 02:10:06.000000000 +0200
+--- a/src/init/ossec-server.sh
++++ b/src/init/ossec-server.sh
 @@ -5,11 +5,15 @@
  
  
@@ -277,7 +269,7 @@ Index: pkg-ossec/src/init/ossec-server.sh
              fi    
          done    
      done    
-@@ -198,7 +202,7 @@
+@@ -201,7 +205,7 @@
  {
      # We first loop to check the config. 
      for i in ${SDAEMONS}; do
@@ -286,16 +278,16 @@ Index: pkg-ossec/src/init/ossec-server.sh
          if [ $? != 0 ]; then
              echo "${i}: Configuration error. Exiting"
              unlock;
-@@ -213,7 +217,7 @@
+@@ -216,7 +220,7 @@
      SDAEMONS="${DB_DAEMON} ${CSYSLOG_DAEMON} ${AGENTLESS_DAEMON} ossec-maild ossec-execd ossec-analysisd ossec-logcollector ossec-remoted ossec-syscheckd ossec-monitord"
      
      echo "Starting $NAME $VERSION (by $AUTHOR)..."
--    echo | ${DIR}/ossec-logtest > /dev/null 2>&1;
-+    echo | ${DIRECTORY}/ossec-logtest > /dev/null 2>&1;
+-    echo | ${DIR}/bin/ossec-logtest > /dev/null 2>&1;
++    echo | ${DIRECTORY}/bin/ossec-logtest > /dev/null 2>&1;
      if [ ! $? = 0 ]; then
          echo "OSSEC analysisd: Testing rules failed. Configuration error. Exiting."
-     fi    
-@@ -225,7 +229,7 @@
+         exit 1;
+@@ -229,7 +233,7 @@
      for i in ${SDAEMONS}; do
          pstatus ${i};
          if [ $? = 0 ]; then
@@ -304,7 +296,7 @@ Index: pkg-ossec/src/init/ossec-server.sh
              if [ $? != 0 ]; then
                  unlock;
                  exit 1;
-@@ -255,13 +259,13 @@
+@@ -259,13 +263,13 @@
          return 0;
      fi
          
@@ -321,7 +313,7 @@ Index: pkg-ossec/src/init/ossec-server.sh
                  continue;
              fi
                  
-@@ -286,12 +290,12 @@
+@@ -290,12 +294,12 @@
          if [ $? = 1 ]; then
              echo "Killing ${i} .. ";
              
@@ -336,11 +328,9 @@ Index: pkg-ossec/src/init/ossec-server.sh
          
       done    
      
-Index: pkg-ossec/src/headers/file_op.h
-===================================================================
---- pkg-ossec.orig/src/headers/file_op.h	2012-08-29 02:12:29.000000000 +0200
-+++ pkg-ossec/src/headers/file_op.h	2012-08-29 02:12:38.000000000 +0200
-@@ -20,7 +20,7 @@
+--- a/src/headers/file_op.h
++++ b/src/headers/file_op.h
+@@ -21,7 +21,7 @@
  
  #define __FILE_H
  
