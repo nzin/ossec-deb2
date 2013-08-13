@@ -33,16 +33,15 @@ Index: pkg-ossec/src/os_auth/main-server.c
      char *dir  = DEFAULTDIR;
      char *user = USER;
      char *group = GROUPGLOBAL;
-@@ -75,8 +76,8 @@
-    /* Setting the name */
-    OS_SetName(ARGV0);
-    /* add an option to use the ip on the socket to tie the name to a
-       specific address */
--   while((c = getopt(argc, argv, "Vdhiu:g:D:c:m:p:")) != -1)
-+   while((c = getopt(argc, argv, "Vdhu:g:D:c:m:p:NC:")) != -1)
-    {
-        switch(c){
-            case 'V':
+@@ -67,7 +68,7 @@
+     /* Setting the name */
+     OS_SetName(ARGV0);
+         
+-    while((c = getopt(argc, argv, "Vdhu:g:D:c:m:p:")) != -1)
++    while((c = getopt(argc, argv, "Vdhu:g:D:c:m:p:NC")) != -1)
+     {
+         switch(c){
+             case 'V':
 @@ -110,6 +111,12 @@
                      ErrorExit("%s: Invalid port: %s", ARGV0, optarg);
                  }
@@ -56,11 +55,10 @@ Index: pkg-ossec/src/os_auth/main-server.c
              default:
                  report_help();
                  break;
-@@ -145,9 +152,14 @@
+@@ -138,8 +145,13 @@
  
      
-     /* chrooting -- TODO: this isn't a chroot. Should also close
-       unneeded open file descriptors (like stdin/stdout)*/
+     /* chrooting */
 -    chdir(dir);
 -
 +    if (do_chroot) 
