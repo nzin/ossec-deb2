@@ -1,20 +1,92 @@
---- a/src/init/ossec-server.sh
-+++ b/src/init/ossec-server.sh
-@@ -331,6 +331,7 @@
-         ;;
+Index: pkg-ossec/src/init/ossec-server.sh
+===================================================================
+--- pkg-ossec.orig/src/init/ossec-server.sh	2012-08-29 01:19:58.000000000 +0200
++++ pkg-ossec/src/init/ossec-server.sh	2012-08-29 01:48:27.000000000 +0200
+@@ -189,14 +189,17 @@
+ # Status function
+ status()
+ {
++    retvalue=0
+     for i in ${DAEMONS}; do
+         pstatus ${i};
+         if [ $? = 0 ]; then
+             echo "${i} not running..."
++	    retvalue=1 # We return with error if some of the components is not running
+         else
+             echo "${i} is running..."
+         fi
+     done             
++    return $retvalue
+ }
+ 
+ testconfig()
+@@ -322,6 +325,7 @@
+ 	;;
    status)
      status
 +    exit $?
  	;;
    help)  
      help
---- a/src/init/ossec-local.sh
-+++ b/src/init/ossec-local.sh
-@@ -342,6 +342,8 @@
+Index: pkg-ossec/src/init/ossec-local.sh
+===================================================================
+--- pkg-ossec.orig/src/init/ossec-local.sh	2012-08-29 01:47:14.000000000 +0200
++++ pkg-ossec/src/init/ossec-local.sh	2012-08-29 01:48:23.000000000 +0200
+@@ -188,16 +188,20 @@
+ # Status function
+ status()
+ {
++    retvalue=0
+     for i in ${DAEMONS}; do
+         pstatus ${i};
+         if [ $? = 0 ]; then
+             echo "${i} not running..."
++	    retvalue=1 # We return with error if some of the components is not running
+         else
+             echo "${i} is running..."
+         fi
+     done             
++    return $retvalue
+ }
+ 
++
+ testconfig()
+ {
+     # We first loop to check the config. 
+@@ -323,6 +327,7 @@
  	;;
    status)
      status
 +    exit $?
+ 	;;
+   help)  
+     help
+Index: pkg-ossec/src/init/ossec-client.sh
+===================================================================
+--- pkg-ossec.orig/src/init/ossec-client.sh	2012-08-29 01:49:40.000000000 +0200
++++ pkg-ossec/src/init/ossec-client.sh	2012-08-29 01:50:20.000000000 +0200
+@@ -113,14 +113,17 @@
+ # Status function
+ status()
+ {
++    retvalue=0
+     for i in ${DAEMONS}; do
+         pstatus ${i};
+         if [ $? = 0 ]; then
+             echo "${i} not running..."
++	    retvalue=1 # We return with error if some of the components is not running
+         else
+             echo "${i} is running..."
+         fi
+     done             
++    return $retvalue
+ }
+ 
+ testconfig()
+@@ -242,6 +245,7 @@
+ 	;;
+   status)
+     status
 +    exit $?
  	;;
    help)  
