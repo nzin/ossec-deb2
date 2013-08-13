@@ -29,9 +29,9 @@ Last-Update: 2012-08-26
 -    printf("\t-C          Chroot the program (default behaviour).\n");
 +    printf("\t-N          Do not chroot (default behaviour).\n");
 +    printf("\t-C          Chroot the program.\n");
-     printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n\n");
+     printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n");
+     printf("\t            <file> contains lines in IP,NAME format.\n\n");
      exit(1);
- }
 --- a/src/analysisd/analysisd.c
 +++ b/src/analysisd/analysisd.c
 @@ -133,7 +133,7 @@
@@ -68,14 +68,14 @@ Last-Update: 2012-08-26
 --- a/src/client-agent/main.c
 +++ b/src/client-agent/main.c
 @@ -43,7 +43,7 @@
-     
+ 
      int uid = 0;
      int gid = 0;
 -    int do_chroot = 1;
 +    int do_chroot = 0;
  
-     
      /* Setting the name */
+     OS_SetName(ARGV0);
 --- a/src/monitord/main.c
 +++ b/src/monitord/main.c
 @@ -20,7 +20,7 @@
@@ -161,7 +161,7 @@ Last-Update: 2012-08-26
      int test_config = 0,run_foreground = 0;
 -    int do_chroot = 1;
 +    int do_chroot = 0;
-     
+ 
      char *cfg = DEFAULTCPATH;
      char *dir = DEFAULTDIR;
 --- a/src/shared/help.c
@@ -192,13 +192,13 @@ Last-Update: 2012-08-26
  
 @@ -57,7 +57,7 @@
      int c = 0, restart_syscheck = 0, restart_all_agents = 0, list_agents = 0;
-     int info_agent = 0, agt_id = 0, active_only = 0, csv_output = 0; 
+     int info_agent = 0, agt_id = 0, active_only = 0, csv_output = 0;
      int list_responses = 0, end_time = 0, restart_agent = 0;
 -    int do_chroot = 1;
 +    int do_chroot = 0;
  
      char shost[512];
-     
+ 
 --- a/src/util/clear_stats.c
 +++ b/src/util/clear_stats.c
 @@ -28,8 +28,8 @@
@@ -215,10 +215,10 @@ Last-Update: 2012-08-26
 @@ -46,7 +46,7 @@
      int gid;
      int uid;
-     int c;
+     int c;	       
 -    int do_chroot = 1;
 +    int do_chroot = 0;
-     
+ 
  
      /* Setting the name */
 --- a/src/util/list_agents.c
@@ -240,9 +240,9 @@ Last-Update: 2012-08-26
      int c;
 -    int do_chroot = 1;
 +    int do_chroot = 0;
-     
  
      /* Setting the name */
+     OS_SetName(ARGV0);
 --- a/src/util/rootcheck_control.c
 +++ b/src/util/rootcheck_control.c
 @@ -35,8 +35,8 @@
@@ -308,4 +308,4 @@ Last-Update: 2012-08-26
 +    int do_chroot = 0;
      int list_agents, update_agents = 0;
      char *agent_id = NULL;
-     
+ 
