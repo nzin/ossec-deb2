@@ -242,7 +242,7 @@ Last-Update: 2012-08-26
      /* Changing user */
 --- a/src/addagent/main.c
 +++ b/src/addagent/main.c
-@@ -73,6 +73,7 @@
+@@ -71,6 +71,7 @@
      char *user_msg;
  
      int c = 0, cmdlist = 0;
@@ -250,7 +250,7 @@ Last-Update: 2012-08-26
      char *cmdexport = NULL;
      char *cmdimport = NULL;
      char *cmdbulk = NULL;
-@@ -88,7 +89,7 @@
+@@ -86,7 +87,7 @@
      OS_SetName(ARGV0);
  
  
@@ -259,7 +259,7 @@ Last-Update: 2012-08-26
          switch(c){
  	        case 'V':
  		        print_version();
-@@ -127,6 +128,12 @@
+@@ -125,6 +126,12 @@
              case 'l':
                  cmdlist = 1;
                  break;
@@ -272,7 +272,7 @@ Last-Update: 2012-08-26
              default:
                  helpmsg();
                  break;
-@@ -158,16 +165,18 @@
+@@ -156,16 +163,18 @@
  
  
      /* Chrooting to the default directory */
@@ -464,7 +464,7 @@ Last-Update: 2012-08-26
      /* Inserting server info into the db */
 --- a/src/remoted/main.c
 +++ b/src/remoted/main.c
-@@ -69,6 +69,17 @@
+@@ -68,6 +68,17 @@
                  if(!optarg)
                      ErrorExit("%s: -D needs an argument",ARGV0);
                  dir = optarg;
@@ -482,7 +482,7 @@ Last-Update: 2012-08-26
          }
      }
  
-@@ -115,11 +126,13 @@
+@@ -114,11 +125,13 @@
              ErrorExit(SETGID_ERROR, ARGV0, group);
  
      /* Going on chroot */
