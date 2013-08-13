@@ -15,6 +15,7 @@
    status)
      status
 +    exit $?
++    exit $?
  	;;
    help)  
      help
