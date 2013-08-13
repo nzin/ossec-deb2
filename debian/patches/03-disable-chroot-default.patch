@@ -21,10 +21,12 @@ Last-Update: 2012-08-26
 
 --- a/src/addagent/main.c
 +++ b/src/addagent/main.c
-@@ -25,6 +25,8 @@
+@@ -25,8 +25,8 @@
      printf("\t-l          List available agents.\n");
      printf("\t-e <id>     Extracts key for an agent (Manager only).\n");
      printf("\t-i <id>     Import authentication key (Agent only).\n");
+-    printf("\t-N          Do not chroot.\n");
+-    printf("\t-C          Chroot the program (default behaviour).\n");
 +    printf("\t-N          Do not chroot (default behaviour).\n");
 +    printf("\t-C          Chroot the program.\n");
      printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n");
@@ -32,29 +34,33 @@ Last-Update: 2012-08-26
      exit(1);
 --- a/src/analysisd/analysisd.c
 +++ b/src/analysisd/analysisd.c
-@@ -133,6 +133,7 @@
+@@ -133,7 +133,7 @@
  #endif
  {
      int c = 0, m_queue = 0, test_config = 0,run_foreground = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      char *dir = DEFAULTDIR;
      char *user = USER;
      char *group = GROUPGLOBAL;
 --- a/src/analysisd/makelists.c
 +++ b/src/analysisd/makelists.c
-@@ -68,6 +68,8 @@
+@@ -68,8 +68,8 @@
      print_out("    -g <group>  Run as 'group'");
      print_out("    -c <config> Read the 'config' file");
-     print_out("    -D <dir>    Chroot to 'dir'");
+     print_out("    -D <dir>    Chroot or change working directory to 'dir'");
+-    print_out("    -N          Do not chroot");
+-    print_out("    -C          Chroot the daemon (default behaviour)");
 +    print_out("    -N          Do not chroot (default behaviour)");
 +    print_out("    -C          Chroot the daemon");
      print_out(" ");
      exit(1);
  }
-@@ -77,6 +79,7 @@
+@@ -79,7 +79,7 @@
  int main(int argc, char **argv)
  {
      int c = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      char *dir = DEFAULTDIR;
      char *user = USER;
@@ -65,96 +71,107 @@ Last-Update: 2012-08-26
  
      int uid = 0;
      int gid = 0;
--
+-    int do_chroot = 1;
 +    int do_chroot = 0;
  
      /* Setting the name */
      OS_SetName(ARGV0);
 --- a/src/monitord/main.c
 +++ b/src/monitord/main.c
-@@ -20,6 +20,7 @@
+@@ -20,7 +20,7 @@
  int main(int argc, char **argv)
  {
      int c, test_config = 0, run_foreground = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      int uid=0,gid=0;
      char *dir  = DEFAULTDIR;
      char *user = USER;
 --- a/src/monitord/report.c
 +++ b/src/monitord/report.c
-@@ -25,6 +25,8 @@
+@@ -25,8 +25,8 @@
      printf("\t-r <filter> <value> Show related entries.\n");
      printf("\t-n                  Creates a description for the report.\n");
      printf("\t-s                  Show the alert dump.\n");
+-    printf("\t-N                  Do not chroot.\n");
+-    printf("\t-C                  Chroot the program (default behaviour).\n");
 +    printf("\t-N                  Do not chroot (default behaviour).\n");
 +    printf("\t-C                  Chroot the program.\n");
      printf("\n");
      printf("\tFilters allowed: group, rule, level, location,\n");
      printf("\t                 user, srcip, filename\n");
-@@ -42,6 +44,7 @@
+@@ -44,7 +44,7 @@
  {
      int c, test_config = 0;
      int uid=0,gid=0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      char *dir  = DEFAULTDIR;
      char *user = USER;
      char *group = GROUPGLOBAL;
 --- a/src/os_auth/main-server.c
 +++ b/src/os_auth/main-server.c
-@@ -53,6 +53,7 @@
+@@ -53,7 +53,7 @@
      // Count of pids we are wait()ing on.
      int c = 0, test_config = 0, use_ip_address = 0, pid = 0, status, i = 0, active_processes = 0;
      int gid = 0, client_sock = 0, sock = 0, port = 1515, ret = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      char *dir  = DEFAULTDIR;
      char *user = USER;
      char *group = GROUPGLOBAL;
 --- a/src/os_csyslogd/main.c
 +++ b/src/os_csyslogd/main.c
-@@ -21,6 +21,7 @@
+@@ -21,7 +21,7 @@
  int main(int argc, char **argv)
  {
      int c, test_config = 0,run_foreground = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      int uid = 0,gid = 0;
  
      /* Using MAILUSER (read only) */
 --- a/src/os_dbd/main.c
 +++ b/src/os_dbd/main.c
-@@ -56,6 +56,7 @@
+@@ -56,7 +56,7 @@
  {
      int c, test_config = 0, run_foreground = 0;
      int uid = 0,gid = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
  
      /* Using MAILUSER (read only) */
      char *dir  = DEFAULTDIR;
 --- a/src/os_maild/maild.c
 +++ b/src/os_maild/maild.c
-@@ -31,6 +31,7 @@
+@@ -31,7 +31,7 @@
  int main(int argc, char **argv)
  {
      int c, test_config = 0,run_foreground = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      int uid = 0,gid = 0;
      char *dir  = DEFAULTDIR;
      char *user = MAILUSER;
 --- a/src/remoted/main.c
 +++ b/src/remoted/main.c
-@@ -21,6 +21,7 @@
+@@ -21,7 +21,7 @@
      int i = 0,c = 0;
      int uid = 0, gid = 0;
      int test_config = 0,run_foreground = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
  
      char *cfg = DEFAULTCPATH;
      char *dir = DEFAULTDIR;
 --- a/src/shared/help.c
 +++ b/src/shared/help.c
-@@ -36,6 +36,8 @@
+@@ -36,8 +36,8 @@
      print_out("    -g <group>  Run as 'group'");
      print_out("    -c <config> Read the 'config' file");
-     print_out("    -D <dir>    Chroot to 'dir'");
+     print_out("    -D <dir>    Chroot or change working directory to 'dir'");
+-    print_out("    -N          Do not chroot");
+-    print_out("    -C          Chroot the program (default behaviour)");
 +    print_out("    -N          Do not chroot (default behaviour)");
 +    print_out("    -C          Chroot the program");
      print_out(" ");
@@ -162,118 +179,133 @@ Last-Update: 2012-08-26
  }
 --- a/src/util/agent_control.c
 +++ b/src/util/agent_control.c
-@@ -35,6 +35,8 @@
+@@ -35,8 +35,8 @@
      printf("\t-f <ar>     Used with -b, specifies which response to run.\n");
      printf("\t-L          List available active responses.\n");
      printf("\t-s          Changes the output to CSV (comma delimited).\n");
+-    printf("\t-N          Do not chroot.\n");
+-    printf("\t-C          Chroot the program (default behaviour).\n");
 +    printf("\t-N          Do not chroot (default behaviour).\n");
 +    printf("\t-C          Chroot the program.\n");
      exit(1);
  }
  
-@@ -55,6 +57,7 @@
+@@ -57,7 +57,7 @@
      int c = 0, restart_syscheck = 0, restart_all_agents = 0, list_agents = 0;
      int info_agent = 0, agt_id = 0, active_only = 0, csv_output = 0;
      int list_responses = 0, end_time = 0, restart_agent = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
  
      char shost[512];
  
 --- a/src/util/clear_stats.c
 +++ b/src/util/clear_stats.c
-@@ -28,6 +28,8 @@
+@@ -28,8 +28,8 @@
      printf("\t-a       Clear all the stats (averages).\n");
      printf("\t-d       Clear the daily averages.\n");
      printf("\t-w       Clear the weekly averages.\n\n");
+-    printf("\t-N       Do not chroot.\n");
+-    printf("\t-C       Chroot the program (default behaviour).\n");
 +    printf("\t-N       Do not chroot (default behaviour).\n");
 +    printf("\t-C       Chroot the program.\n");
      exit(1);
  }
  
-@@ -43,7 +45,7 @@
-     char *user = USER;
+@@ -46,7 +46,7 @@
      int gid;
      int uid;
--
+     int c;	       
+-    int do_chroot = 1;
 +    int do_chroot = 0;
  
+ 
      /* Setting the name */
-     OS_SetName(ARGV0);
 --- a/src/util/list_agents.c
 +++ b/src/util/list_agents.c
-@@ -26,6 +26,8 @@
+@@ -26,8 +26,8 @@
      printf("\t-a    List all agents.\n");
      printf("\t-c    List the connected (active) agents.\n");
      printf("\t-n    List the not connected (active) agents.\n");
+-    printf("\t-N    Do not chroot.\n");
+-    printf("\t-C    Chroot the program (default behaviour).\n");
 +    printf("\t-N    Do not chroot (default behaviour).\n");
 +    printf("\t-C    Chroot the program.\n");
      exit(1);
  }
  
-@@ -42,7 +44,7 @@
-     int gid;
+@@ -45,7 +45,7 @@
      int uid;
      int flag;
--
+     int c;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
  
      /* Setting the name */
      OS_SetName(ARGV0);
 --- a/src/util/rootcheck_control.c
 +++ b/src/util/rootcheck_control.c
-@@ -35,6 +35,8 @@
+@@ -35,8 +35,8 @@
      printf("\t-q          Used with -i, prints all the outstanding issues.\n");
      printf("\t-L          Used with -i, prints the last scan.\n");
      printf("\t-s          Changes the output to CSV (comma delimited).\n");
+-    printf("\t-N          Do not chroot.\n");
+-    printf("\t-C          Chroot the program (default behaviour).\n");
 +    printf("\t-N          Do not chroot (default behaviour).\n");
 +    printf("\t-C          Chroot the program.\n");
      exit(1);
  }
  
-@@ -49,6 +51,7 @@
+@@ -51,7 +51,7 @@
  
      int gid = 0;
      int uid = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      int c = 0, info_agent = 0, update_rootcheck = 0,
                 list_agents = 0, show_last = 0,
                 resolved_only = 0;
 --- a/src/util/syscheck_control.c
 +++ b/src/util/syscheck_control.c
-@@ -37,6 +37,8 @@
+@@ -37,8 +37,8 @@
      printf("\t-z          Used with the -f, zeroes the auto-ignore counter.\n");
      printf("\t-d          Used with the -f, ignores that file.\n");
      printf("\t-s          Changes the output to CSV (comma delimited).\n");
+-    printf("\t-N          Do not chroot.\n");
+-    printf("\t-C          Chroot the program (default behaviour).\n");
 +    printf("\t-N          Do not chroot (default behaviour).\n");
 +    printf("\t-C          Chroot the program.\n");
      exit(1);
  }
  
-@@ -52,6 +54,7 @@
+@@ -54,7 +54,7 @@
  
      int gid = 0;
      int uid = 0;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
      int c = 0, info_agent = 0, update_syscheck = 0,
                 list_agents = 0, zero_counter = 0,
                 registry_only = 0;
 --- a/src/util/syscheck_update.c
 +++ b/src/util/syscheck_update.c
-@@ -28,6 +28,8 @@
+@@ -27,8 +27,8 @@
+     printf("\t-l       List available agents.\n");
      printf("\t-a       Update (clear) syscheck database for all agents.\n");
      printf("\t-u <id>  Update (clear) syscheck database for a specific agent.\n");
-     printf("\t-u local Update (clear) syscheck database locally.\n\n");
+-    printf("\t-N       Do not chroot.\n");
+-    printf("\t-C       Chroot the program (default behaviour).\n");
 +    printf("\t-N       Do not chroot (default behaviour).\n");
 +    printf("\t-C       Chroot the program.\n");
+     printf("\t-u local Update (clear) syscheck database locally.\n\n");
      exit(1);
  }
- 
-@@ -39,7 +41,7 @@
-     char *user = USER;
+@@ -42,7 +42,7 @@
      int gid;
      int uid;
--
+     int c;
+-    int do_chroot = 1;
 +    int do_chroot = 0;
+     int list_agents, update_agents = 0;
+     char *agent_id = NULL;
  
-     /* Setting the name */
-     OS_SetName(ARGV0);
