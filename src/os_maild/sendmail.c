@@ -6,7 +6,7 @@
  *
  * This program is a free software; you can redistribute it
  * and/or modify it under the terms of the GNU General Public
- * License (version 2) as published by the FSF - Free Software 
+ * License (version 2) as published by the FSF - Free Software
  * Foundation
  */
 
@@ -36,6 +36,7 @@
 #define TO			    "To: <%s>\r\n"
 #define CC			    "Cc: <%s>\r\n"
 #define SUBJECT			"Subject: %s\r\n"
+#define ENDHEADER               "\r\n"
 #define ENDDATA			"\r\n.\r\n"
 #define QUITMSG 		"QUIT\r\n"
 
@@ -110,7 +111,7 @@ int OS_Sendsms(MailConfig *mail, struct tm *p, MailMsg *sms_msg)
                     if(msg)
                         free(msg);
                     close(socket);
-                    return(OS_INVALID);    
+                    return(OS_INVALID);
                 }
             }
             else
@@ -153,7 +154,7 @@ int OS_Sendsms(MailConfig *mail, struct tm *p, MailMsg *sms_msg)
     /* Additional RCPT to */
     final_to[0] = '\0';
     final_to_sz = sizeof(final_to) -2;
-    
+
     if(mail->gran_to)
     {
         i = 0;
@@ -186,7 +187,7 @@ int OS_Sendsms(MailConfig *mail, struct tm *p, MailMsg *sms_msg)
             snprintf(snd_msg,127, TO, mail->gran_to[i]);
             strncat(final_to, snd_msg, final_to_sz);
             final_to_sz -= strlen(snd_msg) +2;
-            
+
             i++;
             continue;
         }
@@ -219,7 +220,7 @@ int OS_Sendsms(MailConfig *mail, struct tm *p, MailMsg *sms_msg)
 
     /* Sending date */
     memset(snd_msg,'\0',128);
-    
+
 
     /* Solaris doesn't have the "%z", so we set the timezone to 0. */
     #ifdef SOLARIS
@@ -227,7 +228,7 @@ int OS_Sendsms(MailConfig *mail, struct tm *p, MailMsg *sms_msg)
     #else
     strftime(snd_msg, 127, "Date: %a, %d %b %Y %T %z\r\n",p);
     #endif
-    
+
     OS_SendTCP(socket,snd_msg);
 
 
@@ -236,6 +237,7 @@ int OS_Sendsms(MailConfig *mail, struct tm *p, MailMsg *sms_msg)
     snprintf(snd_msg, 127, SUBJECT, sms_msg->subject);
     OS_SendTCP(socket,snd_msg);
 
+    OS_SendTCP(socket,ENDHEADER);
 
 
     /* Sending body */
@@ -288,7 +290,7 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
     MailNode *mailmsg;
 
     additional_to[0] = '\0';
-    
+
     /* If there is no sms message, we attempt to get from the
      * email list.
      */
@@ -298,7 +300,7 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
     {
         merror("%s: No email to be sent. Inconsistent state.",ARGV0);
     }
-    
+
 
     /* Connecting to the smtp server */	
     socket = OS_ConnectTCP(SMTP_DEFAULT_PORT, mail->smtpserver, 0);
@@ -346,7 +348,7 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
                     if(msg)
                         free(msg);
                     close(socket);
-                    return(OS_INVALID);    
+                    return(OS_INVALID);
                 }
             }
             else
@@ -439,9 +441,9 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
                     free(msg);
 
                 i++;
-                continue;    
+                continue;
             }
-            
+
             MAIL_DEBUG("DEBUG: Sent '%s', received: '%s'", snd_msg, msg);
             free(msg);
             i++;
@@ -485,7 +487,7 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
             {
                 break;
             }
-            
+
             memset(snd_msg,'\0',128);
             snprintf(snd_msg,127, TO, mail->to[i]);
             OS_SendTCP(socket,snd_msg);
@@ -526,7 +528,7 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
     #else
     strftime(snd_msg, 127, "Date: %a, %d %b %Y %T %z\r\n",p);
     #endif
-                            
+
     OS_SendTCP(socket,snd_msg);
 
 
@@ -549,6 +551,7 @@ int OS_Sendmail(MailConfig *mail, struct tm *p)
     }
     OS_SendTCP(socket,snd_msg);
 
+    OS_SendTCP(socket,ENDHEADER);
 
 
     /* Sending body */

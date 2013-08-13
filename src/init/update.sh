@@ -46,10 +46,10 @@ doUpdatecleanup()
     fi
 
     # Checking if the directory is valid.
-    local _dir_pattern="^/[-a-zA-Z0-9/\.-]{3,128}$"
-    echo $DIRECTORY | grep -E "$_dir_pattern" > /dev/null 2>&1
+    _dir_pattern_update="^/[-a-zA-Z0-9/\.-]{3,128}$"
+    echo $DIRECTORY | grep -E "$_dir_pattern_update" > /dev/null 2>&1
     if [ ! $? = 0 ]; then
-        echo "# ($FUNCNAME) ERROR: directory name ($DIRECTORY) doesn't match the pattern $_dir_pattern" 1>&2
+        echo "# ($FUNCNAME) ERROR: directory name ($DIRECTORY) doesn't match the pattern $_dir_pattern_update" 1>&2
         echo "${FALSE}"
         return 1;
     fi
@@ -133,10 +133,13 @@ UpdateOSSECRules()
     cp -pr ${OSSEC_CONF_FILE} "${OSSEC_CONF_FILE}.$$.bak"
 
     # Getting rid of old rules entries
-    grep -Ev "</*rules>|<include>|<list>|rules global entry" ${OSSEC_CONF_FILE} > "${OSSEC_CONF_FILE}.$$.tmp"
+    grep -Ev "</*rules>|<include>|<list>|<decoder>|<decoder_dir|<rule_dir>|rules global entry" ${OSSEC_CONF_FILE} > "${OSSEC_CONF_FILE}.$$.tmp"
+
+    # Customer decoder, decoder_dir, rule_dir are carried over during upgrade
+    grep -E '<decoder>|<decoder_dir|<rule_dir>' ${OSSEC_CONF_FILE} | grep -v '<!--' >> "${OSSEC_CONF_FILE}.$$.tmp2"
 
     # Check for custom files that may have been added in <rules> element
-    for i in $(grep -E '<include>|<list>' ${OSSEC_CONF_FILE} | grep -v '<!--')
+    for i in `grep -E '<include>|<list>' ${OSSEC_CONF_FILE} | grep -v '<!--'`
     do
       grep "$i" ${RULES_TEMPLATE}>/dev/null || echo "    $i" >> "${OSSEC_CONF_FILE}.$$.tmp2"
     done
