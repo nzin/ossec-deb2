@@ -82,9 +82,9 @@
 -            ${DIR}/bin/${i};
 +            ${DIRECTORY}/bin/${i};
              if [ $? != 0 ]; then
+ 		echo "${i} did not start";
                  unlock;
-                 exit 1;
-@@ -175,13 +179,13 @@
+@@ -176,13 +180,13 @@
          return 0;
      fi
          
@@ -101,7 +101,7 @@
                  continue;
              fi
                  
-@@ -206,12 +210,12 @@
+@@ -207,12 +211,12 @@
          if [ $? = 1 ]; then
              echo "Killing ${i} .. ";
              
@@ -188,9 +188,9 @@
 -            ${DIR}/bin/${i} ${DEBUG_CLI};
 +            ${DIRECTORY}/bin/${i} ${DEBUG_CLI};
              if [ $? != 0 ]; then
+ 		echo "${i} did not start correctly.";
                  unlock;
-                 exit 1;
-@@ -270,13 +272,13 @@
+@@ -271,13 +273,13 @@
          return 0;
      fi
          
@@ -207,7 +207,7 @@
                  continue;
              fi
                  
-@@ -301,12 +303,12 @@
+@@ -302,12 +304,12 @@
          if [ $? = 1 ]; then
              echo "Killing ${i} .. ";
              
@@ -294,9 +294,9 @@
 -            ${DIR}/bin/${i} ${DEBUG_CLI};
 +            ${DIRECTORY}/bin/${i} ${DEBUG_CLI};
              if [ $? != 0 ]; then
+ 		echo "${i} did not start correctly.";
                  unlock;
-                 exit 1;
-@@ -259,13 +263,13 @@
+@@ -260,13 +264,13 @@
          return 0;
      fi
          
@@ -313,7 +313,7 @@
                  continue;
              fi
                  
-@@ -290,12 +294,12 @@
+@@ -291,12 +295,12 @@
          if [ $? = 1 ]; then
              echo "Killing ${i} .. ";
              
