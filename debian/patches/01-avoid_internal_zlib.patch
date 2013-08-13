@@ -23,7 +23,7 @@ Last-Update: 2011-07-30
  DBS = cdb/cdb.a
 --- a/src/Makeall
 +++ b/src/Makeall
-@@ -129,10 +129,10 @@
+@@ -132,10 +132,10 @@
  # Getting values for each action
  if [ "X${ARGV}" = "Xall" ]; then
      DIRECTORIES="${LIBS} ${SOURCES} ${BINARIES}" 
