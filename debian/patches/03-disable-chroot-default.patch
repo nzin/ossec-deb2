@@ -289,18 +289,18 @@ Last-Update: 2012-08-26
                 registry_only = 0;
 --- a/src/util/syscheck_update.c
 +++ b/src/util/syscheck_update.c
-@@ -28,8 +28,8 @@
+@@ -27,8 +27,8 @@
+     printf("\t-l       List available agents.\n");
      printf("\t-a       Update (clear) syscheck database for all agents.\n");
      printf("\t-u <id>  Update (clear) syscheck database for a specific agent.\n");
-     printf("\t-u local Update (clear) syscheck database locally.\n");
 -    printf("\t-N       Do not chroot.\n");
 -    printf("\t-C       Chroot the program (default behaviour).\n");
 +    printf("\t-N       Do not chroot (default behaviour).\n");
-+    printf("\t-C       Chroot the program .\n");
-     printlnf();
++    printf("\t-C       Chroot the program.\n");
+     printf("\t-u local Update (clear) syscheck database locally.\n\n");
      exit(1);
  }
-@@ -43,7 +43,7 @@
+@@ -42,7 +42,7 @@
      int gid;
      int uid;
      int c;
