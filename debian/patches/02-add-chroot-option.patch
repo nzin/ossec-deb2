@@ -17,8 +17,8 @@ Description: Add chroot option
 Author: Javier Fernandez-Sanguino <jfs@debian.org>
 Origin: debian
 Forwarded: not-yet
-Reviewed-By: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
-Last-Update: 2013-08-11
+Reviewed-By: 
+Last-Update: 2012-08-26
 
 
 Index: pkg-ossec/src/os_auth/main-server.c
@@ -315,16 +315,16 @@ Index: pkg-ossec/src/os_maild/maild.c
      /* Changing user */        
 Index: pkg-ossec/src/addagent/main.c
 ===================================================================
---- pkg-ossec.orig/src/addagent/main.c	2013-08-10 13:44:53.000000000 +0200
-+++ pkg-ossec/src/addagent/main.c	2013-08-10 01:55:41.000000000 +0200
+--- pkg-ossec.orig/src/addagent/main.c	2012-08-29 13:44:53.000000000 +0200
++++ pkg-ossec/src/addagent/main.c	2012-08-30 01:55:41.000000000 +0200
 @@ -24,6 +24,8 @@
      printf("\t-l          List available agents.\n");
      printf("\t-e <id>     Extracts key for an agent (Manager only).\n");
-     printf("\t-i <id>     Import authentication key (Agent only).\n");
+     printf("\t-i <id>     Import authentication key (Agent only).\n\n");
 +    printf("\t-N          Do not chroot.\n");
 +    printf("\t-C          Chroot the program (default behaviour).\n");
-    printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n\n");
-    exit(1); }
+     exit(1);
+ }
  
 @@ -68,6 +70,7 @@
      char *user_msg;
@@ -334,12 +334,12 @@ Index: pkg-ossec/src/addagent/main.c
      char *cmdexport = NULL;
      char *cmdimport = NULL;
  
-@@ -83,1 +86,1 @@
+@@ -82,7 +85,7 @@
      OS_SetName(ARGV0);
-
-
--    while((c = getopt(argc, argv, "Vhle:i:f:")) != -1){
-+    while((c = getopt(argc, argv, "Vhle:i:f:NC:")) != -1){
+ 
+ 
+-    while((c = getopt(argc, argv, "Vhle:i:")) != -1){
++    while((c = getopt(argc, argv, "Vhle:i:NC")) != -1){
          switch(c){
  	        case 'V':
  		        print_version();
