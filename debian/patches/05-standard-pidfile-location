@@ -1,3 +1,18 @@
+Description: Use a standard location for pidfiles
+ This patch uses the /etc/ossec-init.conf to define the OSSEC directory and
+ creates the lock pidfile within that directory (instead of wherever this
+ script is run).
+ .
+ For more information see the README.Debian file distributed
+ with the package.
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Origin: debian
+Forwarded: not-yet
+Reviewed-By: 
+Last-Update: 2013-08-16
+
 --- a/active-response/host-deny.sh
 +++ b/active-response/host-deny.sh
 @@ -9,12 +9,14 @@
