@@ -1,3 +1,14 @@
+Description: Return from bash functions instead of exiting
+ Patch to return (not exist) from bash functions. Exit
+ will be done by the caller of the function instead of
+ within a function. 
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Reviewed-by: Jose Antonio Quevedo Muñoz <joseantonio.quevedo@gmail.com>
+Last-Update: 2012-08-16
+Origin: debian
+Forwarded: not-needed
+
+
 --- a/src/init/ossec-server.sh
 +++ b/src/init/ossec-server.sh
 @@ -198,7 +198,7 @@
