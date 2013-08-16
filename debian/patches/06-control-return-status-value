@@ -1,6 +1,6 @@
 --- a/src/init/ossec-server.sh
 +++ b/src/init/ossec-server.sh
-@@ -198,14 +187,14 @@
+@@ -198,7 +198,7 @@
              echo "${i} is running..."
          fi
      done
@@ -9,17 +9,9 @@
  }
  
  testconfig()
- {
-     # We first loop to check the config. 
-     for i in ${SDAEMONS}; do
--        ${DIRECTORY}/bin/${i} -t ${DEBUG_CLI};
-+        ${DIR}/bin/${i} -t ${DEBUG_CLI};
-         if [ $? != 0 ]; then
-             echo "${i}: Configuration error. Exiting"
-             unlock;
 --- a/src/init/ossec-local.sh
 +++ b/src/init/ossec-local.sh
-@@ -197,14 +187,14 @@
+@@ -197,7 +197,7 @@
              echo "${i} is running..."
          fi
      done
@@ -28,11 +20,3 @@
  }
  
  testconfig()
- {
-     # We first loop to check the config. 
-     for i in ${SDAEMONS}; do
--        ${DIRECTORY}/bin/${i} -t ${DEBUG_CLI};
-+        ${DIR}/bin/${i} -t ${DEBUG_CLI};
-         if [ $? != 0 ]; then
-             echo "${i}: Configuration error. Exiting"
-             unlock;
