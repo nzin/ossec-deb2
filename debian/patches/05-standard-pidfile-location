@@ -190,6 +190,20 @@
              if [ $? != 0 ]; then
  		echo "${i} did not start correctly.";
                  unlock;
+@@ -251,11 +253,11 @@
+     sleep 2;
+     unlock;
+ 
+-    ls -la "${DIR}/ossec-agent/" >/dev/null 2>&1
++    ls -la "${DIRECTORY}/ossec-agent/" >/dev/null 2>&1
+     if [ $? = 0 ]; then
+         echo ""
+         echo "Starting sub agent directory (for hybrid mode)"
+-        ${DIR}/ossec-agent/bin/ossec-control start
++        ${DIRECTORY}/ossec-agent/bin/ossec-control start
+     fi
+     
+     echo "Completed."
 @@ -271,13 +273,13 @@
          return 0;
      fi
@@ -207,7 +221,7 @@
                  continue;
              fi
                  
-@@ -302,12 +304,12 @@
+@@ -302,22 +304,22 @@
          if [ $? = 1 ]; then
              echo "Killing ${i} .. ";
              
@@ -222,6 +236,18 @@
          
       done    
      
+     unlock;
+ 
+-    ls -la "${DIR}/ossec-agent/" >/dev/null 2>&1
++    ls -la "${DIRECTORY}/ossec-agent/" >/dev/null 2>&1
+     if [ $? = 0 ]; then
+         echo ""
+         echo "Stopping sub agent directory (for hybrid mode)"
+-        ${DIR}/ossec-agent/bin/ossec-control stop
++        ${DIRECTORY}/ossec-agent/bin/ossec-control stop
+     fi
+     echo "$NAME $VERSION Stopped"
+ }
 --- a/src/init/ossec-server.sh
 +++ b/src/init/ossec-server.sh
 @@ -5,11 +5,15 @@
