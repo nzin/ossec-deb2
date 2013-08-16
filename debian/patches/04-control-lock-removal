@@ -1,3 +1,19 @@
+Description: Remove control locks carefully
+ This patch introduces checks before removing lock files.
+ We try to avoid running 'rm -rf' in a bash variable
+ since this is somewhat dangerous.
+ .
+ For more information see the README.Debian file distributed
+ with the package.
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Javier Fernandez-Sanguino <jfs@debian.org>
+Origin: debian
+Forwarded: not-yet
+Reviewed-By: 
+Last-Update: 2013-08-16
+
+
 Index: pkg-ossec/active-response/host-deny.sh
 ===================================================================
 --- pkg-ossec.orig/active-response/host-deny.sh	2012-08-29 00:50:30.000000000 +0200
