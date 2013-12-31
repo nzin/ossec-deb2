@@ -69,7 +69,6 @@ case "$1" in
         cat <<EOF
 queue/alerts     ossec:ossec 770
 queue/ossec      ossec:ossec 770
-queue/ossec/queue      ossec:ossec 770
 queue/fts        ossec:ossec 750
 queue/syscheck   ossec:ossec 750
 queue/rootcheck  ossec:ossec 750
@@ -78,6 +77,7 @@ queue/agent-info ossec:ossec 755
 queue/rids       ossec:ossec 755
 queue/agentless  ossec:ossec 755
 stats            ossec:ossec 750
+var/run/ossec-hids $OSSECUSER:$OSSECGROUP 750
 EOF
         } | while read dir owner mode; do
                 if ! echo "$dir" | grep -q "^/" ; then

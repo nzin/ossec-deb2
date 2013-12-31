@@ -94,17 +94,16 @@ install-prep:
 
 # TODO - review the mode of the files with the InstallServer and InstallAgent scripts
 install-common:
-	cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../usr/lib/ossec/ bin
-	cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../etc/ossec/ etc
-	cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../var/log/ossec/ logs
-	cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../etc/ossec/rules/ rules
-	cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/var && ln -s ../../../var/run/ run
-	cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/active-response && ln -s ../../../usr/lib/ossec/active-response/ bin
+	#cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../usr/lib/ossec/ bin
+	#cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../etc/ossec/ etc
+	#cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../var/log/ossec/ logs
+	#cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec && ln -s ../../etc/ossec/rules/ rules
+	#cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/var && ln -s ../../../var/run/ run
+	#cd debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/active-response && ln -s ../../../usr/lib/ossec/active-response/ bin
 	chmod -R 550 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec
 	if [ -e debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/ ] ; then \
 	chmod 770 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/alerts; \
 	chmod 770 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/ossec; \
-	chmod 770 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/ossec/queue; \
 	chmod 750 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/fts; \
 	chmod 750 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/syscheck; \
 	chmod 750 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/queue/rootcheck; \
@@ -115,73 +114,74 @@ install-common:
 	chmod 750 debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/stats; \
 	chmod 750 debian/$(PKG_BASENAME)-$(VARIANT)/var/log/ossec; \
 	fi
+	mkdir debian/$(PKG_BASENAME)-$(VARIANT)/etc/
 	chmod -R 550 debian/$(PKG_BASENAME)-$(VARIANT)/etc/
 	# common scripts
 	install -m 750 src/agentlessd/scripts/* debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/agentless/
 	# common configuration files:
-	install -m 640 etc/decoder.xml debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/
-	install -m 640 etc/internal_options.conf debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/
-	install -m 640 src/rootcheck/db/*.txt debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/shared/
-	if [  -e "debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/rules/" ] ; then \
-		cp -pr etc/rules/* debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/rules/; \
-		find debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/rules/ -type f -exec chmod a-x {} \; ; \
-		chmod -R ug=rX,o= debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/rules/; \
+	install -m 640 etc/decoder.xml debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/etc/
+	install -m 640 etc/internal_options.conf debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/etc/
+	install -m 640 src/rootcheck/db/*.txt debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/etc/shared/
+	if [  -e "debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/rules/" ] ; then \
+		cp -pr etc/rules/* debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/rules/; \
+		find debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/rules/ -type f -exec chmod a-x {} \; ; \
+		chmod -R ug=rX,o= debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/rules/; \
 	fi
 #	chmod ug-x debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/rules/*
 # These are only for local configuration, not provided upstream
 #	install -m 640 etc/local_decoder.xml debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/
 #	install -m 640 etc/local_internal_options.conf debian/$(PKG_BASENAME)-$(VARIANT)/etc/ossec/
 	# other scripts
-	install -m 750 active-response/*.sh debian/$(PKG_BASENAME)-$(VARIANT)/usr/lib/ossec/active-response/
-	install -m 750 active-response/firewalls/*.sh debian/$(PKG_BASENAME)-$(VARIANT)/usr/lib/ossec/active-response/
+	install -m 750 active-response/*.sh debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/bin/active-response/
+	install -m 750 active-response/firewalls/*.sh debian/$(PKG_BASENAME)-$(VARIANT)/var/ossec/bin/active-response/
 	# information and scripts for chroot
-	install -m 644 debian/ossec-orig-target debian/ossec-hids-local/var/ossec/.ossec-orig-target
-	install -m 755 debian/ossec-hids-update-chroot debian/ossec-hids-local/usr/lib/ossec/
-	install -m 755 debian/ossec-hids-create-chroot debian/ossec-hids-local/usr/lib/ossec/
+	#install -m 644 debian/ossec-orig-target debian/ossec-hids-local/var/ossec/.ossec-orig-target
+	#install -m 755 debian/ossec-hids-update-chroot debian/ossec-hids-local/var/ossec/bin/
+	#install -m 755 debian/ossec-hids-create-chroot debian/ossec-hids-local/var/ossec/bin/
 
 # TODO - simplify the install scripts having the common code in a single
 # install-common target that uses a parameter (PACKAGE) to set the DESTDIR
 install-local:
 	$(MAKE) -f debian/rules VARIANT=local install-common
-	install -m 755 local-bin/ossec* debian/ossec-hids-local/usr/lib/ossec
+	install -m 755 local-bin/ossec* debian/ossec-hids-local/var/ossec/bin
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
 		rootcheck_control ; do \
-		install -m 755 local-bin/$$file debian/ossec-hids-local/usr/lib/ossec/ ; \
+		install -m 755 local-bin/$$file debian/ossec-hids-local/var/ossec/bin/ ; \
 	done
 	# control script
-	install -m 754 src/init/ossec-local.sh debian/ossec-hids-local/usr/lib/ossec/ossec-control 
+	install -m 754 src/init/ossec-local.sh debian/ossec-hids-local/var/ossec/bin/ossec-control 
 	# configuration files:
-	install -m 640 etc/ossec-local.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
+	install -m 640 etc/ossec-local.conf  debian/ossec-hids-local/var/ossec/etc/ossec.conf
 	install -m 640 debian/ossec-init.conf.local  debian/ossec-hids-local/etc/ossec-init.conf
 	
 
 install-server:
 	$(MAKE) -f debian/rules VARIANT=server install-common
-	install -m 755 server-bin/ossec* debian/ossec-hids-server/usr/lib/ossec
+	install -m 755 server-bin/ossec* debian/ossec-hids-server/var/ossec/bin/
 	for file in manage_agents syscheck_update verify-agent-conf  \
 		clear_stats list_agents agent_control syscheck_control \
 		rootcheck_control ; do \
-		install -m 755 server-bin/$$file debian/ossec-hids-server/usr/lib/ossec/ ; \
+		install -m 755 server-bin/$$file debian/ossec-hids-server/var/ossec/bin/ ; \
 	done
 	# control script
-	install -m 754 src/init/ossec-server.sh debian/ossec-hids-server/usr/lib/ossec/ossec-control 
+	install -m 754 src/init/ossec-server.sh debian/ossec-hids-server/var/ossec/bin/ossec-control 
 	# configuration files:
-	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/etc/ossec/ossec.conf
-	install -m 640 debian/ossec-init.conf.server  debian/ossec-hids-local/etc/ossec-init.conf
+	install -m 640 etc/ossec-server.conf  debian/ossec-hids-server/var/ossec/etc/ossec.conf
+	install -m 640 debian/ossec-init.conf.server  debian/ossec-hids-server/etc/ossec-init.conf
 	# TODO: Review Missing configuration files, extract from src/InstallServer.sh
 
 install-agent:
 	$(MAKE) -f debian/rules VARIANT=agent install-common
 	for file in ossec-agentd agent-auth ossec-logcollector ossec-syscheckd ossec-execd \
 		manage_agents ; do \
-		install -m 755 agent-bin/$$file debian/ossec-hids-agent/usr/lib/ossec/ ; \
+		install -m 755 agent-bin/$$file debian/ossec-hids-agent/var/ossec/bin/ ; \
 	done
 	# control script
-	install -m 755 src/init/ossec-client.sh debian/ossec-hids-agent/usr/lib/ossec/ossec-control
+	install -m 755 src/init/ossec-client.sh debian/ossec-hids-agent/var/ossec/bin/ossec-control
 	# configuration files:
-	install -m 640 etc/ossec-agent.conf  debian/ossec-hids-agent/etc/ossec/ossec.conf
-	install -m 640 debian/ossec-init.conf.agent  debian/ossec-hids-local/etc/ossec-init.conf
+	install -m 640 etc/ossec-agent.conf  debian/ossec-hids-agent/var/ossec/etc/ossec.conf
+	install -m 640 debian/ossec-init.conf.agent  debian/ossec-hids-agent/etc/ossec-init.conf
 	# TODO: Review Missing configuration files, extract from src/InstallAgent.sh
 
 install-arch: build install-prep install-server install-local install-agent

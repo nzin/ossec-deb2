@@ -25,7 +25,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="OSSEC Host-based Intrusion Detection System agent"
 NAME=ossec-hids-agent
-DAEMON=/usr/lib/ossec/ossec-agentd
+DAEMON=/var/ossec/bin/ossec-agentd
 DAEMON_ARGS=""
 SCRIPTNAME=/etc/init.d/$NAME
 

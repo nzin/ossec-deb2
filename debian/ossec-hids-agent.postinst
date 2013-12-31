@@ -65,6 +65,27 @@ case "$1" in
 		chmod u=rwx,g=rxs,o= $LOGDIR
 	fi
 
+        cat <<EOF
+var/run/ossec-hids $OSSECUSER:$OSSECGROUP 750
+EOF
+        } | while read dir owner mode; do
+                if ! echo "$dir" | grep -q "^/" ; then
+                    location=${HOMEDIR}/${dir}
+                else
+                    location=$dir
+                fi
+                if ! dpkg-statoverride --list ${HOMEDIR}/${dir}  >/dev/null
+                then
+                    if [ -e "${HOMEDIR}/${dir}" ] ; then
+                        chown $owner ${HOMEDIR}/${dir}
+                        chmod $mode ${HOMEDIR}/${dir}
+                    else
+                        echo "ERROR: Could not find ${HOMEDIR}/${dir}, please send a bug the maintainer of ossec" >&2
+                    fi
+                fi
+        done
+
+
 	# in the case we reconfigure we have to restart and not just to start.
 	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
 		invoke-rc.d ossec-hids-agent stop || exit $?

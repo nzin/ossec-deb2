@@ -1,3 +1,16 @@
+ossec-hids (2.7.1-1-2) UNRELEASED; urgency=low
+
+  * replace all ossec in /var/ossec: process don't find rules, config if configuration
+    is not in /var/ossec (due to daemon chrooting in /var/ossec)
+
+ -- Nicolas Zin <nicolas.zin@gmail.com>  Tue, 31 Dec 2013 17:11:19 +0000
+
+ossec-hids (2.7.1-1-1) UNRELEASED; urgency=low
+
+  * use now the official ossec-hids-2.7.1.tar.gz (and not the "beta")
+
+ -- Nicolas Zin <nicolas.zin@gmail.com>  Mon, 23 Dec 2013 19:54:21 +0000
+
 ossec-hids (2.7.1-beta-1-1) UNRELEASED; urgency=low
 
   * Preliminary release (Closes: #361954)
