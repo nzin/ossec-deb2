@@ -67,7 +67,9 @@ void makelist_help(const char *prog)
     print_out("    -u <user>   Run as 'user'");
     print_out("    -g <group>  Run as 'group'");
     print_out("    -c <config> Read the 'config' file");
-    print_out("    -D <dir>    Chroot to 'dir'");
+    print_out("    -D <dir>    Chroot or change working directory to 'dir'");
+    print_out("    -N          Do not chroot (default behaviour)");
+    print_out("    -C          Chroot the daemon");
     print_out(" ");
     exit(1);
 }
@@ -77,6 +79,7 @@ void makelist_help(const char *prog)
 int main(int argc, char **argv)
 {
     int c = 0;
+    int do_chroot = 0;
     char *dir = DEFAULTDIR;
     char *user = USER;
     char *group = GROUPGLOBAL;
@@ -93,7 +96,7 @@ int main(int argc, char **argv)
     prev_year = 0;
     memset(prev_month, '\0', 4);
 
-    while((c = getopt(argc, argv, "Vdhfu:g:D:c:")) != -1){
+    while((c = getopt(argc, argv, "Vdhfu:g:D:c:NC")) != -1){
         switch(c){
 	    case 'V':
 		print_version();
@@ -125,6 +128,12 @@ int main(int argc, char **argv)
                 break;
             case 'f':
                 force = 1;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
                 break;
             default:
                 help(ARGV0);

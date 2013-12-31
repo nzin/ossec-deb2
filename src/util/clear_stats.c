@@ -28,6 +28,8 @@ void helpmsg()
     printf("\t-a       Clear all the stats (averages).\n");
     printf("\t-d       Clear the daily averages.\n");
     printf("\t-w       Clear the weekly averages.\n\n");
+    printf("\t-N       Do not chroot (default behaviour).\n");
+    printf("\t-C       Chroot the program.\n");
     exit(1);
 }
 
@@ -43,7 +45,7 @@ int main(int argc, char **argv)
     char *user = USER;
     int gid;
     int uid;
-
+    int do_chroot = 0;
 
     /* Setting the name */
     OS_SetName(ARGV0);

@@ -35,6 +35,8 @@ void helpmsg()
     printf("\t-f <ar>     Used with -b, specifies which response to run.\n");
     printf("\t-L          List available active responses.\n");
     printf("\t-s          Changes the output to CSV (comma delimited).\n");
+    printf("\t-N          Do not chroot (default behaviour).\n");
+    printf("\t-C          Chroot the program.\n");
     exit(1);
 }
 
@@ -55,6 +57,7 @@ int main(int argc, char **argv)
     int c = 0, restart_syscheck = 0, restart_all_agents = 0, list_agents = 0;
     int info_agent = 0, agt_id = 0, active_only = 0, csv_output = 0;
     int list_responses = 0, end_time = 0, restart_agent = 0;
+    int do_chroot = 0;
 
     char shost[512];
 
@@ -73,7 +76,7 @@ int main(int argc, char **argv)
     }
 
 
-    while((c = getopt(argc, argv, "VehdlLcsaru:i:b:f:R:")) != -1)
+    while((c = getopt(argc, argv, "VehdlLcsaru:i:b:f:R:NC")) != -1)
     {
         switch(c){
             case 'V':
@@ -139,6 +142,12 @@ int main(int argc, char **argv)
                 restart_agent = 1;
             case 'a':
                 restart_all_agents = 1;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
                 break;
             default:
                 helpmsg();

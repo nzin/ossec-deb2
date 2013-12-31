@@ -133,6 +133,7 @@ int main_analysisd(int argc, char **argv)
 #endif
 {
     int c = 0, m_queue = 0, test_config = 0,run_foreground = 0;
+    int do_chroot = 0;
     char *dir = DEFAULTDIR;
     char *user = USER;
     char *group = GROUPGLOBAL;
@@ -152,7 +153,7 @@ int main_analysisd(int argc, char **argv)
     hourly_syscheck = 0;
     hourly_firewall = 0;
 
-    while((c = getopt(argc, argv, "Vtdhfu:g:D:c:")) != -1){
+    while((c = getopt(argc, argv, "Vtdhfu:g:D:c:NC")) != -1){
         switch(c){
 	    case 'V':
 		print_version();
@@ -188,6 +189,12 @@ int main_analysisd(int argc, char **argv)
                 break;
             case 't':
                 test_config = 1;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
                 break;
             default:
                 help(ARGV0);

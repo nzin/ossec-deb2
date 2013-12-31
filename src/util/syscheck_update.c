@@ -27,6 +27,8 @@ void helpmsg()
     printf("\t-l       List available agents.\n");
     printf("\t-a       Update (clear) syscheck database for all agents.\n");
     printf("\t-u <id>  Update (clear) syscheck database for a specific agent.\n");
+    printf("\t-N       Do not chroot (default behaviour).\n");
+    printf("\t-C       Chroot the program.\n");
     printf("\t-u local Update (clear) syscheck database locally.\n\n");
     exit(1);
 }
@@ -39,7 +41,7 @@ int main(int argc, char **argv)
     char *user = USER;
     int gid;
     int uid;
-
+    int do_chroot = 0;
 
     /* Setting the name */
     OS_SetName(ARGV0);

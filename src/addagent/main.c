@@ -25,6 +25,8 @@ void helpmsg()
     printf("\t-l          List available agents.\n");
     printf("\t-e <id>     Extracts key for an agent (Manager only).\n");
     printf("\t-i <id>     Import authentication key (Agent only).\n");
+    printf("\t-N          Do not chroot (default behaviour).\n");
+    printf("\t-C          Chroot the program.\n");
     printf("\t-f <file>   Bulk generate client keys from file. (Manager only).\n");
     printf("\t            <file> contains lines in IP,NAME format.\n\n");
     exit(1);
@@ -71,6 +73,7 @@ int main(int argc, char **argv)
     char *user_msg;
 
     int c = 0, cmdlist = 0;
+    int do_chroot = 1;
     char *cmdexport = NULL;
     char *cmdimport = NULL;
     char *cmdbulk = NULL;
@@ -86,7 +89,7 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vhle:i:f:")) != -1){
+    while((c = getopt(argc, argv, "Vhle:i:f:NC:")) != -1){
         switch(c){
 	        case 'V':
 		        print_version();
@@ -125,6 +128,12 @@ int main(int argc, char **argv)
             case 'l':
                 cmdlist = 1;
                 break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
+                break;
             default:
                 helpmsg();
                 break;
@@ -156,14 +165,16 @@ int main(int argc, char **argv)
 
 
     /* Chrooting to the default directory */
-    if(Privsep_Chroot(dir) < 0)
-    {
-        ErrorExit(CHROOT_ERROR, ARGV0, dir);
+    if (do_chroot) {
+	    if(Privsep_Chroot(dir) < 0)
+	    {
+		    ErrorExit(CHROOT_ERROR, ARGV0, dir);
+	    }
+	    /* Inside chroot now */
+	    nowChroot();
+    } else {
+	    chdir(dir);
     }
-
-
-    /* Inside chroot now */
-    nowChroot();
 
 
     /* Starting signal handler */

@@ -37,6 +37,8 @@ void helpmsg()
     printf("\t-z          Used with the -f, zeroes the auto-ignore counter.\n");
     printf("\t-d          Used with the -f, ignores that file.\n");
     printf("\t-s          Changes the output to CSV (comma delimited).\n");
+    printf("\t-N          Do not chroot (default behaviour).\n");
+    printf("\t-C          Chroot the program.\n");
     exit(1);
 }
 
@@ -52,6 +54,7 @@ int main(int argc, char **argv)
 
     int gid = 0;
     int uid = 0;
+    int do_chroot = 0;
     int c = 0, info_agent = 0, update_syscheck = 0,
                list_agents = 0, zero_counter = 0,
                registry_only = 0;
@@ -72,7 +75,7 @@ int main(int argc, char **argv)
     }
 
 
-    while((c = getopt(argc, argv, "VhzrDdlcsu:i:f:")) != -1)
+    while((c = getopt(argc, argv, "VhzrDdlcsu:i:f:NC")) != -1)
     {
         switch(c){
             case 'V':
@@ -126,6 +129,12 @@ int main(int argc, char **argv)
                 }
                 agent_id = optarg;
                 update_syscheck = 1;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
                 break;
             default:
                 helpmsg();

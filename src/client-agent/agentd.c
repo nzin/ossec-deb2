@@ -25,7 +25,7 @@
 /* AgentdStart v0.2, 2005/11/09
  * Starts the agent daemon.
  */
-void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
+void AgentdStart(char *dir, int uid, int gid, char *user, char *group, int do_chroot)
 {
     int rc = 0;
     int pid = 0;
@@ -172,6 +172,8 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
         fdtimeout.tv_sec = 120;
         fdtimeout.tv_usec = 0;
 
+        /* Continuesly send notifications */
+        run_notify();
 
         /* Wait for 120 seconds at a maximum for any descriptor */
         rc = select(maxfd, &fdset, NULL, NULL, &fdtimeout);

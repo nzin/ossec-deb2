@@ -35,7 +35,9 @@ void help(const char *prog)
     print_out("    -u <user>   Run as 'user'");
     print_out("    -g <group>  Run as 'group'");
     print_out("    -c <config> Read the 'config' file");
-    print_out("    -D <dir>    Chroot to 'dir'");
+    print_out("    -D <dir>    Chroot or change working directory to 'dir'");
+    print_out("    -N          Do not chroot (default behaviour)");
+    print_out("    -C          Chroot the program");
     print_out(" ");
     exit(1);
 }

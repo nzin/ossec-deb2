@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     int i = 0,c = 0;
     int uid = 0, gid = 0;
     int test_config = 0,run_foreground = 0;
+    int do_chroot = 0;
 
     char *cfg = DEFAULTCPATH;
     char *dir = DEFAULTDIR;
@@ -68,6 +69,17 @@ int main(int argc, char **argv)
                 if(!optarg)
                     ErrorExit("%s: -D needs an argument",ARGV0);
                 dir = optarg;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
+                break;
+            default:
+		print_out("Unknown argument");
+                help(ARGV0);
+                break;
         }
     }
 
@@ -114,11 +126,13 @@ int main(int argc, char **argv)
             ErrorExit(SETGID_ERROR, ARGV0, group);
 
     /* Going on chroot */
-    if(Privsep_Chroot(dir) < 0)
-                ErrorExit(CHROOT_ERROR,ARGV0,dir);
-
-
-    nowChroot();
+    if (do_chroot) {
+	    if(Privsep_Chroot(dir) < 0)
+		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
+	    nowChroot();
+    } else {
+	    chdir(dir);
+    }
 
 
     /* Starting the signal manipulation */

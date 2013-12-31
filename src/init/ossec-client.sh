@@ -4,21 +4,25 @@
 # Author: Daniel B. Cid <daniel.cid@gmail.com>
 
 
+[ -e /etc/ossec-init.conf ] && . /etc/ossec-init.conf # Source the configuration file for DIRECTORY
+if [ -z "$DIRECTORY" ]; then
+	echo "ERROR: Cannot determine the value of the OSSEC directory" 
+	[ ! -e "/etc/ossec-init.conf" ] && echo "ERROR: /etc/ossec-init.conf does not exist"
+	exit 1
+fi
 LOCAL=`dirname $0`;
 cd ${LOCAL}
-PWD=`pwd`
-DIR=`dirname $PWD`;
 
 ###  Do not modify bellow here ###
 NAME="OSSEC HIDS"
-VERSION="v2.7.1-beta-1"
+VERSION="v2.7.1"
 AUTHOR="Trend Micro Inc."
 DAEMONS="ossec-logcollector ossec-syscheckd ossec-agentd ossec-execd"
 
 
 ## Locking for the start/stop
-LOCK="${DIR}/var/start-script-lock"
-LOCK_PID="${LOCK}/pid"
+LOCK="${DIRECTORY}/var/run/ossec-hids/"
+LOCK_PID="${LOCK}/start-script-lock.pid"
 
 
 # This number should be more than enough (even if it is
@@ -32,11 +36,11 @@ MAX_ITERATION="10"
 checkpid()
 {
     for i in ${DAEMONS}; do
-        for j in `cat ${DIR}/var/run/${i}*.pid 2>/dev/null`; do
+        for j in `cat ${LOCK}/${i}*.pid 2>/dev/null`; do
             ps -p $j |grep ossec >/dev/null 2>&1
             if [ ! $? = 0 ]; then
-                echo "Deleting PID file '${DIR}/var/run/${i}-${j}.pid' not used..."
-                rm ${DIR}/var/run/${i}-${j}.pid
+                echo "Deleting PID file '${LOCK}/${i}-${j}.pid' not used..."
+                rm ${LOCK}/${i}-${j}.pid
             fi    
         done    
     done    
@@ -51,9 +55,14 @@ lock()
     
     # Providing a lock.
     while [ 1 ]; do
-        mkdir ${LOCK} > /dev/null 2>&1
-        MSL=$?
-        if [ "${MSL}" = "0" ]; then
+        [ ! -e "${LOCK}" ] && mkdir -p ${LOCK} > /dev/null 2>&1
+        # Ensure we can make the LOCK properly first
+	if [ ! -d "${LOCK}" ] ; then
+		echo "ERROR: The configured lock directory ${LOCK} is not a directory or it does not exist, cannot continue" 
+		exit 1
+	fi
+	# If there is no PIDfile then we can set the pid and break
+	if [ ! -e "${LOCK_PID}" ] ; then
             # Lock aquired (setting the pid)
             echo "$$" > ${LOCK_PID}
             return;
@@ -74,21 +83,23 @@ lock()
         if [ "$i" = "${MAX_ITERATION}" ]; then
             # Unlocking and executing
             unlock;
-            mkdir ${LOCK} > /dev/null 2>&1
             echo "$$" > ${LOCK_PID}
             return;
         fi
     done
 }
 
-
 # Unlock function
+# Just remove the lock file if it is there, keep the lock directory
+# for later. We don't remove the directory (rm -rf is dangerous in a shell script)
 unlock()
 {
-    rm -rf ${LOCK}
+	[ ! -e "${LOCK}" ]  && return 0
+	[ ! -d "${LOCK}" ]  && return 0
+	[ -e "${LOCK_PID}" ] &&  rm -f ${LOCK_PID}
 }
 
-    
+
 # Help message
 help()
 {
@@ -115,7 +126,7 @@ testconfig()
 {
     # We first loop to check the config. 
     for i in ${SDAEMONS}; do
-        ${DIR}/bin/${i} -t;
+        ${DIRECTORY}/bin/${i} -t;
         if [ $? != 0 ]; then
             echo "${i}: Configuration error. Exiting"
             unlock;
@@ -138,7 +149,7 @@ start()
     for i in ${SDAEMONS}; do
         pstatus ${i};
         if [ $? = 0 ]; then
-            ${DIR}/bin/${i};
+            ${DIRECTORY}/bin/${i};
             if [ $? != 0 ]; then
 		echo "${i} did not start";
                 unlock;
@@ -169,13 +180,13 @@ pstatus()
         return 0;
     fi
         
-    ls ${DIR}/var/run/${pfile}*.pid > /dev/null 2>&1
+    ls ${LOCK}/${pfile}*.pid > /dev/null 2>&1
     if [ $? = 0 ]; then
-        for j in `cat ${DIR}/var/run/${pfile}*.pid 2>/dev/null`; do
+        for j in `cat ${LOCK}/${pfile}*.pid 2>/dev/null`; do
             ps -p $j |grep ossec >/dev/null 2>&1
             if [ ! $? = 0 ]; then
                 echo "${pfile}: Process $j not used by ossec, removing .."
-                rm -f ${DIR}/var/run/${pfile}-$j.pid
+                rm -f ${LOCK}/${pfile}-$j.pid
                 continue;
             fi
                 
@@ -200,12 +211,12 @@ stopa()
         if [ $? = 1 ]; then
             echo "Killing ${i} .. ";
             
-            kill `cat ${DIR}/var/run/${i}*.pid`;
+            kill `cat ${LOCK}/${i}*.pid`;
         else
             echo "${i} not running .."; 
         fi
         
-        rm -f ${DIR}/var/run/${i}*.pid
+        rm -f ${LOCK}/${i}*.pid
         
      done    
     

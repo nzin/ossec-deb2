@@ -21,6 +21,7 @@
 int main(int argc, char **argv)
 {
     int c, test_config = 0,run_foreground = 0;
+    int do_chroot = 0;
     int uid = 0,gid = 0;
 
     /* Using MAILUSER (read only) */
@@ -38,7 +39,7 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1){
+    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:NC")) != -1){
         switch(c){
             case 'V':
                 print_version();
@@ -78,6 +79,12 @@ int main(int argc, char **argv)
             case 't':
                 test_config = 1;
                 break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
+                break;
             default:
                 help(ARGV0);
                 break;
@@ -87,7 +94,7 @@ int main(int argc, char **argv)
 
 
     /* Starting daemon */
-    merror(STARTED_MSG, ARGV0);
+    debug1(STARTED_MSG, ARGV0);
 
 
     /* Check if the user/group given are valid */

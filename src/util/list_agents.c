@@ -26,6 +26,8 @@ void helpmsg()
     printf("\t-a    List all agents.\n");
     printf("\t-c    List the connected (active) agents.\n");
     printf("\t-n    List the not connected (active) agents.\n");
+    printf("\t-N    Do not chroot (default behaviour).\n");
+    printf("\t-C    Chroot the program.\n");
     exit(1);
 }
 
@@ -42,7 +44,7 @@ int main(int argc, char **argv)
     int gid;
     int uid;
     int flag;
-
+    int do_chroot = 0;
 
     /* Setting the name */
     OS_SetName(ARGV0);

@@ -25,6 +25,8 @@ void report_help()
     printf("\t-r <filter> <value> Show related entries.\n");
     printf("\t-n                  Creates a description for the report.\n");
     printf("\t-s                  Show the alert dump.\n");
+    printf("\t-N                  Do not chroot (default behaviour).\n");
+    printf("\t-C                  Chroot the program.\n");
     printf("\n");
     printf("\tFilters allowed: group, rule, level, location,\n");
     printf("\t                 user, srcip, filename\n");
@@ -42,6 +44,7 @@ int main(int argc, char **argv)
 {
     int c, test_config = 0;
     int uid=0,gid=0;
+    int do_chroot = 0;
     char *dir  = DEFAULTDIR;
     char *user = USER;
     char *group = GROUPGLOBAL;
@@ -77,7 +80,7 @@ int main(int argc, char **argv)
 
     r_filter.report_name = NULL;
 
-    while((c = getopt(argc, argv, "Vdhstu:g:D:c:f:v:n:r:")) != -1)
+    while((c = getopt(argc, argv, "Vdhstu:g:D:c:f:v:n:r:NC")) != -1)
     {
         switch(c){
             case 'V':
@@ -146,6 +149,12 @@ int main(int argc, char **argv)
             case 's':
                 r_filter.show_alerts = 1;
                 break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
+                break;
             default:
                 report_help();
                 break;
@@ -175,11 +184,13 @@ int main(int argc, char **argv)
 
 
     /* chrooting */
-    if(Privsep_Chroot(dir) < 0)
-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
-
-    nowChroot();
-
+    if (do_chroot) {
+	    if(Privsep_Chroot(dir) < 0)
+		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
+	    nowChroot();
+    } else { 
+	    chdir(dir);
+    }
 
 
     /* Changing user */

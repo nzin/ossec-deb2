@@ -53,6 +53,7 @@ int main(int argc, char **argv)
     // Count of pids we are wait()ing on.
     int c = 0, test_config = 0, use_ip_address = 0, pid = 0, status, i = 0, active_processes = 0;
     int gid = 0, client_sock = 0, sock = 0, port = 1515, ret = 0;
+    int do_chroot = 0;
     char *dir  = DEFAULTDIR;
     char *user = USER;
     char *group = GROUPGLOBAL;
@@ -76,7 +77,7 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
     /* add an option to use the ip on the socket to tie the name to a
        specific address */
-    while((c = getopt(argc, argv, "Vdhiu:g:D:c:m:p:")) != -1)
+    while((c = getopt(argc, argv, "Vdhiu:g:D:c:m:p:NC:")) != -1)
     {
         switch(c){
             case 'V':
@@ -123,6 +124,12 @@ int main(int argc, char **argv)
                     ErrorExit("%s: Invalid port: %s", ARGV0, optarg);
                 }
                 break;
+            case 'N': /* Disable the use of chroot */
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
+                break;
             default:
                 report_help();
                 break;
@@ -152,8 +159,13 @@ int main(int argc, char **argv)
 
     /* chrooting -- TODO: this isn't a chroot. Should also close
        unneeded open file descriptors (like stdin/stdout)*/
-    chdir(dir);
-
+    if (do_chroot)
+      chdir(dir);
+    else
+      chdir(dir);
+    /* Note: there is no difference with chrooting or not in the main-server as
+     * upstream does not yet make one, the code is there to make it possible if
+     * upstream changes the behaviour */
 
 
     /* Signal manipulation */
@@ -198,19 +210,23 @@ int main(int argc, char **argv)
     while(1)
     {
 
-        // no need to completely pin the cpu
-        usleep(0);
-        for (i = 0; i < POOL_SIZE; i++)
-        {
-            int rv = 0;
-            status = 0;
-            if (process_pool[i])
+        // no need to completely pin the cpu, 100ms should be fast enough
+        usleep(100*1000);
+
+        // Only check process-pool if we have active processes
+        if(active_processes > 0){
+            for (i = 0; i < POOL_SIZE; i++)
             {
-                rv = waitpid(process_pool[i], &status, WNOHANG);
-                if (rv != 0){
-                    debug1("%s: DEBUG: Process %d exited", ARGV0, process_pool[i]);
-                    process_pool[i] = 0;
-                    active_processes = active_processes - 1;
+                int rv = 0;
+                status = 0;
+                if (process_pool[i])
+                {
+                    rv = waitpid(process_pool[i], &status, WNOHANG);
+                    if (rv != 0){
+                        debug1("%s: DEBUG: Process %d exited", ARGV0, process_pool[i]);
+                        process_pool[i] = 0;
+                        active_processes = active_processes - 1;
+                    }
                 }
             }
         }

@@ -31,6 +31,7 @@ void OS_Run(MailConfig *mail);
 int main(int argc, char **argv)
 {
     int c, test_config = 0,run_foreground = 0;
+    int do_chroot = 0;
     int uid = 0,gid = 0;
     char *dir  = DEFAULTDIR;
     char *user = MAILUSER;
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:NC")) != -1){
         switch(c){
             case 'V':
                 print_version();
@@ -81,6 +82,12 @@ int main(int argc, char **argv)
                 break;
             case 't':
                 test_config = 1;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
                 break;
             default:
                 help(ARGV0);
@@ -144,11 +151,13 @@ int main(int argc, char **argv)
 
 
     /* chrooting */
-    if(Privsep_Chroot(dir) < 0)
-        ErrorExit(CHROOT_ERROR,ARGV0,dir);
-
-    nowChroot();
-
+    if (do_chroot) {
+	    if(Privsep_Chroot(dir) < 0)
+		    ErrorExit(CHROOT_ERROR,ARGV0,dir);
+	    nowChroot();
+    } else {
+	    chdir(dir);
+    }
 
 
     /* Changing user */

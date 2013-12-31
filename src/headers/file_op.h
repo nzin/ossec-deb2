@@ -21,7 +21,7 @@
 
 #define __FILE_H
 
-#define OS_PIDFILE	"/var/run"
+#define OS_PIDFILE	"/var/run/ossec-hids"
 
 /* Set the program name. Must be done before **anything** else */
 void OS_SetName(char *name);

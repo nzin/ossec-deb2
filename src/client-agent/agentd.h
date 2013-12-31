@@ -29,7 +29,7 @@
 int ClientConf(char *cfgfile);
 
 /* Agentd init function */
-void AgentdStart(char *dir, int uid, int gid, char *user, char *group);
+void AgentdStart(char *dir, int uid, int gid, char *user, char *group, int do_chroot);
 
 /* Event Forwarder */
 void *EventForward();

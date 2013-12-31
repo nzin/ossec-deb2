@@ -35,6 +35,8 @@ void helpmsg()
     printf("\t-q          Used with -i, prints all the outstanding issues.\n");
     printf("\t-L          Used with -i, prints the last scan.\n");
     printf("\t-s          Changes the output to CSV (comma delimited).\n");
+    printf("\t-N          Do not chroot (default behaviour).\n");
+    printf("\t-C          Chroot the program.\n");
     exit(1);
 }
 
@@ -49,6 +51,7 @@ int main(int argc, char **argv)
 
     int gid = 0;
     int uid = 0;
+    int do_chroot = 0;
     int c = 0, info_agent = 0, update_rootcheck = 0,
                list_agents = 0, show_last = 0,
                resolved_only = 0;
@@ -69,7 +72,7 @@ int main(int argc, char **argv)
     }
 
 
-    while((c = getopt(argc, argv, "VhqrDdLlcsu:i:")) != -1)
+    while((c = getopt(argc, argv, "VhqrDdLlcsu:i:NC")) != -1)
     {
         switch(c){
             case 'V':
@@ -116,6 +119,12 @@ int main(int argc, char **argv)
                 }
                 agent_id = optarg;
                 update_rootcheck = 1;
+                break;
+            case 'N':
+                do_chroot = 0;
+                break;
+            case 'C':
+                do_chroot = 1;
                 break;
             default:
                 helpmsg();
