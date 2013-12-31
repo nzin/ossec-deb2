@@ -9,12 +9,14 @@ ACTION=$1
 USER=$2
 IP=$3
 
-LOCAL=`dirname $0`;
-cd $LOCAL
-cd ../
-PWD=`pwd`
-LOCK="${PWD}/host-deny-lock"
-LOCK_PID="${PWD}/host-deny-lock/pid"
+[ -e /etc/ossec-init.conf ] && . /etc/ossec-init.conf # Source the configuration file for DIRECTORY
+if [ -z "$DIRECTORY" ]; then
+	echo "ERROR: Cannot determine the value of the OSSEC directory" 
+	[ ! -e "/etc/ossec-init.conf" ] && echo "ERROR: /etc/ossec-init.conf does not exist"
+	exit 1
+fi
+LOCK="${DIRECTORY}/var/run/ossec-hids/"
+LOCK_PID="${LOCK}/host-deny-lock.pid"
 UNAME=`uname`
 
 
@@ -30,9 +32,14 @@ lock()
     i=0;
     # Providing a lock.
     while [ 1 ]; do
-        mkdir ${LOCK} > /dev/null 2>&1
-        MSL=$?
-        if [ "${MSL}" = "0" ]; then
+        [ ! -e "${LOCK}" ] && mkdir -p ${LOCK} > /dev/null 2>&1
+	# Ensure we can make the LOCK properly first
+	if [ ! -d "${LOCK}" ] ; then
+		echo "ERROR: The configured lock directory ${LOCK} is not a directory or it does not exist, cannot continue" 
+		exit 1
+	fi
+	# If there is no PIDfile then we can set the pid and break
+	if [ ! -e "${LOCK_PID}" ] ; then
             # Lock aquired (setting the pid)
             echo "$$" > ${LOCK_PID}
             return;
@@ -71,9 +78,13 @@ lock()
 }
 
 # Unlock function
+# Just remove the lock file if it is there, keep the lock directory
+# for later. We don't remove the directory (rm -rf is dangerous in a shell script)
 unlock()
 {
-   rm -rf ${LOCK} 
+   [ ! -e "${LOCK}" ]  && return 0
+   [ ! -d "${LOCK}" ]  && return 0
+   [ -e "{$LOCK_PID}" ] &&  rm -f ${LOCK_PID}
 }
 
 
