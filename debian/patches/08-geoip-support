@@ -1,0 +1,34 @@
+Description: modification needed to compile against geoip
+ When adding support to geoip, it doesn't work straight from source on debian.
+ I had to change Makefile to let ossec find the correct library
+ .
+ ossec-hids (2.7.1-1-2) UNRELEASED; urgency=low
+ .
+   * replace all ossec in /var/ossec: process don't find rules, config if configuration
+     is not in /var/ossec (due to daemon chrooting in /var/ossec)
+Author: Nicolas Zin <nicolas.zin@gmail.com>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+--- ossec-hids-2.7.1-1.orig/src/analysisd/Makefile
++++ ossec-hids-2.7.1-1/src/analysisd/Makefile
+@@ -13,7 +13,7 @@ PLUGINS = decoders/decoders.a
+ ALERTS  = alerts/alerts.a
+ DBS     = cdb/cdb.a cdb/cdb_make.a
+ 
+-loga_OBJS = ${LOCAL} ${PLUGINS} ${DBS} ${ALERTS} ${OS_XML} ${OS_REGEX} ${OS_NET} ${OS_SHARED} ${OS_ZLIB} ${CPRELUDE}
++loga_OBJS = ${LOCAL} ${PLUGINS} ${DBS} ${ALERTS} ${OS_XML} ${OS_REGEX} ${OS_NET} ${OS_SHARED} ${OS_ZLIB} ${CPRELUDE} -lGeoIP
+ lists_OBJS = lists_make.c ${OTHER} ${PLUGINS} ${DBS} ${ALERTS} ${OS_XML} ${OS_REGEX} ${OS_NET} ${OS_SHARED} ${OS_ZLIB} ${CPRELUDE}
+ 
+ all: logaudit logtest makelists

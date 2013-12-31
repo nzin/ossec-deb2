@@ -6,9 +6,9 @@ test $DEBIAN_SCRIPT_DEBUG && set -v -x
 # Initialise variables
 OSSECUSER="ossec"
 OSSECGROUP="ossec"
-LOGDIR="/var/log/ossec"
+LOGDIR="/var/ossec/logs"
 HOMEDIR="/var/ossec"
-CONF_FILE=/etc/ossec/ossec-init.conf
+CONF_FILE=/etc/ossec-init.conf
 
 
 # summary of how this script can be called:
@@ -37,18 +37,20 @@ case "$1" in
         # TODO 
         #  - configure the results in the configuration file
         #  - setup active response (firewall response, whitelist, etc.)
-	db_get ossec-hids-server/enable_email || true;	EMAIL="$RET"
-	db_get ossec-hids-server/email_to     || true;	EMAIL_TO="$RET"
-	db_get ossec-hids-server/email_server || true;	EMAIL_SERVER="$RET"
-	db_get ossec-hids-server/enable_syslog ||  true; SYSLOG="$RET"
+	
+	
+	#db_get ossec-hids-agent/enable_email || true;	EMAIL="$RET"
+	#db_get ossec-hids-agent/email_to     || true;	EMAIL_TO="$RET"
+	#db_get ossec-hids-agent/email_server || true;	EMAIL_SERVER="$RET"
+	#db_get ossec-hids-agent/enable_syslog ||  true; SYSLOG="$RET"
 
 	# Failsafe in case the values above are blank (jfs)
-	[ -z "$EMAIL" ] && EMAIL="no"
-	[ -z "$EMAIL_TO" ] && EMAIL_TO="root@localhost"
-	[ -z "$EMAIL_SERVER" ] && EMAIL_SERVER="127.0.0.1"
-	[ -z "$SYSLOG" ] && SYSLOG="no"
+	#[ -z "$EMAIL" ] && EMAIL="no"
+	#[ -z "$EMAIL_TO" ] && EMAIL_TO="root@localhost"
+	#[ -z "$EMAIL_SERVER" ] && EMAIL_SERVER="127.0.0.1"
+	#[ -z "$SYSLOG" ] && SYSLOG="no"
 
-	db_stop
+	#db_stop
 
         # TODO - configure the configuration file
 
@@ -66,6 +68,10 @@ case "$1" in
 	fi
 
         cat <<EOF
+logs               $OSSECUSER:$OSSECGROUP 750
+logs/alerts        $OSSECUSER:$OSSECGROUP 750
+logs/archives      $OSSECUSER:$OSSECGROUP 750
+logs/firewall      $OSSECUSER:$OSSECGROUP 750
 var/run/ossec-hids $OSSECUSER:$OSSECGROUP 750
 EOF
         } | while read dir owner mode; do

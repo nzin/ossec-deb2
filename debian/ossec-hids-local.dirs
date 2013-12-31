@@ -7,6 +7,9 @@ var/ossec/bin/active-response
 var/ossec/etc
 var/ossec/etc/shared
 var/ossec/logs
+var/ossec/logs/alerts
+var/ossec/logs/archives
+var/ossec/logs/firewall
 var/ossec/queue
 var/ossec/stats
 var/ossec/queue/agent-info 
@@ -20,3 +23,5 @@ var/ossec/queue/rootcheck
 var/ossec/queue/syscheck
 var/ossec/rules
 var/ossec/var/
+var/ossec/var/run/
+var/ossec/var/run/ossec-hids/

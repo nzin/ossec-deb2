@@ -1,3 +1,11 @@
+ossec-hids (2.7.1-1-3) UNRELEASED; urgency=low
+
+  * add geoip support
+  * add deb template
+  * recreate logs subdirrectory (to let ossec-analysd work properly)
+
+ -- Nicolas Zin <nicolas.zin@gmail.com>  Tue, 31 Dec 2013 21:47:12 +0000
+
 ossec-hids (2.7.1-1-2) UNRELEASED; urgency=low
 
   * replace all ossec in /var/ossec: process don't find rules, config if configuration

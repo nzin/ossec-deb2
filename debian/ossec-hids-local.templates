@@ -1,0 +1,29 @@
+Template: ossec-hids-local/enable_email
+Type: string
+Default: yes
+Description: If we want to send alerts by email
+  (else it is just stored in /var/ossec/logs)
+
+Template: ossec-hids-local/email_to
+Type: string
+Default: root@localhost
+Description: The email to send alerts to
+ This is the general email where alerts will be sent to.
+ For finer grain, you can add other specific rules inside the ossec.conf file
+
+Template: ossec-hids-agent/email_from
+Type: string
+Default: ossecm@ossec.server
+Description: The email origin from
+ This is the email adress where alerts will come from.
+
+Template: ossec-hids-local/email_server
+Type: string
+Default: localhost
+Description: smtp server address (name or ip)
+
+Template: ossec-hids-local/enable_syslog
+Type: string
+Default: no
+Description: send also via syslog
+

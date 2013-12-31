@@ -52,6 +52,8 @@ build-server: clean-sources configure-server build-server-stamp
 build-server-stamp: 
 # For Prelude support:
 #	cd src && make setprelude
+	cd src && make setgeoip
+	#sed -i -e 's/^loga_OBJS.*/loga_OBJS = \$$\{LOCAL\} \$$\{PLUGINS\} \$$\{DBS\} \$$\{ALERTS\} \$$\{OS_XML\} \$$\{OS_REGEX\} \$$\{OS_NET\} \$$\{OS_SHARED\} \$$\{OS_ZLIB\} \$$\{CPRELUDE\} -lGeoIP/' src/analysisd/Makefile
 	cd src && make all
 	cd src && make build
 	mv bin server-bin
@@ -75,6 +77,8 @@ build-local: clean-sources configure-local build-local-stamp
 build-local-stamp: 
 # For Prelude support:
 #	cd src && make setprelude
+	cd src && make setgeoip
+	#sed -i -e 's/^loga_OBJS.*/loga_OBJS = \$$\{LOCAL\} \$$\{PLUGINS\} \$$\{DBS\} \$$\{ALERTS\} \$$\{OS_XML\} \$$\{OS_REGEX\} \$$\{OS_NET\} \$$\{OS_SHARED\} \$$\{OS_ZLIB\} \$$\{CPRELUDE\} -lGeoIP/' src/analysisd/Makefile
 	cd src && make all
 	cd src && make build
 	mv bin local-bin

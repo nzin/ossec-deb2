@@ -8,6 +8,9 @@ var/ossec/active-response
 var/ossec/agentless
 var/ossec/queue
 var/ossec/logs
+var/ossec/logs/alerts
+var/ossec/logs/archives
+var/ossec/logs/firewall
 var/ossec/stats
 var/ossec/queue/agent-info 
 var/ossec/queue/agentless 
@@ -20,3 +23,5 @@ var/ossec/queue/rootcheck
 var/ossec/queue/syscheck
 var/ossec/rules
 var/ossec/var/
+var/ossec/var/run/
+var/ossec/var/run/ossec-hids/

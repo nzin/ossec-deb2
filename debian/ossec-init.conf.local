@@ -1,5 +1,5 @@
 # Debian version of /etc/ossec-init.conf
 DIRECTORY="/var/ossec" 
-VERSION="v2.6"
+VERSION="v2.7.1"
 DATE="Sun Aug 26 13:02:21 CEST 2012"
 TYPE="local"

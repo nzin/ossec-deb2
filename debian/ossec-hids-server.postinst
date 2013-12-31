@@ -6,9 +6,9 @@ test $DEBIAN_SCRIPT_DEBUG && set -v -x
 # Initialise variables
 OSSECUSER="ossec"
 OSSECGROUP="ossec"
-LOGDIR="/var/log/ossec"
+LOGDIR="/var/ossec/logs"
 HOMEDIR="/var/ossec"
-CONF_FILE=/etc/ossec/ossec-init.conf
+CONF_FILE=/etc/ossec-init.conf
 
 
 # summary of how this script can be called:
@@ -37,20 +37,41 @@ case "$1" in
         # TODO 
         #  - configure the results in the configuration file
         #  - setup active response (firewall response, whitelist, etc.)
+
+        # enable email
+        db_input medium ossec-hids-server/enable_email || true
+        db_go
+        # email from
+        db_input medium ossec-hids-server/email_from || true
+        db_go
+        # email to
+        db_input medium ossec-hids-server/email_to || true
+        db_go
+        # email server
+        db_input medium ossec-hids-server/email_server || true
+        db_go
+
 	db_get ossec-hids-server/enable_email || true;	EMAIL="$RET"
+	db_get ossec-hids-server/email_from   || true;	EMAIL_FROM="$RET"
 	db_get ossec-hids-server/email_to     || true;	EMAIL_TO="$RET"
 	db_get ossec-hids-server/email_server || true;	EMAIL_SERVER="$RET"
-	db_get ossec-hids-server/enable_syslog ||  true; SYSLOG="$RET"
+	#db_get ossec-hids-server/enable_syslog ||  true; SYSLOG="$RET"
 
 	# Failsafe in case the values above are blank (jfs)
 	[ -z "$EMAIL" ] && EMAIL="no"
 	[ -z "$EMAIL_TO" ] && EMAIL_TO="root@localhost"
 	[ -z "$EMAIL_SERVER" ] && EMAIL_SERVER="127.0.0.1"
-	[ -z "$SYSLOG" ] && SYSLOG="no"
+	#[ -z "$SYSLOG" ] && SYSLOG="no"
 
 	db_stop
 
-        # TODO - configure the configuration file
+        # configure the configuration file
+        sed -i -e "s/email_notification.*email_notification/email_notification\>$EMAIL\<\/email_notification/" \
+          -e "s/email_from.*email_from/email_from\>$EMAIL_FROM\<\/email_from/" \
+          -e "s/email_to.*email_to/email_to\>$EMAIL_TO\<\/email_to/" \
+          -e "s/smtp_server.*smtp_server/smtp_server\>$EMAIL_SERVER\<\/smtp_server/" \
+          /var/ossec/etc/ossec.conf
+
 
 	# 5. adjust file and directory permissions
         if ! dpkg-statoverride --list ${CONF_FILE} >/dev/null && [ -e ${CONF_FILE} ] 
@@ -67,16 +88,20 @@ case "$1" in
 
         { 
         cat <<EOF
-queue/alerts     ossec:ossec 770
-queue/ossec      ossec:ossec 770
-queue/fts        ossec:ossec 750
-queue/syscheck   ossec:ossec 750
-queue/rootcheck  ossec:ossec 750
-queue/diff       ossec:ossec 750
-queue/agent-info ossec:ossec 755
-queue/rids       ossec:ossec 755
-queue/agentless  ossec:ossec 755
-stats            ossec:ossec 750
+logs               $OSSECUSER:$OSSECGROUP 750
+logs/alerts        $OSSECUSER:$OSSECGROUP 750
+logs/archives      $OSSECUSER:$OSSECGROUP 750
+logs/firewall      $OSSECUSER:$OSSECGROUP 750
+queue/alerts       $OSSECUSER:$OSSECGROUP 770
+queue/ossec        $OSSECUSER:$OSSECGROUP 770
+queue/fts          $OSSECUSER:$OSSECGROUP 750
+queue/syscheck     $OSSECUSER:$OSSECGROUP 750
+queue/rootcheck    $OSSECUSER:$OSSECGROUP 750
+queue/diff         $OSSECUSER:$OSSECGROUP 750
+queue/agent-info   $OSSECUSER:$OSSECGROUP 755
+queue/rids         $OSSECUSER:$OSSECGROUP 755
+queue/agentless    $OSSECUSER:$OSSECGROUP 755
+stats              $OSSECUSER:$OSSECGROUP 750
 var/run/ossec-hids $OSSECUSER:$OSSECGROUP 750
 EOF
         } | while read dir owner mode; do

@@ -11,7 +11,8 @@ Vcs-Browser: http://git.debian.org/?p=pkg-ossec/pkg-ossec.git;a=summary
 
 Package: ossec-hids-server
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6)
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6),
+  libssl1.0.0 | libssl0.9.8, libgeoip1, geoip-database
 Description: OSSEC host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control different computer
  systems. It provides features that make it useful to setup:
@@ -28,7 +29,8 @@ Description: OSSEC host-based Intrusion Detection System.
 
 Package: ossec-hids-agent
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6)
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6),
+  libssl1.0.0 | libssl0.9.8
 Conflicts: ossec-hids-server, ossec-hids-local
 Description: OSSEC host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control different computer
@@ -46,7 +48,8 @@ Description: OSSEC host-based Intrusion Detection System.
 
 Package: ossec-hids-local
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6)
+Depends: ${shlibs:Depends}, ${misc:Depends}, expect, lsb-base (>= 3.0-6),
+  libssl1.0.0 | libssl0.9.8, libgeoip1, geoip-database
 Conflicts: ossec-hids-server, ossec-hids-agent
 Description: OSSEC host-based Intrusion Detection System.
  OSSEC is a full platform to monitor and control different computer

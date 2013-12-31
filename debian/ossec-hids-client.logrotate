@@ -1,4 +1,4 @@
-/var/log/ossec/*.log {
+/var/ossec/logs/*.log {
         weekly
 	missingok
 	rotate 4

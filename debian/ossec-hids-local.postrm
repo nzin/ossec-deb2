@@ -17,10 +17,25 @@ set -e
 #          <overwriter-version>
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
+OSSECUSER="ossec"
+OSSECGROUP="ossec"
+HOMEDIR="/var/ossec"
+
 
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+    if "$1" = "purge" -o "$1" = "remove" ]; then
+      userdel ${OSSECUSER}
+      userdel ${OSSECUSER}m
+      userdel ${OSSECUSER}r
+      groupdel ${OSSECGROUP}
+    fi
+
+    if [ "$1" = "purge" ]; then
+      rm -rf /var/ossec
+    fi
 
     ;;
 
